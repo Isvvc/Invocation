@@ -14,8 +14,8 @@ struct PersistenceController {
         let result = PersistenceController(inMemory: true)
         let viewContext = result.container.viewContext
         for _ in 0..<10 {
-            let newItem = Item(context: viewContext)
-            newItem.timestamp = Date()
+            let newChecklist = Checklist(context: viewContext)
+            newChecklist.title = String(UUID().uuidString.prefix(8))
         }
         do {
             try viewContext.save()
