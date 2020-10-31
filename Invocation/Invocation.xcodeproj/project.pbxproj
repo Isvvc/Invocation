@@ -16,6 +16,7 @@
 		5907F8E5254B3E9D00E3EF74 /* InvocationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5907F8E4254B3E9D00E3EF74 /* InvocationTests.swift */; };
 		5907F8F0254B3E9D00E3EF74 /* InvocationUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5907F8EF254B3E9D00E3EF74 /* InvocationUITests.swift */; };
 		5907F910254B435100E3EF74 /* ChecklistsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5907F90F254B435100E3EF74 /* ChecklistsView.swift */; };
+		5907F915254B463C00E3EF74 /* ChecklistView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5907F914254B463C00E3EF74 /* ChecklistView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -51,6 +52,7 @@
 		5907F8EF254B3E9D00E3EF74 /* InvocationUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InvocationUITests.swift; sourceTree = "<group>"; };
 		5907F8F1254B3E9D00E3EF74 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		5907F90F254B435100E3EF74 /* ChecklistsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChecklistsView.swift; sourceTree = "<group>"; };
+		5907F914254B463C00E3EF74 /* ChecklistView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChecklistView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -151,6 +153,7 @@
 			children = (
 				5907F8CF254B3E9B00E3EF74 /* ContentView.swift */,
 				5907F90F254B435100E3EF74 /* ChecklistsView.swift */,
+				5907F914254B463C00E3EF74 /* ChecklistView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -295,6 +298,7 @@
 				5907F8D7254B3E9D00E3EF74 /* Persistence.swift in Sources */,
 				5907F8DA254B3E9D00E3EF74 /* Invocation.xcdatamodeld in Sources */,
 				5907F910254B435100E3EF74 /* ChecklistsView.swift in Sources */,
+				5907F915254B463C00E3EF74 /* ChecklistView.swift in Sources */,
 				5907F8D0254B3E9B00E3EF74 /* ContentView.swift in Sources */,
 				5907F8CE254B3E9B00E3EF74 /* InvocationApp.swift in Sources */,
 			);

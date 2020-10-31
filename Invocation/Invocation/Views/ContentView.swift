@@ -15,6 +15,10 @@ struct ContentView: View {
             NavigationView {
                 ChecklistsView()
             }
+            .tabItem {
+                Image(systemName: "list.bullet")
+                Text("Checklists")
+            }
         }
     }
 }
