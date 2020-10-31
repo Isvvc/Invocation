@@ -18,7 +18,7 @@ struct ChecklistsView: View {
     var body: some View {
         List {
             ForEach(checklists) { checklist in
-                Text(checklist.title ?? "Checklist")
+                NavigationLink(checklist.title ?? "Checklist", destination: ChecklistView(checklist: checklist))
             }
         }
         .navigationTitle("Checklists")

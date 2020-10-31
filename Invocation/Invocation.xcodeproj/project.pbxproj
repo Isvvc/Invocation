@@ -17,6 +17,7 @@
 		5907F8F0254B3E9D00E3EF74 /* InvocationUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5907F8EF254B3E9D00E3EF74 /* InvocationUITests.swift */; };
 		5907F910254B435100E3EF74 /* ChecklistsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5907F90F254B435100E3EF74 /* ChecklistsView.swift */; };
 		5907F915254B463C00E3EF74 /* ChecklistView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5907F914254B463C00E3EF74 /* ChecklistView.swift */; };
+		59C00842254DDE5A00E33D98 /* Invocation+FetchRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 59C00841254DDE5A00E33D98 /* Invocation+FetchRequest.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -53,6 +54,7 @@
 		5907F8F1254B3E9D00E3EF74 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		5907F90F254B435100E3EF74 /* ChecklistsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChecklistsView.swift; sourceTree = "<group>"; };
 		5907F914254B463C00E3EF74 /* ChecklistView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChecklistView.swift; sourceTree = "<group>"; };
+		59C00841254DDE5A00E33D98 /* Invocation+FetchRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Invocation+FetchRequest.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -144,6 +146,7 @@
 			isa = PBXGroup;
 			children = (
 				5907F8D8254B3E9D00E3EF74 /* Invocation.xcdatamodeld */,
+				59C00841254DDE5A00E33D98 /* Invocation+FetchRequest.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -296,6 +299,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				5907F8D7254B3E9D00E3EF74 /* Persistence.swift in Sources */,
+				59C00842254DDE5A00E33D98 /* Invocation+FetchRequest.swift in Sources */,
 				5907F8DA254B3E9D00E3EF74 /* Invocation.xcdatamodeld in Sources */,
 				5907F910254B435100E3EF74 /* ChecklistsView.swift in Sources */,
 				5907F915254B463C00E3EF74 /* ChecklistView.swift in Sources */,
