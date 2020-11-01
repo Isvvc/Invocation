@@ -17,6 +17,7 @@
 		5907F8F0254B3E9D00E3EF74 /* InvocationUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5907F8EF254B3E9D00E3EF74 /* InvocationUITests.swift */; };
 		5907F910254B435100E3EF74 /* ChecklistsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5907F90F254B435100E3EF74 /* ChecklistsView.swift */; };
 		5907F915254B463C00E3EF74 /* ChecklistView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5907F914254B463C00E3EF74 /* ChecklistView.swift */; };
+		5913C1F4254F439200A00F51 /* CloudKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5913C1F3254F439200A00F51 /* CloudKit.framework */; };
 		59C00842254DDE5A00E33D98 /* Invocation+FetchRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 59C00841254DDE5A00E33D98 /* Invocation+FetchRequest.swift */; };
 /* End PBXBuildFile section */
 
@@ -54,6 +55,8 @@
 		5907F8F1254B3E9D00E3EF74 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		5907F90F254B435100E3EF74 /* ChecklistsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChecklistsView.swift; sourceTree = "<group>"; };
 		5907F914254B463C00E3EF74 /* ChecklistView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChecklistView.swift; sourceTree = "<group>"; };
+		5913C1EE254F438F00A00F51 /* Invocation.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Invocation.entitlements; sourceTree = "<group>"; };
+		5913C1F3254F439200A00F51 /* CloudKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CloudKit.framework; path = System/Library/Frameworks/CloudKit.framework; sourceTree = SDKROOT; };
 		59C00841254DDE5A00E33D98 /* Invocation+FetchRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Invocation+FetchRequest.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -62,6 +65,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5913C1F4254F439200A00F51 /* CloudKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -89,6 +93,7 @@
 				5907F8E3254B3E9D00E3EF74 /* InvocationTests */,
 				5907F8EE254B3E9D00E3EF74 /* InvocationUITests */,
 				5907F8CB254B3E9B00E3EF74 /* Products */,
+				5913C1F2254F439200A00F51 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -105,6 +110,7 @@
 		5907F8CC254B3E9B00E3EF74 /* Invocation */ = {
 			isa = PBXGroup;
 			children = (
+				5913C1EE254F438F00A00F51 /* Invocation.entitlements */,
 				5907F8CD254B3E9B00E3EF74 /* InvocationApp.swift */,
 				5907F900254B401000E3EF74 /* Model */,
 				5907F904254B401B00E3EF74 /* Views */,
@@ -167,6 +173,14 @@
 				5907F8D6254B3E9D00E3EF74 /* Persistence.swift */,
 			);
 			path = Controllers;
+			sourceTree = "<group>";
+		};
+		5913C1F2254F439200A00F51 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				5913C1F3254F439200A00F51 /* CloudKit.framework */,
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -461,6 +475,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = Invocation/Invocation.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_ASSET_PATHS = "\"Invocation/Preview Content\"";
 				DEVELOPMENT_TEAM = A4525544Q4;
@@ -483,6 +498,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = Invocation/Invocation.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_ASSET_PATHS = "\"Invocation/Preview Content\"";
 				DEVELOPMENT_TEAM = A4525544Q4;

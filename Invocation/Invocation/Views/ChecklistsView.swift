@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import CoreData
 
 struct ChecklistsView: View {
     @Environment(\.managedObjectContext) private var moc
@@ -15,13 +16,39 @@ struct ChecklistsView: View {
         animation: .default)
     private var checklists: FetchedResults<Checklist>
     
+    private var addButton: some View {
+        Button() {
+            let newChecklist = Checklist(context: moc)
+            newChecklist.title = String(UUID().uuidString.prefix(8))
+            PersistenceController.save(context: moc)
+        } label: {
+            Image(systemName: "plus")
+                .imageScale(.large)
+                .font(.body)
+        }
+    }
+    
     var body: some View {
         List {
             ForEach(checklists) { checklist in
                 NavigationLink(checklist.title ?? "Checklist", destination: ChecklistView(checklist: checklist))
             }
+            .onDelete { indexSet in
+                for checklist in indexSet.map({ checklists[$0] }) {
+                    checklist.items?.forEach { item in
+                        guard let item = item as? NSManagedObject else { return }
+                        moc.delete(item)
+                    }
+                    withAnimation {
+                        moc.delete(checklist)
+                    }
+                }
+                PersistenceController.save(context: moc)
+            }
         }
+        .listStyle(PlainListStyle())
         .navigationTitle("Checklists")
+        .navigationBarItems(trailing: addButton)
     }
 }
 

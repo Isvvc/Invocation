@@ -7,7 +7,7 @@
 
 import CoreData
 
-struct PersistenceController {
+class PersistenceController {
     static let shared = PersistenceController()
 
     static var preview: PersistenceController = {
@@ -32,8 +32,13 @@ struct PersistenceController {
 
     init(inMemory: Bool = false) {
         container = NSPersistentCloudKitContainer(name: "Invocation")
+        
         if inMemory {
             container.persistentStoreDescriptions.first!.url = URL(fileURLWithPath: "/dev/null")
+        } else if let description = container.persistentStoreDescriptions.first {
+            description.setOption(true as NSObject, forKey: NSPersistentStoreRemoteChangeNotificationPostOptionKey)
+            container.viewContext.automaticallyMergesChangesFromParent = true
+            container.viewContext.mergePolicy = NSMergeByPropertyObjectTrumpMergePolicy
         }
         container.loadPersistentStores(completionHandler: { (storeDescription, error) in
             if let error = error as NSError? {
@@ -51,7 +56,11 @@ struct PersistenceController {
                 fatalError("Unresolved error \(error), \(error.userInfo)")
             }
         })
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(processUpdate), name: .NSPersistentStoreRemoteChange, object: self.container)
     }
+    
+    //MARK: Saving
     
     func save() {
         PersistenceController.save(context: container.viewContext)
@@ -63,6 +72,45 @@ struct PersistenceController {
         } catch {
             let nsError = error as NSError
             NSLog("Unresolved error \(nsError), \(nsError.userInfo)")
+        }
+    }
+    
+    //MARK: Merging changes
+    
+    lazy var operationQueue: OperationQueue = {
+        let queue = OperationQueue()
+        queue.maxConcurrentOperationCount = 1
+        return queue
+    }()
+    
+    @objc
+    private func processUpdate(notification: Notification) {
+        operationQueue.addOperation {
+            guard let container = notification.object as? NSPersistentCloudKitContainer else { return }
+            let context = container.newBackgroundContext()
+            
+            context.performAndWait {
+                do {
+                    // Ideally this should only run on Checklists that have been modified,
+                    // not every single checklist like we're doing here.
+                    let checklistsFetchRequest: NSFetchRequest<Checklist> = Checklist.fetchRequest()
+                    let checklists = try context.fetch(checklistsFetchRequest)
+                    
+                    // Update the indices of each Checklist's Items
+                    for checklist in checklists {
+                        try checklist.updateIndices(context: context)
+                    }
+                    
+                    // Only save if there are changes so we don't get in infinite loop
+                    // of saving and responding to that save.
+                    if context.hasChanges {
+                        try context.save()
+                    }
+                } catch {
+                    let nsError = error as NSError
+                    NSLog("Unresolved error \(nsError), \(nsError.userInfo)")
+                }
+            }
         }
     }
 }
