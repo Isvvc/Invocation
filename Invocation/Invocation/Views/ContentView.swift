@@ -15,6 +15,14 @@ struct ContentView: View {
     var body: some View {
         TabView {
             NavigationView {
+                ProjectsView()
+            }
+            .tabItem {
+                Image(systemName: "text.badge.checkmark")
+                Text("Invocations")
+            }
+            
+            NavigationView {
                 ChecklistsView()
             }
             .tabItem {

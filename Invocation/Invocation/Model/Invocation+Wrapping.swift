@@ -29,6 +29,13 @@ extension Item {
     }
 }
 
+extension Project {
+    var wrappedTitle: String {
+        get { title ?? checklist?.title ?? "" }
+        set { title = newValue }
+    }
+}
+
 infix operator ???: NilCoalescingPrecedence
 extension String {
     static func ??? (num: String, power: String) -> String {

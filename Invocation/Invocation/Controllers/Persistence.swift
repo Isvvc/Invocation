@@ -13,7 +13,7 @@ class PersistenceController {
     static var preview: PersistenceController = {
         let result = PersistenceController(inMemory: true)
         let viewContext = result.container.viewContext
-        for _ in 0..<10 {
+        for i in 0..<10 {
             let newChecklist = Checklist(context: viewContext)
             newChecklist.title = String(UUID().uuidString.prefix(8))
             
@@ -23,6 +23,10 @@ class PersistenceController {
                 newItem.checklist = newChecklist
                 newItem.index = i
                 newItem.notes = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam vitae lacus odio."
+            }
+            
+            if i == 0 {
+                Project(checklist: newChecklist, context: viewContext)
             }
         }
         result.save()
