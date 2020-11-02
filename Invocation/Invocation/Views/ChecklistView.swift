@@ -20,6 +20,7 @@ struct ChecklistView: View {
     @ObservedObject var checklist: Checklist
     
     @State private var title: String
+    @State private var selectedItem: Item?
     
     init(checklist: Checklist) {
         self.checklist = checklist
@@ -41,8 +42,12 @@ struct ChecklistView: View {
             
             Section(header: Text("Items")) {
                 ForEach(items) { item in
-                    NavigationLink(destination: ItemView(item: item)) {
-                        Text(item.name ?? "Item")
+                    // I would have liked to have the newItem show up in a sheet instead
+                    // if just a segue, but when I did that, the name wouldn't update in
+                    // this list.
+                    NavigationLink(destination: ItemView(item: item), tag: item, selection: $selectedItem) {
+                        Text(item.wrappedName ??? "Item")
+                            .foregroundColor(item.name != nil ? .primary : .secondary)
                     }
                 }
                 .onDelete(perform: delete)
@@ -68,10 +73,9 @@ struct ChecklistView: View {
     
     func createItem() {
         let newItem = Item(context: moc)
-        newItem.name = String(UUID().uuidString.prefix(8))
         newItem.checklist = checklist
         newItem.index = Int16(items.count)
-        PersistenceController.save(context: moc)
+        self.selectedItem = newItem
     }
     
     func delete(_ indexSet: IndexSet) {

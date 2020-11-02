@@ -28,3 +28,13 @@ extension Item {
         set { notes = newValue }
     }
 }
+
+infix operator ???: NilCoalescingPrecedence
+extension String {
+    static func ??? (num: String, power: String) -> String {
+        if num.isEmpty {
+            return power
+        }
+        return num
+    }
+}
