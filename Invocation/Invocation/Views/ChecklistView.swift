@@ -10,6 +10,7 @@ import CoreData
 
 struct ChecklistView: View {
     @Environment(\.managedObjectContext) private var moc
+    @Environment(\.editMode) private var editMode
     
     private var itemsFetchRequest: FetchRequest<Item>
     private var items: FetchedResults<Item> {
@@ -18,37 +19,26 @@ struct ChecklistView: View {
     
     @ObservedObject var checklist: Checklist
     
+    @State private var title: String
+    
     init(checklist: Checklist) {
         self.checklist = checklist
         self.itemsFetchRequest = FetchRequest(
             fetchRequest: checklist.itemsFetchRequest(),
             animation: .default)
-    }
-    
-    private var addButton: some View {
-        Button() {
-            let newItem = Item(context: moc)
-            newItem.name = String(UUID().uuidString.prefix(8))
-            newItem.checklist = checklist
-            newItem.index = Int16(items.count)
-            PersistenceController.save(context: moc)
-        } label: {
-            Image(systemName: "plus")
-                .imageScale(.large)
-                .font(.body)
-        }
-    }
-    
-    private var barButtons: some View {
-        HStack {
-            EditButton()
-                .padding(.trailing)
-            addButton
-        }
+        _title = .init(wrappedValue: checklist.wrappedTitle)
     }
     
     var body: some View {
-        List {
+        Form {
+            Section(header: Text("Title")) {
+                TextField("Checklist Title", text: $title, onCommit: {
+                    checklist.title = title
+                    PersistenceController.save(context: moc)
+                })
+                .autocapitalization(.words)
+            }
+            
             ForEach(items) { item in
                 HStack {
                     Text(item.name ?? "Item")
@@ -76,9 +66,30 @@ struct ChecklistView: View {
                 
                 PersistenceController.save(context: moc)
             }
+            
+            Button(action: createItem) {
+                HStack {
+                    Spacer()
+                    Text("Add New Item")
+                    Spacer()
+                }
+            }
+            
+            Section(header: Text("Settings")) {
+                Toggle("Show completed items", isOn: $checklist.showComplete)
+                Toggle("Show only one item", isOn: $checklist.showOne)
+            }
         }
         .navigationTitle(checklist.title ?? "Checklist")
-        .navigationBarItems(trailing: barButtons)
+        .navigationBarItems(trailing: EditButton())
+    }
+    
+    func createItem() {
+        let newItem = Item(context: moc)
+        newItem.name = String(UUID().uuidString.prefix(8))
+        newItem.checklist = checklist
+        newItem.index = Int16(items.count)
+        PersistenceController.save(context: moc)
     }
 }
 
