@@ -66,6 +66,10 @@ struct ChecklistView: View {
                 Toggle("Show completed items", isOn: $checklist.showComplete)
                 Toggle("Show only one item", isOn: $checklist.showOne)
             }
+            
+            Button("Make Project") {
+                Project(checklist: checklist, context: moc)
+            }
         }
         .navigationTitle(checklist.title ?? "Checklist")
         .navigationBarItems(trailing: EditButton())

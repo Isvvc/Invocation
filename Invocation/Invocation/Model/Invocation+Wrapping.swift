@@ -36,6 +36,13 @@ extension Project {
     }
 }
 
+extension Task {
+    var wrappedName: String {
+        get { name ?? item?.name ?? "" }
+        set { name = newValue }
+    }
+}
+
 infix operator ???: NilCoalescingPrecedence
 extension String {
     static func ??? (num: String, power: String) -> String {

@@ -33,7 +33,18 @@ extension Checklist {
 extension Project {
     func tasksFetchRequest() -> NSFetchRequest<Task> {
         let fetchRequest: NSFetchRequest<Task> = Task.fetchRequest()
-        fetchRequest.predicate = NSPredicate(format: "checklist == %@", self)
+        
+        var predicates = [NSPredicate(format: "project == %@", self)]
+        
+        if !showComplete {
+            predicates.append(NSPredicate(format: "completed == nil"))
+        }
+        
+        if showOne {
+            fetchRequest.fetchLimit = 1
+        }
+        
+        fetchRequest.predicate = NSCompoundPredicate(andPredicateWithSubpredicates: predicates)
         fetchRequest.sortDescriptors = [NSSortDescriptor(keyPath: \Item.index, ascending: true)]
         return fetchRequest
     }
