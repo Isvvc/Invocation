@@ -21,6 +21,7 @@
 		59C00842254DDE5A00E33D98 /* Invocation+FetchRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 59C00841254DDE5A00E33D98 /* Invocation+FetchRequest.swift */; };
 		59C4AE9D255077EB00A4438A /* Invocation+Wrapping.swift in Sources */ = {isa = PBXBuildFile; fileRef = 59C4AE9C255077EB00A4438A /* Invocation+Wrapping.swift */; };
 		59C4AEA225507EC700A4438A /* ItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 59C4AEA125507EC700A4438A /* ItemView.swift */; };
+		59C4AEA72550885400A4438A /* ChecklistController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 59C4AEA62550885400A4438A /* ChecklistController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -62,6 +63,7 @@
 		59C00841254DDE5A00E33D98 /* Invocation+FetchRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Invocation+FetchRequest.swift"; sourceTree = "<group>"; };
 		59C4AE9C255077EB00A4438A /* Invocation+Wrapping.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Invocation+Wrapping.swift"; sourceTree = "<group>"; };
 		59C4AEA125507EC700A4438A /* ItemView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ItemView.swift; sourceTree = "<group>"; };
+		59C4AEA62550885400A4438A /* ChecklistController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChecklistController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -177,6 +179,7 @@
 			isa = PBXGroup;
 			children = (
 				5907F8D6254B3E9D00E3EF74 /* Persistence.swift */,
+				59C4AEA62550885400A4438A /* ChecklistController.swift */,
 			);
 			path = Controllers;
 			sourceTree = "<group>";
@@ -320,6 +323,7 @@
 			files = (
 				5907F8D7254B3E9D00E3EF74 /* Persistence.swift in Sources */,
 				59C4AE9D255077EB00A4438A /* Invocation+Wrapping.swift in Sources */,
+				59C4AEA72550885400A4438A /* ChecklistController.swift in Sources */,
 				59C00842254DDE5A00E33D98 /* Invocation+FetchRequest.swift in Sources */,
 				5907F8DA254B3E9D00E3EF74 /* Invocation.xcdatamodeld in Sources */,
 				59C4AEA225507EC700A4438A /* ItemView.swift in Sources */,
