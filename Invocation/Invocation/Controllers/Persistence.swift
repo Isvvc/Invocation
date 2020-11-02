@@ -106,6 +106,14 @@ class PersistenceController {
                         try checklist.updateIndices(context: context)
                     }
                     
+                    // Update Project indices
+                    let projectsFetchRequest: NSFetchRequest<Project> = Project.fetchRequest()
+                    let projects = try context.fetch(projectsFetchRequest)
+                    
+                    for project in projects {
+                        try project.updateIndices(context: context)
+                    }
+                    
                     // Only save if there are changes so we don't get in infinite loop
                     // of saving and responding to that save.
                     if context.hasChanges {

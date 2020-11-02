@@ -24,5 +24,6 @@ extension Task {
     convenience init(item: Item, context: NSManagedObjectContext) {
         self.init(context: context)
         self.item = item
+        self.index = item.index
     }
 }

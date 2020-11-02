@@ -29,3 +29,26 @@ extension Checklist {
         }
     }
 }
+
+extension Project {
+    func tasksFetchRequest() -> NSFetchRequest<Task> {
+        let fetchRequest: NSFetchRequest<Task> = Task.fetchRequest()
+        fetchRequest.predicate = NSPredicate(format: "checklist == %@", self)
+        fetchRequest.sortDescriptors = [NSSortDescriptor(keyPath: \Item.index, ascending: true)]
+        return fetchRequest
+    }
+    
+    func updateIndices(context: NSManagedObjectContext) throws {
+        let items = try context.fetch(tasksFetchRequest())
+        updateIndices(items: items)
+    }
+    
+    func updateIndices<T: Sequence>(items: T) where T.Element == Task {
+        for (index, item) in items.enumerated() {
+            let index = Int16(index)
+            if item.index != index {
+                item.index = index
+            }
+        }
+    }
+}
