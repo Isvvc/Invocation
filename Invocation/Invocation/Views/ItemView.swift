@@ -11,6 +11,8 @@ import CoreData
 struct ItemView: View {
     @Environment(\.managedObjectContext) private var moc
     
+    @EnvironmentObject private var checklistController: ChecklistController
+    
     @ObservedObject var item: Item
     
     @State private var notes: String
@@ -43,9 +45,12 @@ struct ItemView: View {
             
             Section(header: Text("Link")) {
                 HStack {
-                    TextField("URL", text: $link, onEditingChanged: { editing in
+                    TextField("https://example.com/", text: $link.animation(), onEditingChanged: { editing in
                         editingLink = editing
                     }, onCommit: saveLink)
+                    .autocapitalization(.none)
+                    .disableAutocorrection(true)
+                    
                     if !editingLink,
                        let link = item.link {
                         Link(destination: link) {
@@ -62,9 +67,19 @@ struct ItemView: View {
     }
     
     func saveLink() {
-        guard let url = URL(string: link) else {
-            return link = item.link?.absoluteString ?? ""
+        if link.isEmpty {
+            item.link = nil
+            return save()
         }
+        
+        let httpsLink = checklistController.https(link)
+        
+        guard let url = URL(string: httpsLink) else {
+            link = item.link?.absoluteString ?? ""
+            return save()
+        }
+        
+        link = httpsLink
         item.link = url
         save()
     }
@@ -86,6 +101,7 @@ struct ItemView_Previews: PreviewProvider {
         NavigationView {
             ItemView(item: item)
                 .environment(\.managedObjectContext, PersistenceController.preview.container.viewContext)
+                .environmentObject(ChecklistController())
         }
     }
 }

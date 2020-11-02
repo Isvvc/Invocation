@@ -9,6 +9,8 @@ import SwiftUI
 import CoreData
 
 struct ContentView: View {
+    
+    let checklistController = ChecklistController()
 
     var body: some View {
         TabView {
@@ -20,6 +22,7 @@ struct ContentView: View {
                 Text("Checklists")
             }
         }
+        .environmentObject(checklistController)
     }
 }
 
