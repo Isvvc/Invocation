@@ -22,6 +22,7 @@ class PersistenceController {
                 newItem.name = String(UUID().uuidString.prefix(8))
                 newItem.checklist = newChecklist
                 newItem.index = i
+                newItem.notes = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam vitae lacus odio."
             }
         }
         result.save()

@@ -17,6 +17,14 @@ extension Checklist {
 extension Item {
     var wrappedName: String {
         get { name ?? "" }
-        set { name = newValue }
+        set {
+            objectWillChange.send()
+            name = newValue
+        }
+    }
+    
+    var wrappedNotes: String {
+        get { notes ?? "" }
+        set { notes = newValue }
     }
 }

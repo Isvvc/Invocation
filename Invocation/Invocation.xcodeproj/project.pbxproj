@@ -20,6 +20,7 @@
 		5913C1F4254F439200A00F51 /* CloudKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5913C1F3254F439200A00F51 /* CloudKit.framework */; };
 		59C00842254DDE5A00E33D98 /* Invocation+FetchRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 59C00841254DDE5A00E33D98 /* Invocation+FetchRequest.swift */; };
 		59C4AE9D255077EB00A4438A /* Invocation+Wrapping.swift in Sources */ = {isa = PBXBuildFile; fileRef = 59C4AE9C255077EB00A4438A /* Invocation+Wrapping.swift */; };
+		59C4AEA225507EC700A4438A /* ItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 59C4AEA125507EC700A4438A /* ItemView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -60,6 +61,7 @@
 		5913C1F3254F439200A00F51 /* CloudKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CloudKit.framework; path = System/Library/Frameworks/CloudKit.framework; sourceTree = SDKROOT; };
 		59C00841254DDE5A00E33D98 /* Invocation+FetchRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Invocation+FetchRequest.swift"; sourceTree = "<group>"; };
 		59C4AE9C255077EB00A4438A /* Invocation+Wrapping.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Invocation+Wrapping.swift"; sourceTree = "<group>"; };
+		59C4AEA125507EC700A4438A /* ItemView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ItemView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -166,6 +168,7 @@
 				5907F8CF254B3E9B00E3EF74 /* ContentView.swift */,
 				5907F90F254B435100E3EF74 /* ChecklistsView.swift */,
 				5907F914254B463C00E3EF74 /* ChecklistView.swift */,
+				59C4AEA125507EC700A4438A /* ItemView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -319,6 +322,7 @@
 				59C4AE9D255077EB00A4438A /* Invocation+Wrapping.swift in Sources */,
 				59C00842254DDE5A00E33D98 /* Invocation+FetchRequest.swift in Sources */,
 				5907F8DA254B3E9D00E3EF74 /* Invocation.xcdatamodeld in Sources */,
+				59C4AEA225507EC700A4438A /* ItemView.swift in Sources */,
 				5907F910254B435100E3EF74 /* ChecklistsView.swift in Sources */,
 				5907F915254B463C00E3EF74 /* ChecklistView.swift in Sources */,
 				5907F8D0254B3E9B00E3EF74 /* ContentView.swift in Sources */,
