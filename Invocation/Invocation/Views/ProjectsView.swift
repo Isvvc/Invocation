@@ -36,15 +36,12 @@ fileprivate struct ProjectSection: View {
     @ObservedObject var project: Project
     
     @State private var expanded = true
-    @State private var completed: [Task: Bool] = [:]
     
     init(project: Project) {
         self.project = project
         tasksFetchRequest = FetchRequest(
             fetchRequest: project.tasksFetchRequest(),
             animation: .default)
-        
-        (project.tasks as! Set<Task>).forEach { completed[$0] = false }
     }
     
     private var header: some View {
@@ -77,23 +74,58 @@ fileprivate struct ProjectSection: View {
         Section(header: header) {
             if expanded {
                 ForEach(tasks) { task in
-                    Button {
-                        task.toggle()
-                    } label: {
-                        HStack {
-                            if project.showComplete {
-                                Image(systemName: completed[task] == true ? "checkmark.square" : "square")
-                                    .imageScale(.large)
-                                if task.completed != nil {
-                                    Text("a")
-                                }
-                            }
-                            Text(task.wrappedName ??? "Task")
-                                .foregroundColor(.primary)
-                        }
-                    }
+                    TaskCell(task: task, showComplete: project.showComplete)
                 }
             }
+        }
+    }
+}
+
+fileprivate struct TaskCell: View {
+    
+    @ObservedObject var task: Task
+    
+    var showComplete: Bool
+    
+    @State private var completed = false
+    @State private var work: DispatchWorkItem?
+    
+    var body: some View {
+        Button(action: completeTask) {
+            HStack {
+                if showComplete {
+                    Image(systemName: task.completed != nil ? "checkmark.square" : "square")
+                        .imageScale(.large)
+                }
+                Text(task.wrappedName ??? "Task")
+                    .foregroundColor(.primary)
+                Spacer()
+            }
+        }
+        .overlay(
+            Rectangle()
+                .frame(maxWidth: completed ? .infinity : 0, maxHeight: 1)
+                .animation(.easeIn(duration: 0.125))
+        )
+    }
+    
+    func completeTask() {
+        if showComplete {
+            task.toggle()
+        } else {
+            if completed {
+                work?.cancel()
+            } else {
+                // Complete the task in 1 second to give time for
+                // the animation to play and for the user to cancel.
+                let work = DispatchWorkItem {
+                    task.complete()
+                    self.work = nil
+                }
+                self.work = work
+                DispatchQueue.main.asyncAfter(deadline: .now() + 1, execute: work)
+            }
+            completed.toggle()
         }
     }
 }

@@ -12,6 +12,8 @@ extension Project {
     convenience init(checklist: Checklist, context: NSManagedObjectContext) {
         self.init(context: context)
         self.checklist = checklist
+        self.showComplete = checklist.showComplete
+        self.showOne = checklist.showOne
         
         guard let items = checklist.items as? Set<Item> else { return }
         let tasks = mutableSetValue(forKey: "tasks")
@@ -29,9 +31,13 @@ extension Task {
     
     func toggle() {
         if completed == nil {
-            completed = Date()
+            complete()
         } else {
             completed = nil
         }
+    }
+    
+    func complete() {
+        completed = Date()
     }
 }
