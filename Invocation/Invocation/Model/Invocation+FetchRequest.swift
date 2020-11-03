@@ -32,6 +32,14 @@ extension Checklist {
 
 extension Project {
     func tasksFetchRequest() -> NSFetchRequest<Task> {
+        tasksFetchRequest(showComplete: showComplete, showOne: showOne)
+    }
+    
+    func allTasksFetchRequest() -> NSFetchRequest<Task> {
+        tasksFetchRequest(showComplete: true, showOne: false)
+    }
+    
+    func tasksFetchRequest(showComplete: Bool, showOne: Bool) -> NSFetchRequest<Task> {
         let fetchRequest: NSFetchRequest<Task> = Task.fetchRequest()
         
         var predicates = [NSPredicate(format: "project == %@", self)]

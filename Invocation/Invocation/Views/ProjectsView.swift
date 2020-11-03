@@ -70,8 +70,18 @@ fileprivate struct ProjectSection: View {
         .textCase(.none)
     }
     
+    private var footer: some View {
+        NavigationLink(destination: ProjectView(project: project)) {
+            HStack {
+                Spacer()
+                Text("Details")
+                Image(systemName: "chevron.forward")
+            }
+        }
+    }
+    
     var body: some View {
-        Section(header: header) {
+        Section(header: header, footer: footer) {
             if expanded {
                 ForEach(tasks) { task in
                     TaskCell(task: task, showComplete: project.showComplete)
