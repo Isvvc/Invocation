@@ -87,9 +87,7 @@ struct ChecklistView: View {
         // being done on the main thread, but it
         // crashes when saving if this isn't here.
         DispatchQueue.main.async {
-            withAnimation {
-                indexSet.map { items[$0] }.forEach { moc.delete($0) }
-            }
+            indexSet.map { items[$0] }.forEach(moc.delete)
             PersistenceController.save(context: moc)
             checklist.updateIndices(items: items)
         }

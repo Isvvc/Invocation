@@ -33,22 +33,18 @@ struct ChecklistsView: View {
             ForEach(checklists) { checklist in
                 NavigationLink(checklist.title ?? "Checklist", destination: ChecklistView(checklist: checklist))
             }
-            .onDelete { indexSet in
-                for checklist in indexSet.map({ checklists[$0] }) {
-                    checklist.items?.forEach { item in
-                        guard let item = item as? NSManagedObject else { return }
-                        moc.delete(item)
-                    }
-                    withAnimation {
-                        moc.delete(checklist)
-                    }
-                }
-                PersistenceController.save(context: moc)
-            }
+            .onDelete(perform: delete)
         }
         .listStyle(PlainListStyle())
         .navigationTitle("Checklists")
         .navigationBarItems(trailing: addButton)
+    }
+    
+    func delete(_ indexSet: IndexSet) {
+        indexSet.map({ checklists[$0] }).forEach { checklist in
+            checklist.deleteChildrenAndSelf(context: moc)
+        }
+        PersistenceController.save(context: moc)
     }
 }
 
