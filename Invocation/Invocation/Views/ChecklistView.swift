@@ -12,6 +12,8 @@ struct ChecklistView: View {
     @Environment(\.managedObjectContext) private var moc
     @Environment(\.editMode) private var editMode
     
+    @EnvironmentObject private var checklistController: ChecklistController
+    
     private var itemsFetchRequest: FetchRequest<Item>
     private var items: FetchedResults<Item> {
         itemsFetchRequest.wrappedValue
@@ -20,7 +22,7 @@ struct ChecklistView: View {
     @ObservedObject var checklist: Checklist
     
     @State private var title: String
-    @State private var selectedItem: Item?
+    @State private var newItem: Item?
     
     init(checklist: Checklist) {
         self.checklist = checklist
@@ -28,6 +30,12 @@ struct ChecklistView: View {
             fetchRequest: checklist.itemsFetchRequest(),
             animation: .default)
         _title = .init(wrappedValue: checklist.wrappedTitle)
+    }
+    
+    var newItemDoneButton: some View {
+        Button("Done") {
+            newItem = nil
+        }
     }
     
     var body: some View {
@@ -42,13 +50,7 @@ struct ChecklistView: View {
             
             Section(header: Text("Items")) {
                 ForEach(items) { item in
-                    // I would have liked to have the newItem show up in a sheet instead
-                    // if just a segue, but when I did that, the name wouldn't update in
-                    // this list.
-                    NavigationLink(destination: ItemView(item: item), tag: item, selection: $selectedItem) {
-                        Text(item.wrappedName ??? "Item")
-                            .foregroundColor(item.name != nil ? .primary : .secondary)
-                    }
+                    ItemCell(item: item)
                 }
                 .onDelete(perform: delete)
                 .onMove(perform: move)
@@ -59,6 +61,14 @@ struct ChecklistView: View {
                         Text("Add New Item")
                         Spacer()
                     }
+                }
+                .sheet(item: $newItem) { newItem in
+                    NavigationView {
+                        ItemView(item: newItem)
+                            .navigationBarItems(leading: newItemDoneButton)
+                    }
+                    .environment(\.managedObjectContext, moc)
+                    .environmentObject(checklistController)
                 }
             }
             
@@ -79,7 +89,7 @@ struct ChecklistView: View {
         let newItem = Item(context: moc)
         newItem.checklist = checklist
         newItem.index = Int16(items.count)
-        self.selectedItem = newItem
+        self.newItem = newItem
     }
     
     func delete(_ indexSet: IndexSet) {
@@ -99,6 +109,17 @@ struct ChecklistView: View {
         itemIndices.enumerated().compactMap { $0.element != $0.offset ? (item: items[$0.element], newIndex: Int16($0.offset)) : nil }.forEach { $0.item.index = $0.newIndex }
         
         PersistenceController.save(context: moc)
+    }
+}
+
+fileprivate struct ItemCell: View {
+    @ObservedObject var item: Item
+    
+    var body: some View {
+        NavigationLink(destination: ItemView(item: item)) {
+            Text(item.wrappedName ??? "Item")
+                .foregroundColor(item.name != nil ? .primary : .secondary)
+        }
     }
 }
 
