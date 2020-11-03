@@ -32,11 +32,18 @@ struct ProjectView: View {
     var body: some View {
         Form {
             Section(header: Text("Title")) {
-                TextField("Checklist Title", text: $title, onCommit: {
-                    project.title = title
-                    PersistenceController.save(context: moc)
-                })
-                .autocapitalization(.words)
+                HStack {
+                    TextField("Checklist Title", text: $title, onCommit: setTitle)
+                    .autocapitalization(.words)
+                    if project.title != nil {
+                        Spacer()
+                        // This isn't a button because if it was, then tapping
+                        // the cell around the TextField would trigger it.
+                        Image(systemName: "arrow.counterclockwise")
+                            .onTapGesture(perform: resetTitle)
+                            .foregroundColor(.accentColor)
+                    }
+                }
             }
             
             Section(header: Text("Tasks")) {
@@ -46,6 +53,21 @@ struct ProjectView: View {
             }
         }
         .navigationTitle(project.wrappedTitle ??? "Invocation")
+    }
+    
+    func setTitle() {
+        if title == project.checklist?.title {
+            project.title = nil
+        } else {
+            project.title = title
+        }
+        PersistenceController.save(context: moc)
+    }
+    
+    func resetTitle() {
+        guard let checklistTitle = project.checklist?.title else { return }
+        title = checklistTitle
+        setTitle()
     }
 }
 
