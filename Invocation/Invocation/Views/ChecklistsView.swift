@@ -16,22 +16,42 @@ struct ChecklistsView: View {
         animation: .default)
     private var checklists: FetchedResults<Checklist>
     
+    @EnvironmentObject private var checklistController: ChecklistController
+    
+    @State private var newChecklist: Checklist?
+    
     private var addButton: some View {
         Button() {
-            let newChecklist = Checklist(context: moc)
-            newChecklist.title = String(UUID().uuidString.prefix(8))
+            newChecklist = Checklist(context: moc)
             PersistenceController.save(context: moc)
         } label: {
             Image(systemName: "plus")
                 .imageScale(.large)
                 .font(.body)
         }
+        .sheet(item: $newChecklist) { newChecklist in
+            NavigationView {
+                ChecklistView(checklist: newChecklist)
+                    .environment(\.managedObjectContext, moc)
+                    .environmentObject(checklistController)
+            }
+            // I have no idea why, but everything is bold if I don't add this
+            .font(.body)
+        }
     }
     
     var body: some View {
         List {
             ForEach(checklists) { checklist in
-                NavigationLink(checklist.title ?? "Checklist", destination: ChecklistView(checklist: checklist))
+                NavigationLink(destination: ChecklistView(checklist: checklist)) {
+                    HStack {
+                        Text(checklist.wrappedTitle ??? "Checklist")
+                            .foregroundColor(checklist.title != nil ? .primary : .secondary)
+                        Spacer()
+                        Text("\(checklist.items?.count ?? 0) Items")
+                            .foregroundColor(.secondary)
+                    }
+                }
             }
             .onDelete(perform: delete)
         }
