@@ -17,7 +17,7 @@ class PersistenceController {
             let newChecklist = Checklist(context: viewContext)
             newChecklist.title = String(UUID().uuidString.prefix(8))
             
-            for i in 0..<Int16.random(in: 2..<7) {
+            for i in 0..<Int16.random(in: 3..<6) {
                 let newItem = Item(context: viewContext)
                 newItem.name = String(UUID().uuidString.prefix(8))
                 newItem.checklist = newChecklist

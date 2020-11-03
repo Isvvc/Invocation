@@ -23,6 +23,7 @@ struct ChecklistView: View {
     
     @State private var title: String
     @State private var newItem: Item?
+    @State private var project: Project?
     
     init(checklist: Checklist) {
         self.checklist = checklist
@@ -35,6 +36,12 @@ struct ChecklistView: View {
     var newItemDoneButton: some View {
         Button("Done") {
             newItem = nil
+        }
+    }
+    
+    var projectDoneButton: some View {
+        Button("Done") {
+            project = nil
         }
     }
     
@@ -77,12 +84,19 @@ struct ChecklistView: View {
                 Toggle("Show only one item", isOn: $checklist.showOne)
             }
             
-            Button("Make Project") {
-                Project(checklist: checklist, context: moc)
+            Button("Invoke") {
+                project = Project(checklist: checklist, context: moc)
             }
         }
-        .navigationTitle(checklist.title ?? "Checklist")
+        .navigationTitle(checklist.wrappedTitle ??? "Checklist")
         .navigationBarItems(trailing: EditButton())
+        .sheet(item: $project) { project in
+            NavigationView {
+                ProjectView(project: project)
+                    .navigationBarItems(leading: projectDoneButton)
+            }
+            .environment(\.managedObjectContext, moc)
+        }
     }
     
     func createItem() {
