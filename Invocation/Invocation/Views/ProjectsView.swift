@@ -19,9 +19,9 @@ struct ProjectsView: View {
         List {
             ForEach(projects) { project in
                 ProjectSection(project: project)
-//                    .environment(\.managedObjectContext, moc)
             }
         }
+        .listStyle(GroupedListStyle())
         .navigationTitle("Invocations")
     }
 }
@@ -36,34 +36,64 @@ fileprivate struct ProjectSection: View {
     @ObservedObject var project: Project
     
     @State private var expanded = true
+    @State private var completed: [Task: Bool] = [:]
     
     init(project: Project) {
         self.project = project
         tasksFetchRequest = FetchRequest(
             fetchRequest: project.tasksFetchRequest(),
             animation: .default)
+        
+        (project.tasks as! Set<Task>).forEach { completed[$0] = false }
+    }
+    
+    private var header: some View {
+        Button {
+            withAnimation {
+                expanded.toggle()
+            }
+        } label: {
+            HStack {
+                VStack(alignment: .leading) {
+                    Spacer()
+                    Text(project.wrappedTitle ??? "Project")
+                        .font(.title)
+                        .foregroundColor(.primary)
+                    Text("\(project.tasks?.count ?? 0) Tasks")
+                        .foregroundColor(.secondary)
+                    Spacer()
+                }
+                Spacer()
+                Image(systemName: "chevron.forward")
+                    .imageScale(.large)
+                    .foregroundColor(.accentColor)
+                    .rotationEffect(expanded ? .degrees(90) : .zero)
+            }
+        }
+        .textCase(.none)
     }
     
     var body: some View {
-        DisclosureGroup(isExpanded: $expanded) {
-            ForEach(tasks) { task in
-                HStack {
-                    Text(task.wrappedName ??? "Task")
-                    if task.completed != nil {
-                        Spacer()
-                        Image(systemName: "checkmark")
-                            .foregroundColor(.accentColor)
+        Section(header: header) {
+            if expanded {
+                ForEach(tasks) { task in
+                    Button {
+                        task.toggle()
+                    } label: {
+                        HStack {
+                            if project.showComplete {
+                                Image(systemName: completed[task] == true ? "checkmark.square" : "square")
+                                    .imageScale(.large)
+                                if task.completed != nil {
+                                    Text("a")
+                                }
+                            }
+                            Text(task.wrappedName ??? "Task")
+                                .foregroundColor(.primary)
+                        }
                     }
                 }
             }
-        } label: {
-            VStack(alignment: .leading) {
-                Text(project.wrappedTitle ??? "Project")
-                    .font(.title)
-                Text("\(project.tasks?.count ?? 0) tasks")
-                    .foregroundColor(.secondary)
-            }
-            .padding()
         }
     }
 }

@@ -26,4 +26,12 @@ extension Task {
         self.item = item
         self.index = item.index
     }
+    
+    func toggle() {
+        if completed == nil {
+            completed = Date()
+        } else {
+            completed = nil
+        }
+    }
 }
