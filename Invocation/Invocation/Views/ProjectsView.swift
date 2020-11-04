@@ -17,6 +17,8 @@ struct ProjectsView: View {
         animation: .default)
     private var projects: FetchedResults<Project>
     
+    @EnvironmentObject private var checklistController: ChecklistController
+    
     @Binding var tab: Int
     
     @State private var selection: Project?
@@ -43,8 +45,12 @@ struct ProjectsView: View {
         }
         .listStyle(GroupedListStyle())
         .navigationTitle("Invocations")
-        .onAppear {
-            selection = nil
+        .sheet(item: $selection) { project in
+            NavigationView {
+                ProjectView(project: project)
+            }
+            .environment(\.managedObjectContext, moc)
+            .environmentObject(checklistController)
         }
     }
 }
@@ -103,9 +109,6 @@ fileprivate struct ProjectSection: View {
     
     private var footer: some View {
         HStack {
-            NavigationLink(destination: ProjectView(project: project), tag: project, selection: $selection) {
-                EmptyView()
-            }
             Spacer()
             Button {
                 selection = project

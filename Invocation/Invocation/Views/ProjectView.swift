@@ -32,6 +32,12 @@ struct ProjectView: View {
         _title = .init(wrappedValue: project.wrappedTitle)
     }
     
+    private var doneButton: some View {
+        Button("Done") {
+            presentationMode.wrappedValue.dismiss()
+        }
+    }
+    
     private var settingsHeader: some View {
         Button {
             guard let checklist = project.checklist else { return }
@@ -101,6 +107,7 @@ struct ProjectView: View {
             }
         }
         .navigationTitle(project.wrappedTitle ??? "Invocation")
+        .navigationBarItems(leading: doneButton)
         .onDisappear {
             PersistenceController.save(context: moc)
         }

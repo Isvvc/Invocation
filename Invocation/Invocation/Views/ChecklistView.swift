@@ -39,12 +39,6 @@ struct ChecklistView: View {
         }
     }
     
-    var projectDoneButton: some View {
-        Button("Done") {
-            project = nil
-        }
-    }
-    
     var body: some View {
         Form {
             Section(header: Text("Title")) {
@@ -93,7 +87,6 @@ struct ChecklistView: View {
         .sheet(item: $project) { project in
             NavigationView {
                 ProjectView(project: project)
-                    .navigationBarItems(leading: projectDoneButton)
             }
             .environment(\.managedObjectContext, moc)
             .environmentObject(checklistController)
