@@ -31,6 +31,26 @@ struct ProjectView: View {
         _title = .init(wrappedValue: project.wrappedTitle)
     }
     
+    private var settingsHeader: some View {
+        Button {
+            guard let checklist = project.checklist else { return }
+            project.showComplete = checklist.showComplete
+            project.showOne = checklist.showOne
+        } label: {
+            HStack {
+                Text("Settings")
+                if let checklist = project.checklist {
+                    if project.showComplete != checklist.showComplete
+                        || project.showOne != checklist.showOne {
+                        Spacer()
+                        Image(systemName: "arrow.counterclockwise")
+                            .foregroundColor(.accentColor)
+                    }
+                }
+            }
+        }
+    }
+    
     var body: some View {
         Form {
             Section(header: Text("Title")) {
@@ -53,6 +73,12 @@ struct ProjectView: View {
                     Text(task.wrappedName ??? "Task")
                 }
             }
+            
+            Section(header: settingsHeader) {
+                Toggle("Show completed items", isOn: $project.showComplete)
+                Toggle("Show only one item", isOn: $project.showOne)
+            }
+            .animation(.easeInOut)
             
             Section {
                 Button {
