@@ -32,7 +32,7 @@ extension Checklist {
 
 extension Project {
     func tasksFetchRequest() -> NSFetchRequest<Task> {
-        tasksFetchRequest(showComplete: showComplete)
+        tasksFetchRequest(showComplete: showOne ? false : showComplete)
     }
     
     func allTasksFetchRequest() -> NSFetchRequest<Task> {

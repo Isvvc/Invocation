@@ -128,7 +128,7 @@ fileprivate struct ProjectSection: View {
                     }
                 } else {
                     ForEach(task) { task in
-                        TaskCell(task: task, showComplete: project.showComplete)
+                        TaskCell(task: task, showComplete: false)
                     }
                 }
             }

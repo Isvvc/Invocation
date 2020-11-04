@@ -23,6 +23,7 @@ struct ProjectView: View {
     @State private var title: String
     @State private var selection: Task?
     @State private var delete = false
+    @State private var showOne = false
     
     init(project: Project) {
         self.project = project
@@ -82,8 +83,17 @@ struct ProjectView: View {
             }
             
             Section(header: settingsHeader) {
-                Toggle("Show completed items", isOn: $project.showComplete)
                 Toggle("Show only one item", isOn: $project.showOne)
+                    // In theory a .animation() on this toggle binding should animate this, but
+                    // it doesn't, so I'm using a separate state variable to force animation.
+                    .onChange(of: project.showOne) { showOne in
+                        withAnimation {
+                            self.showOne = showOne
+                        }
+                    }
+                if showOne {
+                    Toggle("Show completed items", isOn: $project.showComplete)
+                }
             }
             .animation(.easeInOut)
             
@@ -108,6 +118,9 @@ struct ProjectView: View {
         }
         .navigationTitle(project.wrappedTitle ??? "Invocation")
         .navigationBarItems(leading: doneButton)
+        .onAppear {
+            showOne = project.showOne
+        }
         .onDisappear {
             PersistenceController.save(context: moc)
         }
