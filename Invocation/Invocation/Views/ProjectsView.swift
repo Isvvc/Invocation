@@ -7,6 +7,8 @@
 
 import SwiftUI
 
+//MARK: ProjectsView
+
 struct ProjectsView: View {
     @Environment(\.managedObjectContext) private var moc
     
@@ -47,14 +49,17 @@ struct ProjectsView: View {
     }
 }
 
+//MARK: ProjectSection
+
 fileprivate struct ProjectSection: View {
     
     private var tasksFetchRequest: FetchRequest<Task>
     private var tasks: FetchedResults<Task> {
         tasksFetchRequest.wrappedValue
     }
-    private var task: Task? {
-        tasks.first(where: { $0.completed == nil })
+    private var task: [Task] {
+        guard let task = tasks.first(where: { $0.completed == nil }) else { return [] }
+        return [task]
     }
     
     @ObservedObject var project: Project
@@ -118,13 +123,17 @@ fileprivate struct ProjectSection: View {
                     ForEach(tasks) { task in
                         TaskCell(task: task, showComplete: project.showComplete)
                     }
-                } else if let task = task {
-                    TaskCell(task: task, showComplete: project.showComplete)
+                } else {
+                    ForEach(task) { task in
+                        TaskCell(task: task, showComplete: project.showComplete)
+                    }
                 }
             }
         }
     }
 }
+
+//MARK: TaskCell
 
 fileprivate struct TaskCell: View {
     @Environment(\.managedObjectContext) private var moc
@@ -167,8 +176,12 @@ fileprivate struct TaskCell: View {
                 let work = DispatchWorkItem {
                     task.complete()
                     self.work = nil
-                    self.completed = false
                     PersistenceController.save(context: moc)
+                    // Give time for the cell to disappear
+                    // before the strikethrough hides.
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) {
+                        self.completed = false
+                    }
                 }
                 self.work = work
                 DispatchQueue.main.asyncAfter(deadline: .now() + 1, execute: work)
@@ -177,6 +190,8 @@ fileprivate struct TaskCell: View {
         }
     }
 }
+
+//MARK: Preview
 
 struct ProjectsView_Previews: PreviewProvider {
     static var previews: some View {
