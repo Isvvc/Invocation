@@ -8,10 +8,17 @@
 import SwiftUI
 import CoreData
 
+//MARK: Project View
+
 struct ProjectView: View {
+    
+    //MARK: Properties
+    
     @Environment(\.managedObjectContext) private var moc
     @Environment(\.presentationMode) private var presentationMode
     @Environment(\.editMode) private var editMode
+    
+    @AppStorage(Defaults.projectNameFill.rawValue) var projectNameFill: Bool = false
     
     private var tasksFetchRequest: FetchRequest<Task>
     private var tasks: FetchedResults<Task> {
@@ -20,7 +27,7 @@ struct ProjectView: View {
     
     @ObservedObject var project: Project
     
-    @State private var title: String
+    @State private var title: String = ""
     @State private var selection: Task?
     @State private var delete = false
     @State private var showOne = false
@@ -30,8 +37,9 @@ struct ProjectView: View {
         self.tasksFetchRequest = FetchRequest(
             fetchRequest: project.allTasksFetchRequest(),
             animation: .default)
-        _title = .init(wrappedValue: project.wrappedTitle)
     }
+    
+    //MARK: Views
     
     private var doneButton: some View {
         Button("Done") {
@@ -59,13 +67,18 @@ struct ProjectView: View {
         }
     }
     
+    //MARK: Body
+    
     var body: some View {
         Form {
             Section(header: Text("Title")) {
                 HStack {
-                    TextField("Checklist Title", text: $title, onCommit: setTitle)
+                    TextField(projectNameFill ? "Invocation Title" : project.checklist?.title ?? "Checklist Title", text: $title, onCommit: setTitle)
                         .autocapitalization(.words)
-                    if project.title != nil {
+                    // Show the reset button if the name is modified, or
+                    // if the name field is empty when it shoudn't be.
+                    if project.title != nil
+                        || (projectNameFill && title.isEmpty) {
                         Spacer()
                         // This isn't a button because if it was, then tapping
                         // the cell around the TextField would trigger it.
@@ -91,7 +104,7 @@ struct ProjectView: View {
                             self.showOne = showOne
                         }
                     }
-                if showOne {
+                if !showOne {
                     Toggle("Show completed items", isOn: $project.showComplete)
                 }
             }
@@ -120,24 +133,45 @@ struct ProjectView: View {
         .navigationBarItems(leading: doneButton)
         .onAppear {
             showOne = project.showOne
+            if projectNameFill {
+                title = project.wrappedTitle
+            } else {
+                title = project.title ?? ""
+            }
         }
         .onDisappear {
             PersistenceController.save(context: moc)
         }
     }
     
+    //MARK: Functions
+    
     func setTitle() {
-        if title == project.checklist?.title {
+        if title.isEmpty {
+            if !projectNameFill {
+                 project.title = nil
+            }
+            // Otherwise don't do anything, since
+            // there shouldn't be an empty name.
+        } else if title == project.checklist?.title {
             project.title = nil
+            if !projectNameFill {
+                title = ""
+            }
         } else {
             project.title = title
         }
+        
         PersistenceController.save(context: moc)
     }
     
     func resetTitle() {
-        guard let checklistTitle = project.checklist?.title else { return }
-        title = checklistTitle
+        if projectNameFill {
+            guard let checklistTitle = project.checklist?.title else { return }
+            title = checklistTitle
+        } else {
+            title = ""
+        }
         setTitle()
     }
     
@@ -147,6 +181,8 @@ struct ProjectView: View {
         PersistenceController.save(context: moc)
     }
 }
+
+//MARK: Tasks View
 
 fileprivate struct TaskView: View {
     
@@ -194,6 +230,8 @@ fileprivate struct TaskView: View {
         .buttonStyle(BorderlessButtonStyle())
     }
 }
+
+//MARK: Preview
 
 struct ProjectView_Previews: PreviewProvider {
     static var project: Project {
