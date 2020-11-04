@@ -15,10 +15,26 @@ struct ProjectsView: View {
         animation: .default)
     private var projects: FetchedResults<Project>
     
+    @Binding var tab: Int
+    
     var body: some View {
-        List {
-            ForEach(projects) { project in
-                ProjectSection(project: project)
+        Group {
+            if projects.count == 0 {
+                VStack {
+                    Text("Invocations of checklists appear here.")
+                        .foregroundColor(.secondary)
+                        .padding()
+                    Button("Go to checklistst tab") {
+                        tab = 1
+                    }
+                    .padding(.bottom)
+                }
+            } else {
+                List {
+                    ForEach(projects) { project in
+                        ProjectSection(project: project)
+                    }
+                }
             }
         }
         .listStyle(GroupedListStyle())
@@ -143,7 +159,7 @@ fileprivate struct TaskCell: View {
 struct ProjectsView_Previews: PreviewProvider {
     static var previews: some View {
         NavigationView {
-            ProjectsView()
+            ProjectsView(tab: .constant(0))
                 .environment(\.managedObjectContext, PersistenceController.preview.container.viewContext)
         }
     }

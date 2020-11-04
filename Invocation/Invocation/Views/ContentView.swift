@@ -11,16 +11,19 @@ import CoreData
 struct ContentView: View {
     
     let checklistController = ChecklistController()
+    
+    @State private var tab = 0
 
     var body: some View {
-        TabView {
+        TabView(selection: $tab) {
             NavigationView {
-                ProjectsView()
+                ProjectsView(tab: $tab)
             }
             .tabItem {
                 Image(systemName: "text.badge.checkmark")
                 Text("Invocations")
             }
+            .tag(0)
             
             NavigationView {
                 ChecklistsView()
@@ -29,6 +32,7 @@ struct ContentView: View {
                 Image(systemName: "list.bullet")
                 Text("Checklists")
             }
+            .tag(1)
         }
         .environmentObject(checklistController)
     }
