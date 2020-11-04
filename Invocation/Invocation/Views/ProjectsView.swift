@@ -17,6 +17,8 @@ struct ProjectsView: View {
     
     @Binding var tab: Int
     
+    @State private var selection: Project?
+    
     var body: some View {
         Group {
             if projects.count == 0 {
@@ -32,13 +34,16 @@ struct ProjectsView: View {
             } else {
                 List {
                     ForEach(projects) { project in
-                        ProjectSection(project: project)
+                        ProjectSection(project: project, selection: $selection)
                     }
                 }
             }
         }
         .listStyle(GroupedListStyle())
         .navigationTitle("Invocations")
+        .onAppear {
+            selection = nil
+        }
     }
 }
 
@@ -51,10 +56,12 @@ fileprivate struct ProjectSection: View {
     
     @ObservedObject var project: Project
     
+    @Binding var selection: Project?
     @State private var expanded = true
     
-    init(project: Project) {
+    init(project: Project, selection: Binding<Project?>) {
         self.project = project
+        _selection = selection
         tasksFetchRequest = FetchRequest(
             fetchRequest: project.tasksFetchRequest(),
             animation: .default)
@@ -87,9 +94,14 @@ fileprivate struct ProjectSection: View {
     }
     
     private var footer: some View {
-        NavigationLink(destination: ProjectView(project: project)) {
-            HStack {
-                Spacer()
+        HStack {
+            NavigationLink(destination: ProjectView(project: project), tag: project, selection: $selection) {
+                EmptyView()
+            }
+            Spacer()
+            Button {
+                selection = project
+            } label: {
                 Text("Details")
                 Image(systemName: "chevron.forward")
             }
