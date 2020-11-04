@@ -125,7 +125,6 @@ fileprivate struct TaskCell: View {
                 }
                 Text(task.wrappedName ??? "Task")
                     .foregroundColor(.primary)
-                Spacer()
             }
         }
         .overlay(

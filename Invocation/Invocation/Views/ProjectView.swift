@@ -21,6 +21,7 @@ struct ProjectView: View {
     @ObservedObject var project: Project
     
     @State private var title: String
+    @State private var selection: Task?
     @State private var delete = false
     
     init(project: Project) {
@@ -70,7 +71,7 @@ struct ProjectView: View {
             
             Section(header: Text("Tasks")) {
                 ForEach(tasks) { task in
-                    Text(task.wrappedName ??? "Task")
+                    TaskView(task: task, selection: $selection)
                 }
             }
             
@@ -124,10 +125,60 @@ struct ProjectView: View {
     }
 }
 
+fileprivate struct TaskView: View {
+    
+    @EnvironmentObject private var checklistController: ChecklistController
+    
+    @ObservedObject var task: Task
+    @Binding var selection: Task?
+    
+    var body: some View {
+        HStack {
+            NavigationLink(
+                destination: Text("Task"),
+                tag: task,
+                selection: $selection,
+                label: { EmptyView() })
+                .frame(width: 0, height: 0)
+            
+            Button {
+                task.toggle()
+            } label: {
+                HStack {
+                    Image(systemName: task.completed != nil ? "checkmark.square" : "square")
+                        .imageScale(.large)
+                    VStack(alignment: .leading) {
+                        Text(task.wrappedName ??? "Task")
+                            .foregroundColor(.primary)
+                        if let completedDate = task.completed {
+                            Text("Completed \(checklistController.dateFormatter.string(from: completedDate))")
+                                .foregroundColor(.secondary)
+                                .font(.caption)
+                        }
+                    }
+                    .animation(.easeInOut)
+                    Spacer()
+                }
+            }
+            
+            Button {
+                selection = task
+            } label: {
+                Image(systemName: "questionmark.circle")
+                    .imageScale(.large)
+            }
+        }
+        .buttonStyle(BorderlessButtonStyle())
+    }
+}
+
 struct ProjectView_Previews: PreviewProvider {
     static var project: Project {
         let fetchRequest: NSFetchRequest<Project> = Project.fetchRequest()
         fetchRequest.fetchLimit = 1
+        // Can't seem to get the predicate right to show
+        // the preview Project with the completed task.
+//        fetchRequest.predicate = NSPredicate(format: "SUBQUERY(tasks, $task, $task.completed != nil).@count > 0")
         let context = PersistenceController.preview.container.viewContext
         return try! context.fetch(fetchRequest).first!
     }

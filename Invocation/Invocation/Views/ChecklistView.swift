@@ -96,6 +96,7 @@ struct ChecklistView: View {
                     .navigationBarItems(leading: projectDoneButton)
             }
             .environment(\.managedObjectContext, moc)
+            .environmentObject(checklistController)
         }
     }
     

@@ -8,6 +8,14 @@
 import Foundation
 
 class ChecklistController: ObservableObject {
+    
+    lazy var dateFormatter: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.dateStyle = .short
+        formatter.timeStyle = .short
+        return formatter
+    }()
+    
     /// Sets a URL's protocol to HTTPS.
     ///
     /// If the URL is already using HTTPS, it returns the same URL.
@@ -30,4 +38,5 @@ class ChecklistController: ObservableObject {
         
         return "https://" + url
     }
+    
 }
