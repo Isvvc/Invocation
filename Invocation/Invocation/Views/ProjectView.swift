@@ -10,6 +10,7 @@ import CoreData
 
 struct ProjectView: View {
     @Environment(\.managedObjectContext) private var moc
+    @Environment(\.presentationMode) private var presentationMode
     @Environment(\.editMode) private var editMode
     
     private var tasksFetchRequest: FetchRequest<Task>
@@ -20,6 +21,7 @@ struct ProjectView: View {
     @ObservedObject var project: Project
     
     @State private var title: String
+    @State private var delete = false
     
     init(project: Project) {
         self.project = project
@@ -34,7 +36,7 @@ struct ProjectView: View {
             Section(header: Text("Title")) {
                 HStack {
                     TextField("Checklist Title", text: $title, onCommit: setTitle)
-                    .autocapitalization(.words)
+                        .autocapitalization(.words)
                     if project.title != nil {
                         Spacer()
                         // This isn't a button because if it was, then tapping
@@ -49,6 +51,25 @@ struct ProjectView: View {
             Section(header: Text("Tasks")) {
                 ForEach(tasks) { task in
                     Text(task.wrappedName ??? "Task")
+                }
+            }
+            
+            Section {
+                Button {
+                    delete = true
+                } label: {
+                    HStack {
+                        Spacer()
+                        Text("Delete")
+                        Spacer()
+                    }
+                }
+                .foregroundColor(.red)
+                .actionSheet(isPresented: $delete) {
+                    ActionSheet(title: Text("Are you sure?"), message: Text("Delete \(project.wrappedTitle ??? "Project")?"), buttons: [
+                        .destructive(Text("Delete"), action: deleteProject),
+                        .cancel()
+                    ])
                 }
             }
         }
@@ -68,6 +89,12 @@ struct ProjectView: View {
         guard let checklistTitle = project.checklist?.title else { return }
         title = checklistTitle
         setTitle()
+    }
+    
+    func deleteProject() {
+        presentationMode.wrappedValue.dismiss()
+        project.deleteChildrenAndSelf(context: moc)
+        PersistenceController.save(context: moc)
     }
 }
 
