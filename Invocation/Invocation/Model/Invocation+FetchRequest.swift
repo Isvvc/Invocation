@@ -32,24 +32,20 @@ extension Checklist {
 
 extension Project {
     func tasksFetchRequest() -> NSFetchRequest<Task> {
-        tasksFetchRequest(showComplete: showComplete, showOne: showOne)
+        tasksFetchRequest(showComplete: showComplete)
     }
     
     func allTasksFetchRequest() -> NSFetchRequest<Task> {
-        tasksFetchRequest(showComplete: true, showOne: false)
+        tasksFetchRequest(showComplete: true)
     }
     
-    func tasksFetchRequest(showComplete: Bool, showOne: Bool) -> NSFetchRequest<Task> {
+    func tasksFetchRequest(showComplete: Bool) -> NSFetchRequest<Task> {
         let fetchRequest: NSFetchRequest<Task> = Task.fetchRequest()
         
         var predicates = [NSPredicate(format: "project == %@", self)]
         
         if !showComplete {
             predicates.append(NSPredicate(format: "completed == nil"))
-        }
-        
-        if showOne {
-            fetchRequest.fetchLimit = 1
         }
         
         fetchRequest.predicate = NSCompoundPredicate(andPredicateWithSubpredicates: predicates)

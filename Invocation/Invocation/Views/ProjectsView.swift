@@ -53,6 +53,9 @@ fileprivate struct ProjectSection: View {
     private var tasks: FetchedResults<Task> {
         tasksFetchRequest.wrappedValue
     }
+    private var task: Task? {
+        tasks.first(where: { $0.completed == nil })
+    }
     
     @ObservedObject var project: Project
     
@@ -111,7 +114,11 @@ fileprivate struct ProjectSection: View {
     var body: some View {
         Section(header: header, footer: footer) {
             if expanded {
-                ForEach(tasks) { task in
+                if !project.showOne {
+                    ForEach(tasks) { task in
+                        TaskCell(task: task, showComplete: project.showComplete)
+                    }
+                } else if let task = task {
                     TaskCell(task: task, showComplete: project.showComplete)
                 }
             }
