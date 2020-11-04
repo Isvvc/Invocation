@@ -101,6 +101,9 @@ struct ProjectView: View {
             }
         }
         .navigationTitle(project.wrappedTitle ??? "Invocation")
+        .onDisappear {
+            PersistenceController.save(context: moc)
+        }
     }
     
     func setTitle() {
