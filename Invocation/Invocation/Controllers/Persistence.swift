@@ -77,11 +77,15 @@ class PersistenceController {
     
     //MARK: Saving
     
+    /// Saves the container's viewContext if there are changes.
     func save() {
         PersistenceController.save(context: container.viewContext)
     }
     
+    /// Saves the given context if there are changes.
+    /// - Parameter context: the Core Data context to save.
     static func save(context: NSManagedObjectContext) {
+        guard context.hasChanges else { return }
         do {
             try context.save()
         } catch {
@@ -131,7 +135,7 @@ class PersistenceController {
                     }
                 } catch {
                     let nsError = error as NSError
-                    NSLog("Unresolved error \(nsError), \(nsError.userInfo)")
+                    NSLog("Error processing update error \(nsError), \(nsError.userInfo)")
                 }
             }
         }
