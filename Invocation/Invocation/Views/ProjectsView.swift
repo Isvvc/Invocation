@@ -108,6 +108,7 @@ fileprivate struct ProjectSection: View {
 }
 
 fileprivate struct TaskCell: View {
+    @Environment(\.managedObjectContext) private var moc
     
     @ObservedObject var task: Task
     
@@ -148,6 +149,7 @@ fileprivate struct TaskCell: View {
                     task.complete()
                     self.work = nil
                     self.completed = false
+                    PersistenceController.save(context: moc)
                 }
                 self.work = work
                 DispatchQueue.main.asyncAfter(deadline: .now() + 1, execute: work)
