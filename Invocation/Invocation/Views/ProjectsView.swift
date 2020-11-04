@@ -125,6 +125,7 @@ fileprivate struct TaskCell: View {
                 }
                 Text(task.wrappedName ??? "Task")
                     .foregroundColor(.primary)
+                Spacer()
             }
         }
         .overlay(
@@ -146,6 +147,7 @@ fileprivate struct TaskCell: View {
                 let work = DispatchWorkItem {
                     task.complete()
                     self.work = nil
+                    self.completed = false
                 }
                 self.work = work
                 DispatchQueue.main.asyncAfter(deadline: .now() + 1, execute: work)
