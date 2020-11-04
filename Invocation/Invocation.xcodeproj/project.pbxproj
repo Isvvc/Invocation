@@ -19,6 +19,8 @@
 		5907F915254B463C00E3EF74 /* ChecklistView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5907F914254B463C00E3EF74 /* ChecklistView.swift */; };
 		5913C1F4254F439200A00F51 /* CloudKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5913C1F3254F439200A00F51 /* CloudKit.framework */; };
 		593591092551D22100695B43 /* Invocation+Delete.swift in Sources */ = {isa = PBXBuildFile; fileRef = 593591082551D22100695B43 /* Invocation+Delete.swift */; };
+		59AA338525533EF9009D3096 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 59AA338425533EF9009D3096 /* SettingsView.swift */; };
+		59AA338A255340C6009D3096 /* Defaults.swift in Sources */ = {isa = PBXBuildFile; fileRef = 59AA3389255340C6009D3096 /* Defaults.swift */; };
 		59AF3F472552163700F76C9D /* ProjectView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 59AF3F462552163700F76C9D /* ProjectView.swift */; };
 		59C00842254DDE5A00E33D98 /* Invocation+FetchRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 59C00841254DDE5A00E33D98 /* Invocation+FetchRequest.swift */; };
 		59C4AE9D255077EB00A4438A /* Invocation+Wrapping.swift in Sources */ = {isa = PBXBuildFile; fileRef = 59C4AE9C255077EB00A4438A /* Invocation+Wrapping.swift */; };
@@ -65,6 +67,8 @@
 		5913C1EE254F438F00A00F51 /* Invocation.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Invocation.entitlements; sourceTree = "<group>"; };
 		5913C1F3254F439200A00F51 /* CloudKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CloudKit.framework; path = System/Library/Frameworks/CloudKit.framework; sourceTree = SDKROOT; };
 		593591082551D22100695B43 /* Invocation+Delete.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Invocation+Delete.swift"; sourceTree = "<group>"; };
+		59AA338425533EF9009D3096 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		59AA3389255340C6009D3096 /* Defaults.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Defaults.swift; sourceTree = "<group>"; };
 		59AF3F462552163700F76C9D /* ProjectView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectView.swift; sourceTree = "<group>"; };
 		59C00841254DDE5A00E33D98 /* Invocation+FetchRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Invocation+FetchRequest.swift"; sourceTree = "<group>"; };
 		59C4AE9C255077EB00A4438A /* Invocation+Wrapping.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Invocation+Wrapping.swift"; sourceTree = "<group>"; };
@@ -170,6 +174,7 @@
 				59C4AE9C255077EB00A4438A /* Invocation+Wrapping.swift */,
 				59C4AEB12550A15E00A4438A /* Invocation+Convenience.swift */,
 				593591082551D22100695B43 /* Invocation+Delete.swift */,
+				59AA3389255340C6009D3096 /* Defaults.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -183,6 +188,7 @@
 				59C4AEA125507EC700A4438A /* ItemView.swift */,
 				59C4AEAC25509F6900A4438A /* ProjectsView.swift */,
 				59AF3F462552163700F76C9D /* ProjectView.swift */,
+				59AA338425533EF9009D3096 /* SettingsView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -333,6 +339,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				59AA338525533EF9009D3096 /* SettingsView.swift in Sources */,
+				59AA338A255340C6009D3096 /* Defaults.swift in Sources */,
 				5907F8D7254B3E9D00E3EF74 /* Persistence.swift in Sources */,
 				59C4AE9D255077EB00A4438A /* Invocation+Wrapping.swift in Sources */,
 				593591092551D22100695B43 /* Invocation+Delete.swift in Sources */,

@@ -33,6 +33,15 @@ struct ContentView: View {
                 Text("Checklists")
             }
             .tag(1)
+            
+            NavigationView {
+                SettingsView()
+            }
+            .tabItem {
+                Image(systemName: "gear")
+                Text("Settings")
+            }
+            .tag(2)
         }
         .environmentObject(checklistController)
     }
