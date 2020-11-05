@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-//MARK: ProjectsView
+//MARK: Projects View
 
 struct ProjectsView: View {
     @Environment(\.managedObjectContext) private var moc
@@ -55,7 +55,7 @@ struct ProjectsView: View {
     }
 }
 
-//MARK: ProjectSection
+//MARK: Project Section
 
 fileprivate struct ProjectSection: View {
     
@@ -136,12 +136,14 @@ fileprivate struct ProjectSection: View {
     }
 }
 
-//MARK: TaskCell
+//MARK: Task Cell
 
 fileprivate struct TaskCell: View {
     @Environment(\.managedObjectContext) private var moc
     
     @EnvironmentObject private var checklistController: ChecklistController
+    
+    @AppStorage(Defaults.showDateOnList.rawValue) private var showDateOnList: Bool = true
     
     @ObservedObject var task: Task
     
@@ -161,6 +163,7 @@ fileprivate struct TaskCell: View {
                     Text(task.wrappedName ??? "Task")
                         .foregroundColor(.primary)
                     if showComplete,
+                       showDateOnList,
                        let completedDate = task.completed {
                         Text("Completed \(checklistController.dateFormatter.string(from: completedDate))")
                             .foregroundColor(.secondary)

@@ -11,4 +11,6 @@ enum Defaults: String {
     case projectNameFill
     case dateStyle
     case timeStyle
+    case showDateOnList
+    case showDateOnProject
 }

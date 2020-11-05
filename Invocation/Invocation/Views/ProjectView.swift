@@ -188,6 +188,8 @@ fileprivate struct TaskView: View {
     
     @EnvironmentObject private var checklistController: ChecklistController
     
+    @AppStorage(Defaults.showDateOnProject.rawValue) private var showDateOnProject: Bool = true
+    
     @ObservedObject var task: Task
     @Binding var selection: Task?
     
@@ -209,7 +211,8 @@ fileprivate struct TaskView: View {
                     VStack(alignment: .leading) {
                         Text(task.wrappedName ??? "Task")
                             .foregroundColor(.primary)
-                        if let completedDate = task.completed {
+                        if showDateOnProject,
+                           let completedDate = task.completed {
                             Text("Completed \(checklistController.dateFormatter.string(from: completedDate))")
                                 .foregroundColor(.secondary)
                                 .font(.caption)

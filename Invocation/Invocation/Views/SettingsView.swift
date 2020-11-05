@@ -14,6 +14,8 @@ struct SettingsView: View {
     @AppStorage(Defaults.projectNameFill.rawValue) private var projectNameFill: Bool = false
     @AppStorage(Defaults.dateStyle.rawValue) private var dateStyle: Int = 1
     @AppStorage(Defaults.timeStyle.rawValue) private var timeStyle: Int = 1
+    @AppStorage(Defaults.showDateOnList.rawValue) private var showDateOnList: Bool = true
+    @AppStorage(Defaults.showDateOnProject.rawValue) private var showDateOnProject: Bool = true
     
     @EnvironmentObject private var checklistController: ChecklistController
     
@@ -90,6 +92,11 @@ struct SettingsView: View {
                 .onChange(of: timeStyle){ timeStyle in
                     checklistController.setDateFormat(dateStyleInt: dateStyle, timeStyleInt: timeStyle)
                 }
+            }
+            
+            Section(header: Text("Show dates"), footer: Text("Show dates of completed tasks")) {
+                Toggle("Invocations list", isOn: $showDateOnList)
+                Toggle("Invocation sheet", isOn: $showDateOnProject)
             }
         }
         .navigationTitle("Settings")
