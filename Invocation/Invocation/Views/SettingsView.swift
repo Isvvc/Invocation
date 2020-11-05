@@ -65,6 +65,10 @@ struct SettingsView: View {
                 Toggle("Invocations list", isOn: $showDateOnList)
                 Toggle("Invocation sheet", isOn: $showDateOnProject)
             }
+            
+            Section {
+                NavigationLink("Acknowledgements", destination: AcknowledgementsView())
+            }
         }
         .navigationTitle("Settings")
     }
