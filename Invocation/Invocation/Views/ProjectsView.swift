@@ -141,6 +141,8 @@ fileprivate struct ProjectSection: View {
 fileprivate struct TaskCell: View {
     @Environment(\.managedObjectContext) private var moc
     
+    @EnvironmentObject private var checklistController: ChecklistController
+    
     @ObservedObject var task: Task
     
     var showComplete: Bool
@@ -155,8 +157,16 @@ fileprivate struct TaskCell: View {
                     Image(systemName: task.completed != nil ? "checkmark.square" : "square")
                         .imageScale(.large)
                 }
-                Text(task.wrappedName ??? "Task")
-                    .foregroundColor(.primary)
+                VStack(alignment: .leading) {
+                    Text(task.wrappedName ??? "Task")
+                        .foregroundColor(.primary)
+                    if showComplete,
+                       let completedDate = task.completed {
+                        Text("Completed \(checklistController.dateFormatter.string(from: completedDate))")
+                            .foregroundColor(.secondary)
+                            .font(.caption)
+                    }
+                }
                 Spacer()
             }
         }
