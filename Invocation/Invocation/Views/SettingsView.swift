@@ -25,39 +25,21 @@ struct SettingsView: View {
         Form {
             Section(header: Text("Preferences")) {
                 Toggle(isOn: $projectNameFill) {
-                    VStack(alignment: .leading) {
-                        Text("Auto fill invocation name")
-                        Text("Copy a checklist's name to invocations")
-                            .foregroundColor(.secondary)
-                            .font(.caption)
-                    }
+                    TextWithCaption(
+                        text: "Auto fill invocation name",
+                        caption: "Copy a checklist's name to invocations")
                 }
             }
             
             Section(header: Text("Date Format")) {
                 Picker("Date style", selection: $dateStyle) {
-                    VStack(alignment: .leading) {
-                        Text("Short")
-                        Text(dateFormatterShort.string(from: Date()))
-                            .font(.caption)
-                            .foregroundColor(.secondary)
-                    }
+                    TextWithCaption(text: "Short", caption: dateFormatterShort.string(from: Date()))
                     .tag(1)
                     
-                    VStack(alignment: .leading) {
-                        Text("Medium")
-                        Text(dateFormatterMedium.string(from: Date()))
-                            .font(.caption)
-                            .foregroundColor(.secondary)
-                    }
+                    TextWithCaption(text: "Medium", caption: dateFormatterMedium.string(from: Date()))
                     .tag(2)
                     
-                    VStack(alignment: .leading) {
-                        Text("Long")
-                        Text(dateFormatterLong.string(from: Date()))
-                            .font(.caption)
-                            .foregroundColor(.secondary)
-                    }
+                    TextWithCaption(text: "Long", caption: dateFormatterLong.string(from: Date()))
                     .tag(3)
                 }
                 .onChange(of: dateStyle){ dateStyle in
@@ -65,28 +47,13 @@ struct SettingsView: View {
                 }
                 
                 Picker("Time style", selection: $timeStyle) {
-                    VStack(alignment: .leading) {
-                        Text("Short")
-                        Text(timeFormatterShort.string(from: Date()))
-                            .font(.caption)
-                            .foregroundColor(.secondary)
-                    }
-                    .tag(1)
+                    TextWithCaption(text: "Short", caption: timeFormatterShort.string(from: Date()))
+                        .tag(1)
                     
-                    VStack(alignment: .leading) {
-                        Text("Medium")
-                        Text(timeFormatterMedium.string(from: Date()))
-                            .font(.caption)
-                            .foregroundColor(.secondary)
-                    }
+                    TextWithCaption(text: "Medium", caption: timeFormatterMedium.string(from: Date()))
                     .tag(2)
                     
-                    VStack(alignment: .leading) {
-                        Text("Long")
-                        Text(timeFormatterLong.string(from: Date()))
-                            .font(.caption)
-                            .foregroundColor(.secondary)
-                    }
+                    TextWithCaption(text: "Long", caption: timeFormatterLong.string(from: Date()))
                     .tag(3)
                 }
                 .onChange(of: timeStyle){ timeStyle in
