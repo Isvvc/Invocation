@@ -12,10 +12,10 @@ import SwiftUI
 struct ProjectsView: View {
     @Environment(\.managedObjectContext) private var moc
     
-    @FetchRequest(
-        sortDescriptors: [NSSortDescriptor(keyPath: \Project.title, ascending: true)],
-        animation: .default)
-    private var projects: FetchedResults<Project>
+    @ObservedObject var projectsContainer: ObjectsContainer<Project>
+    var projects: [Project] {
+        projectsContainer.sortedObjects
+    }
     
     @EnvironmentObject private var checklistController: ChecklistController
     
@@ -210,9 +210,21 @@ fileprivate struct TaskCell: View {
 //MARK: Preview
 
 struct ProjectsView_Previews: PreviewProvider {
+    static var projectsContainer: ObjectsContainer<Project> = {
+        let projectsContainer = ObjectsContainer<Project>(method: 0, ascending: true, context: PersistenceController.preview.container.viewContext)
+        
+        projectsContainer.comparisons.append(
+            Comparison<Project, String>(makeComparison: { project -> String? in
+                project.wrappedTitle
+            }))
+        projectsContainer.sort()
+        
+        return projectsContainer
+    }()
+    
     static var previews: some View {
         NavigationView {
-            ProjectsView(tab: .constant(0))
+            ProjectsView(projectsContainer: projectsContainer, tab: .constant(0))
                 .environment(\.managedObjectContext, PersistenceController.preview.container.viewContext)
         }
     }

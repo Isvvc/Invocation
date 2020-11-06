@@ -9,15 +9,28 @@ import SwiftUI
 import CoreData
 
 struct ContentView: View {
+    @Environment(\.managedObjectContext) private var moc
+    
+    @AppStorage(Defaults.projectSort.rawValue) private var projectSort: Int = 0
+    @AppStorage(Defaults.projectSortAscending.rawValue) private var projectSortAscending: Bool = true
     
     let checklistController = ChecklistController()
     
+    @State private var projectsContainer: ObjectsContainer<Project>?
     @State private var tab = 0
 
     var body: some View {
         TabView(selection: $tab) {
             NavigationView {
-                ProjectsView(tab: $tab)
+                if let projectsContainer = projectsContainer {
+                    ProjectsView(projectsContainer: projectsContainer, tab: $tab)
+                        .onChange(of: projectSort) { projectSort in
+                            projectsContainer.sort(method: projectSort, ascending: projectSortAscending)
+                        }
+                        .onChange(of: projectSortAscending) { projectSortAscending in
+                            projectsContainer.sort(method: projectSort, ascending: projectSortAscending)
+                        }
+                }
             }
             .tabItem {
                 Image(systemName: "text.badge.checkmark")
@@ -44,6 +57,32 @@ struct ContentView: View {
             .tag(2)
         }
         .environmentObject(checklistController)
+        .onAppear {
+            if projectsContainer == nil {
+                initProjectsContainer()
+            }
+        }
+    }
+    
+    func initProjectsContainer() {
+        let projectsContainer = ObjectsContainer<Project>(method: projectSort, ascending: projectSortAscending, context: moc)
+        
+        let comparisons: [ComparisonProtocol] = [
+            Comparison<Project, Date>(makeComparison: { project -> Date? in
+                project.invoked
+            }),
+            Comparison<Project, String>(makeComparison: { project -> String? in
+                project.wrappedTitle
+            }),
+            Comparison<Project, Date>(makeComparison: { project -> Date? in
+                project.lastCompletedTask?.completed
+            })
+        ]
+        
+        projectsContainer.comparisons.append(contentsOf: comparisons)
+        projectsContainer.sort()
+        
+        self.projectsContainer = projectsContainer
     }
 }
 

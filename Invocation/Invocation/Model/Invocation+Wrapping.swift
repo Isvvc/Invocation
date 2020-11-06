@@ -34,6 +34,23 @@ extension Project {
         get { title ?? checklist?.title ?? "" }
         set { title = newValue }
     }
+    
+    var lastCompletedTask: Task? {
+        // This could be done with the max(by:) function,
+        // but that's always confusing to use.
+        var lastTask: Task?
+        for task in tasks as? Set<Task> ?? [] {
+            guard let date = task.completed else { continue }
+            if let lastTaskDate = lastTask?.completed {
+                if date > lastTaskDate {
+                    lastTask = task
+                }
+            } else {
+                lastTask = task
+            }
+        }
+        return lastTask
+    }
 }
 
 extension Task {

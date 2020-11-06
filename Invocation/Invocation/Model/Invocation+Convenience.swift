@@ -14,6 +14,7 @@ extension Project {
         self.checklist = checklist
         self.showComplete = checklist.showComplete
         self.showOne = checklist.showOne
+        self.invoked = Date()
         
         guard let items = checklist.items as? Set<Item> else { return }
         let tasks = mutableSetValue(forKey: "tasks")
