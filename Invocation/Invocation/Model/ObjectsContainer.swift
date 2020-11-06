@@ -13,6 +13,7 @@ import CoreData
 protocol ComparisonProtocol {
     func sort<FunctionType: NSManagedObject>(_ objects: [FunctionType], ascending: Bool) -> [FunctionType]
     func insert<FunctionType: NSManagedObject>(_ object: FunctionType, into sortedObjects: inout [FunctionType], ascending: Bool)
+    func move<FunctionType: NSManagedObject>(_ object: FunctionType, in sortedObjects: inout [FunctionType], ascending: Bool)
 }
 
 //MARK: Comparison
@@ -48,15 +49,33 @@ struct Comparison<T: NSManagedObject, C: Comparable>: ComparisonProtocol {
         guard let sortedObjects = objects as? [T],
               let objectToInsert = object as? T else { return }
         
-        if let comparison = makeComparison(objectToInsert),
-           // Find the first object that belongs after the given object
-           let index = sortedObjects.firstIndex(where: { object -> Bool in
-            guard let existingComparison = makeComparison(object) else { return false }
-            return ascending == (comparison < existingComparison)
-           }) {
+        if let index = indexToInsert(objectToInsert, into: sortedObjects, ascending: ascending) {
             objects.insert(object, at: index)
         } else {
             objects.append(object)
+        }
+    }
+    
+    func move<FunctionType: NSManagedObject>(_ object: FunctionType, in objects: inout [FunctionType], ascending: Bool) {
+        guard let originalIndex = objects.firstIndex(of: object),
+              let objectToMove = object as? T,
+              var sortedObjects = objects as? [T] else { return }
+        sortedObjects.remove(at: originalIndex)
+        
+        guard let index = indexToInsert(objectToMove, into: sortedObjects, ascending: ascending) else { return }
+        
+        if index != originalIndex {
+            objects.remove(at: originalIndex)
+            objects.insert(object, at: index)
+        }
+    }
+    
+    private func indexToInsert(_ object: T, into objects: [T], ascending: Bool) -> Int? {
+        guard let comparison = makeComparison(object) else { return nil }
+        // Find the first object that belongs after the given object
+        return objects.firstIndex { object -> Bool in
+            guard let existingComparison = makeComparison(object) else { return false }
+            return ascending == (comparison < existingComparison)
         }
     }
 }
@@ -123,12 +142,6 @@ class ObjectsContainer<T: NSManagedObject>: NSObject, ObservableObject, NSFetche
     
     //MARK: Fetched Results Controller Delegate
     
-    /*
-    func controllerDidChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
-        sort()
-    }
-     */
-    
     func controller(
         _ controller: NSFetchedResultsController<NSFetchRequestResult>,
         didChange anObject: Any,
@@ -142,7 +155,7 @@ class ObjectsContainer<T: NSManagedObject>: NSObject, ObservableObject, NSFetche
         case .delete:
             sortedObjects.removeAll(where: { $0 == object })
         default:
-            break
+            currentComparison?.move(object, in: &sortedObjects, ascending: ascending)
         }
     }
 }
