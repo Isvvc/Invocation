@@ -8,9 +8,14 @@
 import SwiftUI
 import CoreData
 
+//MARK: Comparison Protocol
+
 protocol ComparisonProtocol {
     func sort<FunctionType: NSManagedObject>(_ objects: [FunctionType], ascending: Bool) -> [FunctionType]
+    func insert<FunctionType: NSManagedObject>(_ object: FunctionType, into sortedObjects: inout [FunctionType], ascending: Bool)
 }
+
+//MARK: Comparison
 
 struct Comparison<T: NSManagedObject, C: Comparable>: ComparisonProtocol {
     var makeComparison: (T) -> C?
@@ -30,18 +35,37 @@ struct Comparison<T: NSManagedObject, C: Comparable>: ComparisonProtocol {
         }
         
         return objects.sorted { object1, object2 -> Bool in
+            // Put nil values at the end.
+            //TODO: Make this configurable
             guard let object1Comparison = value(for: object1) else { return false }
             guard let object2Comparison = value(for: object2) else { return true }
-            if ascending {
-                return object1Comparison < object2Comparison
-            } else {
-                return object1Comparison > object2Comparison
-            }
+            
+            return ascending == (object1Comparison < object2Comparison)
         } as? [FunctionType] ?? []
+    }
+    
+    func insert<FunctionType: NSManagedObject>(_ object: FunctionType, into objects: inout [FunctionType], ascending: Bool) {
+        guard let sortedObjects = objects as? [T],
+              let objectToInsert = object as? T else { return }
+        
+        if let comparison = makeComparison(objectToInsert),
+           // Find the first object that belongs after the given object
+           let index = sortedObjects.firstIndex(where: { object -> Bool in
+            guard let existingComparison = makeComparison(object) else { return false }
+            return ascending == (comparison < existingComparison)
+           }) {
+            objects.insert(object, at: index)
+        } else {
+            objects.append(object)
+        }
     }
 }
 
+//MARK: Objects Container
+
 class ObjectsContainer<T: NSManagedObject>: NSObject, ObservableObject, NSFetchedResultsControllerDelegate {
+    
+    //MARK: Properties
     
     var frc: NSFetchedResultsController<T>
     
@@ -51,6 +75,18 @@ class ObjectsContainer<T: NSManagedObject>: NSObject, ObservableObject, NSFetche
     var ascending: Bool
     
     var comparisons: [ComparisonProtocol] = []
+    var currentComparison: ComparisonProtocol? {
+        let index: Int
+        if method < comparisons.count {
+            index = method
+        } else if comparisons.count > 0 {
+            index = 0
+        } else {
+            return nil
+        }
+        
+        return comparisons[index]
+    }
     
     init(method: Int, ascending: Bool, context: NSManagedObjectContext) {
         self.method = method
@@ -70,19 +106,11 @@ class ObjectsContainer<T: NSManagedObject>: NSObject, ObservableObject, NSFetche
         frc.delegate = self
     }
     
+    //MARK: Methods
+    
     func sort() {
-        guard let items = frc.fetchedObjects else { return }
-        
-        let index: Int
-        if method < comparisons.count {
-            index = method
-        } else if comparisons.count > 0 {
-            index = 0
-        } else {
-            return
-        }
-        
-        let comparison = comparisons[index]
+        guard let items = frc.fetchedObjects,
+              let comparison = currentComparison else { return }
         
         sortedObjects = comparison.sort(items, ascending: ascending)
     }
@@ -93,7 +121,26 @@ class ObjectsContainer<T: NSManagedObject>: NSObject, ObservableObject, NSFetche
         sort()
     }
     
+    //MARK: Fetched Results Controller Delegate
+    
+    /*
     func controllerDidChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
         sort()
+    }
+     */
+    
+    func controller(
+        _ controller: NSFetchedResultsController<NSFetchRequestResult>,
+        didChange anObject: Any,
+        at indexPath: IndexPath?,
+        for type: NSFetchedResultsChangeType,
+        newIndexPath: IndexPath?) {
+        switch type {
+        case .insert:
+            guard let object = anObject as? T else { break }
+            currentComparison?.insert(object, into: &sortedObjects, ascending: ascending)
+        default:
+            break
+        }
     }
 }
