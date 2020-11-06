@@ -72,7 +72,7 @@ struct ContentView: View {
                 project.invoked
             }),
             Comparison<Project, String>(makeComparison: { project -> String? in
-                project.wrappedTitle
+                project.wrappedTitle.lowercased()
             }),
             Comparison<Project, Date>(makeComparison: { project -> Date? in
                 project.lastCompletedTask?.completed
