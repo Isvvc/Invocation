@@ -135,10 +135,12 @@ class ObjectsContainer<T: NSManagedObject>: NSObject, ObservableObject, NSFetche
         at indexPath: IndexPath?,
         for type: NSFetchedResultsChangeType,
         newIndexPath: IndexPath?) {
+        guard let object = anObject as? T else { return }
         switch type {
         case .insert:
-            guard let object = anObject as? T else { break }
             currentComparison?.insert(object, into: &sortedObjects, ascending: ascending)
+        case .delete:
+            sortedObjects.removeAll(where: { $0 == object })
         default:
             break
         }
