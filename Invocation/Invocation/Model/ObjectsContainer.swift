@@ -93,35 +93,6 @@ class ObjectsContainer<T: NSManagedObject>: NSObject, ObservableObject, NSFetche
         sort()
     }
     
-    /*
-    func sort() {
-        guard T.self == Project.self else { return }
-        
-        // true if 1 is before 2
-        let sortFunc: (Project, Project) -> Bool
-        
-        // 0: Invocation Date
-        // 1: Name
-        // 2: Last completed task
-        switch method {
-        case 2:
-            var lastCompleted: [Project: Date?] = [:]
-            frc.fetchedObjects?.forEach { lastCompleted[$0] = $0.lastCompletedTask?.completed }
-            sortFunc = { project1, project2 in
-                // Dates come out as double optionals
-                guard case let project1Date?? = lastCompleted[project1] else { return false }
-                guard case let project2Date?? = lastCompleted[project2] else { return true }
-                return project1Date > project2Date
-            }
-        default:
-            sortFunc = { project1, project2 in
-                project1.wrappedTitle > project2.wrappedTitle
-            }
-        }
-        
-        sortedProjects = fetchedResults.sorted(by: sortFunc)
-    }*/
-    
     func controllerDidChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
         sort()
     }
