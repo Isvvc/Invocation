@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 50;
+	objectVersion = 52;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -21,6 +21,7 @@
 		593591092551D22100695B43 /* Invocation+Delete.swift in Sources */ = {isa = PBXBuildFile; fileRef = 593591082551D22100695B43 /* Invocation+Delete.swift */; };
 		597C95DF25547A2400A9A9D4 /* AcknowledgementsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 597C95DE25547A2400A9A9D4 /* AcknowledgementsView.swift */; };
 		597C95E42554866C00A9A9D4 /* ObjectsContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 597C95E32554866C00A9A9D4 /* ObjectsContainer.swift */; };
+		5988B16D25573AC3008B9C91 /* SwiftDate in Frameworks */ = {isa = PBXBuildFile; productRef = 5988B16C25573AC3008B9C91 /* SwiftDate */; };
 		59AA338525533EF9009D3096 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 59AA338425533EF9009D3096 /* SettingsView.swift */; };
 		59AA338A255340C6009D3096 /* Defaults.swift in Sources */ = {isa = PBXBuildFile; fileRef = 59AA3389255340C6009D3096 /* Defaults.swift */; };
 		59AA338F25538084009D3096 /* TextWithCaption.swift in Sources */ = {isa = PBXBuildFile; fileRef = 59AA338E25538083009D3096 /* TextWithCaption.swift */; };
@@ -89,6 +90,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5988B16D25573AC3008B9C91 /* SwiftDate in Frameworks */,
 				5913C1F4254F439200A00F51 /* CloudKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -235,6 +237,9 @@
 			dependencies = (
 			);
 			name = Invocation;
+			packageProductDependencies = (
+				5988B16C25573AC3008B9C91 /* SwiftDate */,
+			);
 			productName = Invocation;
 			productReference = 5907F8CA254B3E9B00E3EF74 /* Invocation.app */;
 			productType = "com.apple.product-type.application";
@@ -306,6 +311,9 @@
 				Base,
 			);
 			mainGroup = 5907F8C1254B3E9A00E3EF74;
+			packageReferences = (
+				5988B16B25573AC3008B9C91 /* XCRemoteSwiftPackageReference "SwiftDate" */,
+			);
 			productRefGroup = 5907F8CB254B3E9B00E3EF74 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -688,6 +696,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		5988B16B25573AC3008B9C91 /* XCRemoteSwiftPackageReference "SwiftDate" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/malcommac/SwiftDate.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 6.2.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		5988B16C25573AC3008B9C91 /* SwiftDate */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 5988B16B25573AC3008B9C91 /* XCRemoteSwiftPackageReference "SwiftDate" */;
+			productName = SwiftDate;
+		};
+/* End XCSwiftPackageProductDependency section */
 
 /* Begin XCVersionGroup section */
 		5907F8D8254B3E9D00E3EF74 /* Invocation.xcdatamodeld */ = {
