@@ -181,12 +181,10 @@ fileprivate struct TaskCell: View {
         )
     }
     
-    func completeTask() {
+    private func completeTask() {
         if showComplete {
             task.toggle()
-            withAnimation {
-                projectsContainer.sort()
-            }
+            updateProjectSorting()
         } else {
             if completed {
                 work?.cancel()
@@ -201,9 +199,7 @@ fileprivate struct TaskCell: View {
                     // before the strikethrough hides.
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) {
                         completed = false
-                        withAnimation {
-                            projectsContainer.sort()
-                        }
+                        updateProjectSorting()
                     }
                 }
                 self.work = work
@@ -212,6 +208,14 @@ fileprivate struct TaskCell: View {
             completed.toggle()
         }
     }
+    
+    private func updateProjectSorting() {
+        guard let project = task.project else { return }
+        withAnimation {
+            projectsContainer.update(object: project)
+        }
+    }
+    
 }
 
 //MARK: Preview

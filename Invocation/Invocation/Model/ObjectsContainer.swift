@@ -153,6 +153,10 @@ class ObjectsContainer<T: NSManagedObject>: NSObject, ObservableObject, NSFetche
         sort()
     }
     
+    func update(object: T) {
+        currentComparison?.move(object, in: &sortedObjects, ascending: ascending, emptyFirst: emptyFirst)
+    }
+    
     //MARK: Fetched Results Controller Delegate
     
     func controller(
