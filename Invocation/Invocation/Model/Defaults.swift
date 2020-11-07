@@ -15,4 +15,5 @@ enum Defaults: String {
     case showDateOnProject
     case projectSort
     case projectSortAscending
+    case projectSortEmptyFirst
 }

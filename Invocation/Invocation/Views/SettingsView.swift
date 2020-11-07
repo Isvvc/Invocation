@@ -18,6 +18,7 @@ struct SettingsView: View {
     @AppStorage(Defaults.showDateOnProject.rawValue) private var showDateOnProject: Bool = true
     @AppStorage(Defaults.projectSort.rawValue) private var projectSort: Int = 0
     @AppStorage(Defaults.projectSortAscending.rawValue) private var projectSortAscending: Bool = true
+    @AppStorage(Defaults.projectSortEmptyFirst.rawValue) private var projectSortEmptyFirst: Bool = false
     
     @EnvironmentObject private var checklistController: ChecklistController
     
@@ -44,6 +45,18 @@ struct SettingsView: View {
                 }
                 Toggle(isOn: $projectSortAscending) {
                     TextWithCaption(text: "Ascending", caption: sortDescriptions[projectSort]?[projectSortAscending])
+                }
+                if projectSort == 2 {
+                    HStack {
+                        TextWithCaption(text: "Empty invocations", caption: "Invocations with no completed tasks")
+                        Picker("Empty invocations", selection: $projectSortEmptyFirst) {
+                            Text("First")
+                                .tag(true)
+                            Text("Last")
+                                .tag(false)
+                        }
+                        .pickerStyle(SegmentedPickerStyle())
+                    }
                 }
             }
             
