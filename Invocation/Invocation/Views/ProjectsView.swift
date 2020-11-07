@@ -50,6 +50,11 @@ struct ProjectsView: View {
             }
             .environment(\.managedObjectContext, moc)
             .environmentObject(checklistController)
+            .onDisappear {
+                withAnimation {
+                    projectsContainer.update(object: project)
+                }
+            }
         }
     }
 }

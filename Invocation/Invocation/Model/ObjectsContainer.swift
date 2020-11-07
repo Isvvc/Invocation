@@ -172,7 +172,7 @@ class ObjectsContainer<T: NSManagedObject>: NSObject, ObservableObject, NSFetche
         case .delete:
             sortedObjects.removeAll(where: { $0 == object })
         default:
-            currentComparison?.move(object, in: &sortedObjects, ascending: ascending, emptyFirst: emptyFirst)
+            break
         }
     }
 }
