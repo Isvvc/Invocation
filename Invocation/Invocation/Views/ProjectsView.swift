@@ -12,7 +12,7 @@ import SwiftUI
 struct ProjectsView: View {
     @Environment(\.managedObjectContext) private var moc
     
-    @ObservedObject var projectsContainer: ObjectsContainer<Project>
+    @EnvironmentObject var projectsContainer: ObjectsContainer<Project>
     var projects: [Project] {
         projectsContainer.sortedObjects
     }
@@ -141,9 +141,10 @@ fileprivate struct ProjectSection: View {
 fileprivate struct TaskCell: View {
     @Environment(\.managedObjectContext) private var moc
     
-    @EnvironmentObject private var checklistController: ChecklistController
-    
     @AppStorage(Defaults.showDateOnList.rawValue) private var showDateOnList: Bool = true
+    
+    @EnvironmentObject var projectsContainer: ObjectsContainer<Project>
+    @EnvironmentObject private var checklistController: ChecklistController
     
     @ObservedObject var task: Task
     
@@ -183,6 +184,9 @@ fileprivate struct TaskCell: View {
     func completeTask() {
         if showComplete {
             task.toggle()
+            withAnimation {
+                projectsContainer.sort()
+            }
         } else {
             if completed {
                 work?.cancel()
@@ -196,7 +200,10 @@ fileprivate struct TaskCell: View {
                     // Give time for the cell to disappear
                     // before the strikethrough hides.
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) {
-                        self.completed = false
+                        completed = false
+                        withAnimation {
+                            projectsContainer.sort()
+                        }
                     }
                 }
                 self.work = work
@@ -224,8 +231,9 @@ struct ProjectsView_Previews: PreviewProvider {
     
     static var previews: some View {
         NavigationView {
-            ProjectsView(projectsContainer: projectsContainer, tab: .constant(0))
+            ProjectsView(tab: .constant(0))
                 .environment(\.managedObjectContext, PersistenceController.preview.container.viewContext)
+                .environmentObject(projectsContainer)
         }
     }
 }

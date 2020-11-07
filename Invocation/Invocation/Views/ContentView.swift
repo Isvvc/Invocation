@@ -23,7 +23,8 @@ struct ContentView: View {
         TabView(selection: $tab) {
             NavigationView {
                 if let projectsContainer = projectsContainer {
-                    ProjectsView(projectsContainer: projectsContainer, tab: $tab)
+                    ProjectsView(tab: $tab)
+                        .environmentObject(projectsContainer)
                         .onChange(of: projectSort) { projectSort in
                             projectsContainer.sort(method: projectSort, ascending: projectSortAscending)
                         }
