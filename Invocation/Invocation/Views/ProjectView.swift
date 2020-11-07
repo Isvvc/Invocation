@@ -25,6 +25,8 @@ struct ProjectView: View {
         tasksFetchRequest.wrappedValue
     }
     
+    @EnvironmentObject private var projectsContainer: ObjectsContainer<Project>
+    
     @ObservedObject var project: Project
     
     @State private var title: String = ""
@@ -141,6 +143,9 @@ struct ProjectView: View {
         }
         .onDisappear {
             PersistenceController.save(context: moc)
+            withAnimation {
+                projectsContainer.update(object: project)
+            }
         }
     }
     
@@ -247,10 +252,13 @@ struct ProjectView_Previews: PreviewProvider {
         return try! context.fetch(fetchRequest).first!
     }
     
+    static var projectsContainer = ObjectsContainer<Project>(method: 0, ascending: true, emptyFirst: false, context: PersistenceController.preview.container.viewContext)
+    
     static var previews: some View {
         NavigationView {
             ProjectView(project: project)
                 .environment(\.managedObjectContext, PersistenceController.preview.container.viewContext)
+                .environmentObject(projectsContainer)
         }
     }
 }

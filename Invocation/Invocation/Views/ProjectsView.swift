@@ -12,12 +12,11 @@ import SwiftUI
 struct ProjectsView: View {
     @Environment(\.managedObjectContext) private var moc
     
+    @EnvironmentObject private var checklistController: ChecklistController
     @EnvironmentObject var projectsContainer: ObjectsContainer<Project>
     var projects: [Project] {
         projectsContainer.sortedObjects
     }
-    
-    @EnvironmentObject private var checklistController: ChecklistController
     
     @Binding var tab: Int
     
@@ -143,8 +142,8 @@ fileprivate struct TaskCell: View {
     
     @AppStorage(Defaults.showDateOnList.rawValue) private var showDateOnList: Bool = true
     
-    @EnvironmentObject var projectsContainer: ObjectsContainer<Project>
     @EnvironmentObject private var checklistController: ChecklistController
+    @EnvironmentObject private var projectsContainer: ObjectsContainer<Project>
     
     @ObservedObject var task: Task
     
