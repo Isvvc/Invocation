@@ -218,7 +218,7 @@ fileprivate struct TaskCell: View {
 
 struct ProjectsView_Previews: PreviewProvider {
     static var projectsContainer: ObjectsContainer<Project> = {
-        let projectsContainer = ObjectsContainer<Project>(method: 0, ascending: true, context: PersistenceController.preview.container.viewContext)
+        let projectsContainer = ObjectsContainer<Project>(method: 0, ascending: true, emptyFirst: false, context: PersistenceController.preview.container.viewContext)
         
         projectsContainer.comparisons.append(
             Comparison<Project, String>(makeComparison: { project -> String? in

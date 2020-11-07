@@ -13,6 +13,7 @@ struct ContentView: View {
     
     @AppStorage(Defaults.projectSort.rawValue) private var projectSort: Int = 0
     @AppStorage(Defaults.projectSortAscending.rawValue) private var projectSortAscending: Bool = true
+    @AppStorage(Defaults.projectSortEmptyFirst.rawValue) private var projectSortEmptyFirst: Bool = false
     
     let checklistController = ChecklistController()
     
@@ -25,12 +26,9 @@ struct ContentView: View {
                 if let projectsContainer = projectsContainer {
                     ProjectsView(tab: $tab)
                         .environmentObject(projectsContainer)
-                        .onChange(of: projectSort) { projectSort in
-                            projectsContainer.sort(method: projectSort, ascending: projectSortAscending)
-                        }
-                        .onChange(of: projectSortAscending) { projectSortAscending in
-                            projectsContainer.sort(method: projectSort, ascending: projectSortAscending)
-                        }
+                        .onChange(of: projectSort, perform: sort)
+                        .onChange(of: projectSortAscending, perform: sort)
+                        .onChange(of: projectSortEmptyFirst, perform: sort)
                 }
             }
             .tabItem {
@@ -66,7 +64,7 @@ struct ContentView: View {
     }
     
     func initProjectsContainer() {
-        let projectsContainer = ObjectsContainer<Project>(method: projectSort, ascending: projectSortAscending, context: moc)
+        let projectsContainer = ObjectsContainer<Project>(method: projectSort, ascending: projectSortAscending, emptyFirst: projectSortEmptyFirst, context: moc)
         
         let comparisons: [ComparisonProtocol] = [
             Comparison<Project, Date>(makeComparison: { project -> Date? in
@@ -85,6 +83,11 @@ struct ContentView: View {
         
         self.projectsContainer = projectsContainer
     }
+    
+    func sort(_: Any) {
+        projectsContainer?.sort(method: projectSort, ascending: projectSortAscending, emptyFirst: projectSortEmptyFirst)
+    }
+    
 }
 
 struct ContentView_Previews: PreviewProvider {

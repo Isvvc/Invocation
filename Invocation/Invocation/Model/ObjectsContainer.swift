@@ -11,9 +11,9 @@ import CoreData
 //MARK: Comparison Protocol
 
 protocol ComparisonProtocol {
-    func sort<FunctionType: NSManagedObject>(_ objects: [FunctionType], ascending: Bool) -> [FunctionType]
-    func insert<FunctionType: NSManagedObject>(_ object: FunctionType, into sortedObjects: inout [FunctionType], ascending: Bool)
-    func move<FunctionType: NSManagedObject>(_ object: FunctionType, in sortedObjects: inout [FunctionType], ascending: Bool)
+    func sort<FunctionType: NSManagedObject>(_ objects: [FunctionType], ascending: Bool, emptyFirst: Bool) -> [FunctionType]
+    func insert<FunctionType: NSManagedObject>(_ object: FunctionType, into sortedObjects: inout [FunctionType], ascending: Bool, emptyFirst: Bool)
+    func move<FunctionType: NSManagedObject>(_ object: FunctionType, in sortedObjects: inout [FunctionType], ascending: Bool, emptyFirst: Bool)
 }
 
 //MARK: Comparison
@@ -21,7 +21,8 @@ protocol ComparisonProtocol {
 struct Comparison<T: NSManagedObject, C: Comparable>: ComparisonProtocol {
     var makeComparison: (T) -> C?
     
-    func sort<FunctionType: NSManagedObject>(_ objects: [FunctionType], ascending: Bool) -> [FunctionType] {
+    func sort<FunctionType: NSManagedObject>(_ objects: [FunctionType], ascending: Bool, emptyFirst: Bool) -> [FunctionType] {
+        //TODO: Make these objects an inout like insert and move
         guard let objects = objects as? [T] else { return [] }
         var cache: [T: C?] = [:]
         
@@ -36,45 +37,54 @@ struct Comparison<T: NSManagedObject, C: Comparable>: ComparisonProtocol {
         }
         
         return objects.sorted { object1, object2 -> Bool in
-            // Put nil values at the end.
-            //TODO: Make this configurable
-            guard let object1Comparison = value(for: object1) else { return false }
-            guard let object2Comparison = value(for: object2) else { return true }
+            guard let object1Comparison = value(for: object1) else { return emptyFirst }
+            guard let object2Comparison = value(for: object2) else { return !emptyFirst }
             
             return ascending == (object1Comparison < object2Comparison)
         } as? [FunctionType] ?? []
     }
     
-    func insert<FunctionType: NSManagedObject>(_ object: FunctionType, into objects: inout [FunctionType], ascending: Bool) {
+    func insert<FunctionType: NSManagedObject>(_ object: FunctionType, into objects: inout [FunctionType], ascending: Bool, emptyFirst: Bool) {
         guard let sortedObjects = objects as? [T],
               let objectToInsert = object as? T else { return }
         
-        if let index = indexToInsert(objectToInsert, into: sortedObjects, ascending: ascending) {
+        if let index = indexToInsert(objectToInsert, into: sortedObjects, ascending: ascending, emptyFirst: emptyFirst) {
             objects.insert(object, at: index)
         } else {
-            objects.append(object)
+            if emptyFirst {
+                objects.insert(object, at: 0)
+            } else {
+                objects.append(object)
+            }
         }
     }
     
-    func move<FunctionType: NSManagedObject>(_ object: FunctionType, in objects: inout [FunctionType], ascending: Bool) {
+    func move<FunctionType: NSManagedObject>(_ object: FunctionType, in objects: inout [FunctionType], ascending: Bool, emptyFirst: Bool) {
         guard let originalIndex = objects.firstIndex(of: object),
               let objectToMove = object as? T,
               var sortedObjects = objects as? [T] else { return }
         sortedObjects.remove(at: originalIndex)
         
-        guard let index = indexToInsert(objectToMove, into: sortedObjects, ascending: ascending) else { return }
-        
-        if index != originalIndex {
+        if let index = indexToInsert(objectToMove, into: sortedObjects, ascending: ascending, emptyFirst: emptyFirst) {
+            if index != originalIndex {
+                objects.remove(at: originalIndex)
+                objects.insert(object, at: index)
+            }
+        } else {
             objects.remove(at: originalIndex)
-            objects.insert(object, at: index)
+            if emptyFirst {
+                objects.insert(object, at: 0)
+            } else {
+                objects.append(object)
+            }
         }
     }
     
-    private func indexToInsert(_ object: T, into objects: [T], ascending: Bool) -> Int? {
+    private func indexToInsert(_ object: T, into objects: [T], ascending: Bool, emptyFirst: Bool) -> Int? {
         guard let comparison = makeComparison(object) else { return nil }
         // Find the first object that belongs after the given object
         return objects.firstIndex { object -> Bool in
-            guard let existingComparison = makeComparison(object) else { return false }
+            guard let existingComparison = makeComparison(object) else { return emptyFirst }
             return ascending == (comparison < existingComparison)
         }
     }
@@ -92,6 +102,7 @@ class ObjectsContainer<T: NSManagedObject>: NSObject, ObservableObject, NSFetche
     
     var method: Int
     var ascending: Bool
+    var emptyFirst: Bool
     
     var comparisons: [ComparisonProtocol] = []
     var currentComparison: ComparisonProtocol? {
@@ -107,9 +118,10 @@ class ObjectsContainer<T: NSManagedObject>: NSObject, ObservableObject, NSFetche
         return comparisons[index]
     }
     
-    init(method: Int, ascending: Bool, context: NSManagedObjectContext) {
+    init(method: Int, ascending: Bool, emptyFirst: Bool, context: NSManagedObjectContext) {
         self.method = method
         self.ascending = ascending
+        self.emptyFirst = emptyFirst
         
         let fetchRequest = T.fetchRequest() as! NSFetchRequest<T>
         fetchRequest.sortDescriptors = [NSSortDescriptor(key: "title", ascending: true)]
@@ -131,12 +143,13 @@ class ObjectsContainer<T: NSManagedObject>: NSObject, ObservableObject, NSFetche
         guard let items = frc.fetchedObjects,
               let comparison = currentComparison else { return }
         
-        sortedObjects = comparison.sort(items, ascending: ascending)
+        sortedObjects = comparison.sort(items, ascending: ascending, emptyFirst: emptyFirst)
     }
     
-    func sort(method: Int, ascending: Bool) {
+    func sort(method: Int, ascending: Bool, emptyFirst: Bool) {
         self.method = method
         self.ascending = ascending
+        self.emptyFirst = emptyFirst
         sort()
     }
     
@@ -151,11 +164,11 @@ class ObjectsContainer<T: NSManagedObject>: NSObject, ObservableObject, NSFetche
         guard let object = anObject as? T else { return }
         switch type {
         case .insert:
-            currentComparison?.insert(object, into: &sortedObjects, ascending: ascending)
+            currentComparison?.insert(object, into: &sortedObjects, ascending: ascending, emptyFirst: emptyFirst)
         case .delete:
             sortedObjects.removeAll(where: { $0 == object })
         default:
-            currentComparison?.move(object, in: &sortedObjects, ascending: ascending)
+            currentComparison?.move(object, in: &sortedObjects, ascending: ascending, emptyFirst: emptyFirst)
         }
     }
 }
