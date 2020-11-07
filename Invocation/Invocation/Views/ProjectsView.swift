@@ -12,12 +12,11 @@ import SwiftUI
 struct ProjectsView: View {
     @Environment(\.managedObjectContext) private var moc
     
-    @FetchRequest(
-        sortDescriptors: [NSSortDescriptor(keyPath: \Project.title, ascending: true)],
-        animation: .default)
-    private var projects: FetchedResults<Project>
-    
     @EnvironmentObject private var checklistController: ChecklistController
+    @EnvironmentObject var projectsContainer: ObjectsContainer<Project>
+    var projects: [Project] {
+        projectsContainer.sortedObjects
+    }
     
     @Binding var tab: Int
     
@@ -51,6 +50,11 @@ struct ProjectsView: View {
             }
             .environment(\.managedObjectContext, moc)
             .environmentObject(checklistController)
+            .onDisappear {
+                withAnimation {
+                    projectsContainer.update(object: project)
+                }
+            }
         }
     }
 }
@@ -141,9 +145,10 @@ fileprivate struct ProjectSection: View {
 fileprivate struct TaskCell: View {
     @Environment(\.managedObjectContext) private var moc
     
-    @EnvironmentObject private var checklistController: ChecklistController
-    
     @AppStorage(Defaults.showDateOnList.rawValue) private var showDateOnList: Bool = true
+    
+    @EnvironmentObject private var checklistController: ChecklistController
+    @EnvironmentObject private var projectsContainer: ObjectsContainer<Project>
     
     @ObservedObject var task: Task
     
@@ -180,9 +185,10 @@ fileprivate struct TaskCell: View {
         )
     }
     
-    func completeTask() {
+    private func completeTask() {
         if showComplete {
             task.toggle()
+            updateProjectSorting()
         } else {
             if completed {
                 work?.cancel()
@@ -196,7 +202,8 @@ fileprivate struct TaskCell: View {
                     // Give time for the cell to disappear
                     // before the strikethrough hides.
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) {
-                        self.completed = false
+                        completed = false
+                        updateProjectSorting()
                     }
                 }
                 self.work = work
@@ -205,15 +212,36 @@ fileprivate struct TaskCell: View {
             completed.toggle()
         }
     }
+    
+    private func updateProjectSorting() {
+        guard let project = task.project else { return }
+        withAnimation {
+            projectsContainer.update(object: project)
+        }
+    }
+    
 }
 
 //MARK: Preview
 
 struct ProjectsView_Previews: PreviewProvider {
+    static var projectsContainer: ObjectsContainer<Project> = {
+        let projectsContainer = ObjectsContainer<Project>(method: 0, ascending: true, emptyFirst: false, context: PersistenceController.preview.container.viewContext)
+        
+        projectsContainer.comparisons.append(
+            Comparison<Project, String>(makeComparison: { project -> String? in
+                project.wrappedTitle
+            }))
+        projectsContainer.sort()
+        
+        return projectsContainer
+    }()
+    
     static var previews: some View {
         NavigationView {
             ProjectsView(tab: .constant(0))
                 .environment(\.managedObjectContext, PersistenceController.preview.container.viewContext)
+                .environmentObject(projectsContainer)
         }
     }
 }

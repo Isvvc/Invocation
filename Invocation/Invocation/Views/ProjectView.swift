@@ -93,6 +93,8 @@ struct ProjectView: View {
                 ForEach(tasks) { task in
                     TaskView(task: task, selection: $selection)
                 }
+                .onDelete(perform: delete)
+                .onMove(perform: move)
             }
             
             Section(header: settingsHeader) {
@@ -130,7 +132,7 @@ struct ProjectView: View {
             }
         }
         .navigationTitle(project.wrappedTitle ??? "Invocation")
-        .navigationBarItems(leading: doneButton)
+        .navigationBarItems(leading: doneButton, trailing: EditButton())
         .onAppear {
             showOne = project.showOne
             if projectNameFill {
@@ -178,6 +180,19 @@ struct ProjectView: View {
     func deleteProject() {
         presentationMode.wrappedValue.dismiss()
         project.deleteChildrenAndSelf(context: moc)
+        PersistenceController.save(context: moc)
+    }
+    
+    func delete(_ indexSet: IndexSet) {
+        indexSet.map { tasks[$0] }.forEach(moc.delete)
+        project.updateIndices(items: tasks)
+    }
+    
+    func move(_ indices: IndexSet, newOffset: Int) {
+        var taksIndices = tasks.enumerated().map { $0.offset }
+        taksIndices.move(fromOffsets: indices, toOffset: newOffset)
+        taksIndices.enumerated().compactMap { $0.element != $0.offset ? (task: tasks[$0.element], newIndex: Int16($0.offset)) : nil }.forEach { $0.task.index = $0.newIndex }
+        
         PersistenceController.save(context: moc)
     }
 }
@@ -251,6 +266,7 @@ struct ProjectView_Previews: PreviewProvider {
         NavigationView {
             ProjectView(project: project)
                 .environment(\.managedObjectContext, PersistenceController.preview.container.viewContext)
+                .environmentObject(ChecklistController())
         }
     }
 }

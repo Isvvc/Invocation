@@ -16,6 +16,9 @@ struct SettingsView: View {
     @AppStorage(Defaults.timeStyle.rawValue) private var timeStyle: Int = 1
     @AppStorage(Defaults.showDateOnList.rawValue) private var showDateOnList: Bool = true
     @AppStorage(Defaults.showDateOnProject.rawValue) private var showDateOnProject: Bool = true
+    @AppStorage(Defaults.projectSort.rawValue) private var projectSort: Int = 0
+    @AppStorage(Defaults.projectSortAscending.rawValue) private var projectSortAscending: Bool = true
+    @AppStorage(Defaults.projectSortEmptyFirst.rawValue) private var projectSortEmptyFirst: Bool = false
     
     @EnvironmentObject private var checklistController: ChecklistController
     
@@ -28,6 +31,32 @@ struct SettingsView: View {
                     TextWithCaption(
                         text: "Auto fill invocation name",
                         caption: "Copy a checklist's name to invocations")
+                }
+            }
+            
+            Section(header: Text("Invocation Sorting")) {
+                Picker("Sort by", selection: $projectSort) {
+                    Text("Invocation date")
+                        .tag(0)
+                    Text("Name")
+                        .tag(1)
+                    Text("Last completed task")
+                        .tag(2)
+                }
+                Toggle(isOn: $projectSortAscending) {
+                    TextWithCaption(text: "Ascending", caption: sortDescriptions[projectSort]?[projectSortAscending])
+                }
+                if projectSort == 2 {
+                    HStack {
+                        TextWithCaption(text: "Empty invocations", caption: "Invocations with no completed tasks")
+                        Picker("Empty invocations", selection: $projectSortEmptyFirst) {
+                            Text("First")
+                                .tag(true)
+                            Text("Last")
+                                .tag(false)
+                        }
+                        .pickerStyle(SegmentedPickerStyle())
+                    }
                 }
             }
             
@@ -72,6 +101,23 @@ struct SettingsView: View {
         }
         .navigationTitle("Settings")
     }
+    
+    //MARK: Descriptions
+    
+    private var sortDescriptions: [Int: [Bool: String]] = [
+        0: [ // Invocation Date
+            true: "Oldest first",
+            false: "Newest first"
+        ],
+        1: [ // Name
+            true: "A-Z",
+            false: "Z-A"
+        ],
+        2: [ // Last completed task
+            true: "Last completed last",
+            false: "Last completed first"
+        ]
+    ]
     
     //MARK: Date Formatters
     

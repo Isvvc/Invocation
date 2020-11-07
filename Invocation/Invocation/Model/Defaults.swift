@@ -13,4 +13,7 @@ enum Defaults: String {
     case timeStyle
     case showDateOnList
     case showDateOnProject
+    case projectSort
+    case projectSortAscending
+    case projectSortEmptyFirst
 }
