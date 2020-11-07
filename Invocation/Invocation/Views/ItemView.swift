@@ -7,9 +7,11 @@
 
 import SwiftUI
 import CoreData
+import SwiftDate
 
 struct ItemView: View {
     @Environment(\.managedObjectContext) private var moc
+    @AppStorage(Defaults.weekStartsOn.rawValue) private var weekStartsOn: Int = 2
     
     @EnvironmentObject private var checklistController: ChecklistController
     
@@ -62,6 +64,17 @@ struct ItemView: View {
                     }
                 }
             }
+            
+            Section(header: Text("Due Date")) {
+                Picker("Weekday", selection: $item.weekday) {
+                    Text("None")
+                        .tag(Int16(0))
+                    ForEach(weekdays(), id: \.self) { weekday in
+                        Text(weekday.name())
+                            .tag(Int16(weekday.rawValue))
+                    }
+                }
+            }
         }
         .navigationTitle("Item")
     }
@@ -86,6 +99,10 @@ struct ItemView: View {
     
     func save() {
         PersistenceController.save(context: moc)
+    }
+    
+    func weekdays() -> [WeekDay] {
+        IndexSet(1...7).compactMap { WeekDay.init(rawValue: ($0 + weekStartsOn - 2) % 7 + 1) }
     }
 }
 

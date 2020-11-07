@@ -16,4 +16,5 @@ enum Defaults: String {
     case projectSort
     case projectSortAscending
     case projectSortEmptyFirst
+    case weekStartsOn
 }

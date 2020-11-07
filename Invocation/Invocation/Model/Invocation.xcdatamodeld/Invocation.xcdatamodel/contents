@@ -9,10 +9,14 @@
         <relationship name="projects" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Project" inverseName="checklist" inverseEntity="Project"/>
     </entity>
     <entity name="Item" representedClassName="Item" syncable="YES" codeGenerationType="class">
+        <attribute name="dateOffset" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="index" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="link" optional="YES" attributeType="URI"/>
         <attribute name="name" optional="YES" attributeType="String"/>
         <attribute name="notes" optional="YES" attributeType="String"/>
+        <attribute name="time" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="timeInterval" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="weekday" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
         <relationship name="checklist" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Checklist" inverseName="items" inverseEntity="Checklist"/>
         <relationship name="tasks" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Task" inverseName="item" inverseEntity="Task"/>
     </entity>
@@ -36,7 +40,7 @@
     </entity>
     <elements>
         <element name="Checklist" positionX="-63" positionY="-18" width="128" height="133"/>
-        <element name="Item" positionX="-63" positionY="-18" width="128" height="133"/>
+        <element name="Item" positionX="-63" positionY="-18" width="128" height="193"/>
         <element name="Project" positionX="-54" positionY="18" width="128" height="148"/>
         <element name="Task" positionX="-36" positionY="72" width="128" height="148"/>
     </elements>

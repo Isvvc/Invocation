@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import SwiftDate
 
 struct SettingsView: View {
     
@@ -19,6 +20,7 @@ struct SettingsView: View {
     @AppStorage(Defaults.projectSort.rawValue) private var projectSort: Int = 0
     @AppStorage(Defaults.projectSortAscending.rawValue) private var projectSortAscending: Bool = true
     @AppStorage(Defaults.projectSortEmptyFirst.rawValue) private var projectSortEmptyFirst: Bool = false
+    @AppStorage(Defaults.weekStartsOn.rawValue) private var weekStartsOn: Int = 2
     
     @EnvironmentObject private var checklistController: ChecklistController
     
@@ -88,6 +90,13 @@ struct SettingsView: View {
                 .onChange(of: timeStyle){ timeStyle in
                     checklistController.setDateFormat(dateStyleInt: dateStyle, timeStyleInt: timeStyle)
                 }
+                
+                Picker("Week starts on", selection: $weekStartsOn) {
+                    ForEach(weekDays, id: \.self) { weekday in
+                        Text(weekday.name())
+                            .tag(weekday.rawValue)
+                    }
+                }
             }
             
             Section(header: Text("Show dates"), footer: Text("Show dates of completed tasks")) {
@@ -118,6 +127,8 @@ struct SettingsView: View {
             false: "Last completed first"
         ]
     ]
+    
+    private let weekDays: [WeekDay] = [.monday, .tuesday, .wednesday, .thursday, .friday, .saturday, .sunday]
     
     //MARK: Date Formatters
     
