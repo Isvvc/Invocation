@@ -74,6 +74,14 @@ struct ItemView: View {
                             .tag(Int16(weekday.rawValue))
                     }
                 }
+                
+                Stepper(value: $item.dateOffset, in: 0...365) {
+                    HStack {
+                        TextWithCaption(text: "Day offset", caption: dateOffsetCaption())
+                        Spacer()
+                        Text("\(item.dateOffset)")
+                    }
+                }
             }
         }
         .navigationTitle("Item")
@@ -103,6 +111,28 @@ struct ItemView: View {
     
     func weekdays() -> [WeekDay] {
         IndexSet(1...7).compactMap { WeekDay.init(rawValue: ($0 + weekStartsOn - 2) % 7 + 1) }
+    }
+    
+    func dateOffsetCaption() -> String {
+        if let weekday = WeekDay(rawValue: Int(item.weekday))?.name() {
+            switch item.dateOffset {
+            case 0:
+                return "Next \(weekday) after invocation"
+            case 1:
+                return "Next \(weekday) 1 day after invocation"
+            default:
+                return "Next \(weekday) \(item.dateOffset) days after invocation"
+            }
+        } else {
+            switch item.dateOffset {
+            case 0:
+                return "Same day as invocation"
+            case 1:
+                return "The day after invocation"
+            default:
+                return "\(item.dateOffset) days after invocation"
+            }
+        }
     }
 }
 
