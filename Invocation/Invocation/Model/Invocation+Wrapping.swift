@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import SwiftDate
 
 extension Checklist {
     var wrappedTitle: String {
@@ -26,6 +27,14 @@ extension Item {
     var wrappedNotes: String {
         get { notes ?? "" }
         set { notes = newValue }
+    }
+    
+    var nextDueDate: Date {
+        let offsetDate = Date() + Int(dateOffset).days
+        if let weekday = WeekDay(rawValue: Int(weekday)) {
+            return offsetDate.nextWeekday(weekday, region: .current)
+        }
+        return offsetDate
     }
 }
 

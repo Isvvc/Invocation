@@ -82,6 +82,13 @@ struct ItemView: View {
                         Text("\(item.dateOffset)")
                     }
                 }
+                
+                HStack {
+                    Text("Next due date")
+                    Spacer()
+                    Text(checklistController.dateFormatter.string(from: item.nextDueDate))
+                        .fontWeight(.semibold)
+                }
             }
         }
         .navigationTitle("Item")
