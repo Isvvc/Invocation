@@ -23,6 +23,7 @@ class PersistenceController {
                 newItem.checklist = newChecklist
                 newItem.index = i
                 newItem.notes = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam vitae lacus odio."
+                newItem.due = true
             }
             
             switch i {

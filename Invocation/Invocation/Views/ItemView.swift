@@ -20,6 +20,7 @@ struct ItemView: View {
     @State private var notes: String
     @State private var link: String
     @State private var editingLink = false
+    @State private var due = false
     
     init(item: Item) {
         self.item = item
@@ -66,34 +67,44 @@ struct ItemView: View {
             }
             
             Section(header: Text("Due Date")) {
-                Picker("Weekday", selection: $item.weekday) {
-                    Text("None")
-                        .tag(Int16(0))
-                    ForEach(weekdays(), id: \.self) { weekday in
-                        Text(weekday.name())
-                            .tag(Int16(weekday.rawValue))
+                Toggle("Enabled", isOn: $due.animation())
+                    .onChange(of: item.due) { value in
+                        item.due = value
                     }
-                }
                 
-                Stepper(value: $item.dateOffset, in: 0...365) {
+                if due {
+                    Picker("Weekday", selection: $item.weekday) {
+                        Text("None")
+                            .tag(Int16(0))
+                        ForEach(weekdays(), id: \.self) { weekday in
+                            Text(weekday.name())
+                                .tag(Int16(weekday.rawValue))
+                        }
+                    }
+                    
+                    Stepper(value: $item.dateOffset, in: 0...365) {
+                        HStack {
+                            TextWithCaption(text: "Day offset", caption: dateOffsetCaption())
+                            Spacer()
+                            Text("\(item.dateOffset)")
+                        }
+                    }
+                    
+                    DatePicker("Time", selection: $item.wrappedTime, displayedComponents: .hourAndMinute)
+                    
                     HStack {
-                        TextWithCaption(text: "Day offset", caption: dateOffsetCaption())
+                        Text("Next due date")
                         Spacer()
-                        Text("\(item.dateOffset)")
+                        Text(checklistController.dateFormatter.string(from: item.nextDueDate))
+                            .fontWeight(.semibold)
                     }
-                }
-                
-                DatePicker("Time", selection: $item.wrappedTime, displayedComponents: .hourAndMinute)
-                
-                HStack {
-                    Text("Next due date")
-                    Spacer()
-                    Text(checklistController.dateFormatter.string(from: item.nextDueDate))
-                        .fontWeight(.semibold)
                 }
             }
         }
         .navigationTitle("Item")
+        .onAppear {
+            due = item.due
+        }
     }
     
     func saveLink() {
