@@ -32,6 +32,7 @@
 		59C4AEA72550885400A4438A /* ChecklistController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 59C4AEA62550885400A4438A /* ChecklistController.swift */; };
 		59C4AEAD25509F6A00A4438A /* ProjectsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 59C4AEAC25509F6900A4438A /* ProjectsView.swift */; };
 		59C4AEB22550A15E00A4438A /* Invocation+Convenience.swift in Sources */ = {isa = PBXBuildFile; fileRef = 59C4AEB12550A15E00A4438A /* Invocation+Convenience.swift */; };
+		59DBA8112559DF0F00CCE185 /* TextEditorSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 59DBA8102559DF0F00CCE185 /* TextEditorSection.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -83,6 +84,7 @@
 		59C4AEA62550885400A4438A /* ChecklistController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChecklistController.swift; sourceTree = "<group>"; };
 		59C4AEAC25509F6900A4438A /* ProjectsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectsView.swift; sourceTree = "<group>"; };
 		59C4AEB12550A15E00A4438A /* Invocation+Convenience.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Invocation+Convenience.swift"; sourceTree = "<group>"; };
+		59DBA8102559DF0F00CCE185 /* TextEditorSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextEditorSection.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -225,6 +227,7 @@
 			isa = PBXGroup;
 			children = (
 				59AA338E25538083009D3096 /* TextWithCaption.swift */,
+				59DBA8102559DF0F00CCE185 /* TextEditorSection.swift */,
 			);
 			path = "Supplementary Views";
 			sourceTree = "<group>";
@@ -364,6 +367,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				59DBA8112559DF0F00CCE185 /* TextEditorSection.swift in Sources */,
 				59AA338525533EF9009D3096 /* SettingsView.swift in Sources */,
 				59AA338A255340C6009D3096 /* Defaults.swift in Sources */,
 				5907F8D7254B3E9D00E3EF74 /* Persistence.swift in Sources */,

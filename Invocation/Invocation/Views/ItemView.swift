@@ -34,16 +34,8 @@ struct ItemView: View {
                 TextField("Item Name", text: $item.wrappedName, onCommit: save)
             }
             
-            Section(header: Text("Notes")) {
-                TextEditor(text: $notes.animation())
-                if notes != item.wrappedNotes {
-                    Button("Save changes") {
-                        withAnimation {
-                            item.notes = notes
-                            save()
-                        }
-                    }
-                }
+            TextEditorSection(text: $item.wrappedNotes) {
+                save()
             }
             
             Section(header: Text("Link")) {
