@@ -83,6 +83,8 @@ struct ItemView: View {
                     }
                 }
                 
+                DatePicker("Time", selection: $item.wrappedTime, displayedComponents: .hourAndMinute)
+                
                 HStack {
                     Text("Next due date")
                     Spacer()
