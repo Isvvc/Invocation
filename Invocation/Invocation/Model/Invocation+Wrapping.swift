@@ -29,12 +29,34 @@ extension Item {
         set { notes = newValue }
     }
     
+    var wrappedTime: Date {
+        get { time ?? Date() }
+        set { time = newValue }
+    }
+    
     var nextDueDate: Date {
-        let offsetDate = Date() + Int(dateOffset).days
-        if let weekday = WeekDay(rawValue: Int(weekday)) {
-            return offsetDate.nextWeekday(weekday, region: .current)
+        let now = Date()
+        let time = self.time ?? Date()
+        
+        let offsetDate = DateInRegion(now, region: .current)
+            .dateByAdding(Int(dateOffset), .day)
+        let dateComponents = offsetDate.dateComponents
+        let timeComponents = DateInRegion(time, region: .current).dateComponents
+        
+        var dateAndTime = DateInRegion(year: dateComponents.year!, month: dateComponents.month!, day: dateComponents.day!,
+                                       hour: timeComponents.hour!, minute: timeComponents.minute!, region: .current)
+        
+        // Ensure the next due date isn't in the past
+        if dateAndTime.date < Date() {
+            dateAndTime = dateAndTime + 1.days
         }
-        return offsetDate
+        
+        if let weekday = WeekDay(rawValue: Int(weekday)),
+           weekday.rawValue != dateAndTime.weekday {
+            return dateAndTime.nextWeekday(weekday).date
+        }
+        
+        return dateAndTime.date
     }
 }
 
