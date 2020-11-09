@@ -140,6 +140,7 @@
 				5907F8CD254B3E9B00E3EF74 /* InvocationApp.swift */,
 				5907F900254B401000E3EF74 /* Model */,
 				5907F904254B401B00E3EF74 /* Views */,
+				59A59BF82559DE0400DB85B0 /* Supplementary Views */,
 				5907F908254B402500E3EF74 /* Controllers */,
 				5907F8D1254B3E9D00E3EF74 /* Assets.xcassets */,
 				5907F8DB254B3E9D00E3EF74 /* Info.plist */,
@@ -199,7 +200,6 @@
 				59AF3F462552163700F76C9D /* ProjectView.swift */,
 				59AA338425533EF9009D3096 /* SettingsView.swift */,
 				597C95DE25547A2400A9A9D4 /* AcknowledgementsView.swift */,
-				59AA338E25538083009D3096 /* TextWithCaption.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -219,6 +219,14 @@
 				5913C1F3254F439200A00F51 /* CloudKit.framework */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		59A59BF82559DE0400DB85B0 /* Supplementary Views */ = {
+			isa = PBXGroup;
+			children = (
+				59AA338E25538083009D3096 /* TextWithCaption.swift */,
+			);
+			path = "Supplementary Views";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
