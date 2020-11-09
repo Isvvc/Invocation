@@ -30,18 +30,17 @@ extension Item {
     }
     
     var wrappedTime: Date {
-        get { time ?? Date() }
+        get { time ?? Date() + 10.minutes }
         set { time = newValue }
     }
     
     var nextDueDate: Date {
         let now = Date()
-        let time = self.time ?? Date()
         
         let offsetDate = DateInRegion(now, region: .current)
             .dateByAdding(Int(dateOffset), .day)
         let dateComponents = offsetDate.dateComponents
-        let timeComponents = DateInRegion(time, region: .current).dateComponents
+        let timeComponents = DateInRegion(wrappedTime, region: .current).dateComponents
         
         var dateAndTime = DateInRegion(year: dateComponents.year!, month: dateComponents.month!, day: dateComponents.day!,
                                        hour: timeComponents.hour!, minute: timeComponents.minute!, region: .current)
