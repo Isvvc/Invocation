@@ -17,16 +17,7 @@ struct ItemView: View {
     
     @ObservedObject var item: Item
     
-    @State private var notes: String
-    @State private var link: String
-    @State private var editingLink = false
     @State private var due = false
-    
-    init(item: Item) {
-        self.item = item
-        _notes = .init(initialValue: item.wrappedNotes)
-        _link = .init(initialValue: item.link?.absoluteString ?? "")
-    }
     
     var body: some View {
         Form {
@@ -34,28 +25,10 @@ struct ItemView: View {
                 TextField("Item Name", text: $item.wrappedName, onCommit: save)
             }
             
-            TextEditorSection(text: $item.wrappedNotes) {
-                save()
-            }
+            TextEditorSection(text: $item.wrappedNotes, onSave: save)
             
             Section(header: Text("Link")) {
-                HStack {
-                    TextField("https://example.com/", text: $link.animation(), onEditingChanged: { editing in
-                        editingLink = editing
-                    }, onCommit: saveLink)
-                    .autocapitalization(.none)
-                    .disableAutocorrection(true)
-                    
-                    if !editingLink,
-                       let link = item.link {
-                        Link(destination: link) {
-                            Image(systemName: "arrow.up.right")
-                        }
-                    } else {
-                        Image(systemName: "arrow.up.right")
-                            .foregroundColor(.secondary)
-                    }
-                }
+                ChecklistLinkField(url: $item.link, onCommit: save)
             }
             
             Section {
@@ -97,24 +70,6 @@ struct ItemView: View {
         .onAppear {
             due = item.due
         }
-    }
-    
-    func saveLink() {
-        if link.isEmpty {
-            item.link = nil
-            return save()
-        }
-        
-        let httpsLink = checklistController.https(link)
-        
-        guard let url = URL(string: httpsLink) else {
-            link = item.link?.absoluteString ?? ""
-            return save()
-        }
-        
-        link = httpsLink
-        item.link = url
-        save()
     }
     
     func save() {
