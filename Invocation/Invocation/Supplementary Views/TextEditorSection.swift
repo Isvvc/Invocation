@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct TextEditorSection: View {
+    var header: some View = Text("Notes")
     @Binding var text: String
     var onSave: () -> Void = {}
     
@@ -15,7 +16,7 @@ struct TextEditorSection: View {
     @State private var editorTextInitialized = false
     
     var body: some View {
-        Section(header: Text("Notes")) {
+        Section(header: header) {
             TextEditor(text: $editorText.animation())
             if editorText != text {
                 HStack {
