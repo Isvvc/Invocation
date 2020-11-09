@@ -28,6 +28,9 @@ extension Task {
         self.init(context: context)
         self.item = item
         self.index = item.index
+        if item.due {
+            self.due = item.nextDueDate
+        }
     }
     
     func toggle() {
