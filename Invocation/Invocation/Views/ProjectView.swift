@@ -91,7 +91,7 @@ struct ProjectView: View {
             
             Section(header: Text("Tasks")) {
                 ForEach(tasks) { task in
-                    TaskView(task: task, selection: $selection)
+                    TaskRow(task: task, selection: $selection)
                 }
                 .onDelete(perform: delete)
                 .onMove(perform: move)
@@ -199,7 +199,7 @@ struct ProjectView: View {
 
 //MARK: Tasks View
 
-fileprivate struct TaskView: View {
+fileprivate struct TaskRow: View {
     
     @EnvironmentObject private var checklistController: ChecklistController
     
@@ -211,7 +211,7 @@ fileprivate struct TaskView: View {
     var body: some View {
         HStack {
             NavigationLink(
-                destination: Text("Task"),
+                destination: TaskView(task: task),
                 tag: task,
                 selection: $selection,
                 label: { EmptyView() })

@@ -22,7 +22,7 @@ struct ItemView: View {
     var body: some View {
         Form {
             Section(header: Text("Name")) {
-                TextField("Item Name", text: $item.wrappedName, onCommit: save)
+                TextField("Item name", text: $item.wrappedName, onCommit: save)
             }
             
             TextEditorSection(text: $item.wrappedNotes, onSave: save)
@@ -33,7 +33,7 @@ struct ItemView: View {
             
             Section {
                 Toggle("Due date", isOn: $due.animation())
-                    .onChange(of: item.due) { value in
+                    .onChange(of: due) { value in
                         item.due = value
                     }
                 

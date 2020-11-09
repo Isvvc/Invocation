@@ -18,6 +18,7 @@
 		5907F910254B435100E3EF74 /* ChecklistsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5907F90F254B435100E3EF74 /* ChecklistsView.swift */; };
 		5907F915254B463C00E3EF74 /* ChecklistView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5907F914254B463C00E3EF74 /* ChecklistView.swift */; };
 		5913C1F4254F439200A00F51 /* CloudKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5913C1F3254F439200A00F51 /* CloudKit.framework */; };
+		59331B792559E78800F14270 /* TaskView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 59331B782559E78800F14270 /* TaskView.swift */; };
 		593591092551D22100695B43 /* Invocation+Delete.swift in Sources */ = {isa = PBXBuildFile; fileRef = 593591082551D22100695B43 /* Invocation+Delete.swift */; };
 		597C95DF25547A2400A9A9D4 /* AcknowledgementsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 597C95DE25547A2400A9A9D4 /* AcknowledgementsView.swift */; };
 		597C95E42554866C00A9A9D4 /* ObjectsContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 597C95E32554866C00A9A9D4 /* ObjectsContainer.swift */; };
@@ -72,6 +73,7 @@
 		5907F914254B463C00E3EF74 /* ChecklistView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChecklistView.swift; sourceTree = "<group>"; };
 		5913C1EE254F438F00A00F51 /* Invocation.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Invocation.entitlements; sourceTree = "<group>"; };
 		5913C1F3254F439200A00F51 /* CloudKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CloudKit.framework; path = System/Library/Frameworks/CloudKit.framework; sourceTree = SDKROOT; };
+		59331B782559E78800F14270 /* TaskView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskView.swift; sourceTree = "<group>"; };
 		593591082551D22100695B43 /* Invocation+Delete.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Invocation+Delete.swift"; sourceTree = "<group>"; };
 		597C95DE25547A2400A9A9D4 /* AcknowledgementsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AcknowledgementsView.swift; sourceTree = "<group>"; };
 		597C95E32554866C00A9A9D4 /* ObjectsContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObjectsContainer.swift; sourceTree = "<group>"; };
@@ -202,6 +204,7 @@
 				59C4AEA125507EC700A4438A /* ItemView.swift */,
 				59C4AEAC25509F6900A4438A /* ProjectsView.swift */,
 				59AF3F462552163700F76C9D /* ProjectView.swift */,
+				59331B782559E78800F14270 /* TaskView.swift */,
 				59AA338425533EF9009D3096 /* SettingsView.swift */,
 				597C95DE25547A2400A9A9D4 /* AcknowledgementsView.swift */,
 			);
@@ -379,6 +382,7 @@
 				593591092551D22100695B43 /* Invocation+Delete.swift in Sources */,
 				59AA338F25538084009D3096 /* TextWithCaption.swift in Sources */,
 				59C4AEA72550885400A4438A /* ChecklistController.swift in Sources */,
+				59331B792559E78800F14270 /* TaskView.swift in Sources */,
 				597C95E42554866C00A9A9D4 /* ObjectsContainer.swift in Sources */,
 				59AF3F472552163700F76C9D /* ProjectView.swift in Sources */,
 				59C00842254DDE5A00E33D98 /* Invocation+FetchRequest.swift in Sources */,
