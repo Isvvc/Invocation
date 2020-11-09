@@ -66,8 +66,8 @@ struct ItemView: View {
                 }
             }
             
-            Section(header: Text("Due Date")) {
-                Toggle("Enabled", isOn: $due.animation())
+            Section {
+                Toggle("Due date", isOn: $due.animation())
                     .onChange(of: item.due) { value in
                         item.due = value
                     }
