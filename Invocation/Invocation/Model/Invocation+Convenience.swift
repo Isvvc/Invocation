@@ -73,10 +73,21 @@ extension Item {
         let offsetDate = DateInRegion(date, region: .current)
             .dateByAdding(Int(dateOffset), .day)
         let dateComponents = offsetDate.dateComponents
-        let timeComponents = DateInRegion(wrappedTime, region: .current).dateComponents
+        
+        let timeComponents: DateComponents
+        
+        if let time = time {
+            timeComponents = DateInRegion(time, region: .current).dateComponents
+        } else {
+            timeComponents = dateComponents
+        }
         
         var dateAndTime = DateInRegion(year: dateComponents.year!, month: dateComponents.month!, day: dateComponents.day!,
                                        hour: timeComponents.hour!, minute: timeComponents.minute!, region: .current)
+        
+        if time == nil {
+            dateAndTime.addTimeInterval(timeInterval)
+        }
         
         // Ensure the next due date isn't in the past
         if dateAndTime.date < date {

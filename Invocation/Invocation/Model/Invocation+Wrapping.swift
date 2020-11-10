@@ -34,7 +34,7 @@ extension Item {
     }
     
     var wrappedTime: Date {
-        get { time ?? Date() + 10.minutes }
+        get { time ?? Date() }
         set { time = newValue }
     }
 }

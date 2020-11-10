@@ -186,7 +186,7 @@ struct ItemView: View {
     private func changeTimeType(_: Any? = nil) {
         if specificTime {
             if item.time == nil {
-                item.time = item.wrappedTime
+                item.time = Date() + 10.minutes
             }
         } else {
             item.time = nil
