@@ -18,50 +18,112 @@ struct ItemView: View {
     @ObservedObject var item: Item
     
     @State private var due = false
+    @State private var specificTime = true
+    @State private var showingTimeOffset = false
+    @State private var hourSelection: Int = 0
+    @State private var minuteSelection: Int = 0
     
     var body: some View {
-        Form {
-            Section(header: Text("Name")) {
-                TextField("Item name", text: $item.wrappedName, onCommit: save)
-            }
-            
-            TextEditorSection(text: $item.wrappedNotes, onSave: save)
-            
-            Section(header: Text("Link")) {
-                ChecklistLinkField(url: $item.link, onCommit: save)
-            }
-            
-            Section {
-                Toggle("Due date", isOn: $due.animation())
-                    .onChange(of: due) { value in
-                        item.due = value
-                    }
+        ScrollViewReader { proxy in
+            Form {
+                Section(header: Text("Name")) {
+                    TextField("Item name", text: $item.wrappedName, onCommit: save)
+                }
                 
-                if due {
-                    Picker("Weekday", selection: $item.weekday) {
-                        Text("None")
-                            .tag(Int16(0))
-                        ForEach(weekdays(), id: \.self) { weekday in
-                            Text(weekday.name())
-                                .tag(Int16(weekday.rawValue))
+                TextEditorSection(text: $item.wrappedNotes, onSave: save)
+                
+                Section(header: Text("Link")) {
+                    ChecklistLinkField(url: $item.link, onCommit: save)
+                }
+                
+                Section {
+                    Toggle("Due date", isOn: $due.animation())
+                        .onChange(of: due) { value in
+                            item.due = value
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.0625) {
+                                withAnimation {
+                                    proxy.scrollTo(0)
+                                }
+                            }
                         }
-                    }
                     
-                    Stepper(value: $item.dateOffset, in: 0...365) {
+                    if due {
+                        Picker("Weekday", selection: $item.weekday) {
+                            Text("None")
+                                .tag(Int16(0))
+                            ForEach(weekdays(), id: \.self) { weekday in
+                                Text(weekday.name())
+                                    .tag(Int16(weekday.rawValue))
+                            }
+                        }
+                        
+                        Stepper(value: $item.dateOffset, in: 0...365) {
+                            HStack {
+                                TextWithCaption(text: "Day offset", caption: dateOffsetCaption())
+                                Spacer()
+                                Text("\(item.dateOffset)")
+                            }
+                        }
+                        
+                        Picker("Time", selection: $specificTime.animation()) {
+                            Text("Time after invocation")
+                                .tag(false)
+                            Text("Specific time")
+                                .tag(true)
+                        }
+                        .pickerStyle(SegmentedPickerStyle())
+                        .onChange(of: specificTime, perform: changeTimeType)
+                        
+                        if specificTime {
+                            DatePicker("Time", selection: $item.wrappedTime, displayedComponents: .hourAndMinute)
+                        } else {
+                            Button {
+                                withAnimation {
+                                    showingTimeOffset.toggle()
+                                    if showingTimeOffset {
+                                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) {
+                                            withAnimation {
+                                                proxy.scrollTo(0)
+                                            }
+                                        }
+                                    }
+                                }
+                            } label: {
+                                ZStack {
+                                    HStack {
+                                        if showingTimeOffset {
+                                            Spacer()
+                                        }
+                                        Text("Time offset")
+                                        Spacer()
+                                    }
+                                    HStack {
+                                        Spacer()
+                                        if !showingTimeOffset {
+                                            Text(timeOffsetText)
+                                                .foregroundColor(.primary)
+                                        }
+                                        Image(systemName: "chevron.forward")
+                                            .imageScale(.large)
+                                            .rotationEffect(showingTimeOffset ? .degrees(90) : .zero)
+                                    }
+                                }
+                            }
+                            
+                            if showingTimeOffset {
+                                TimePicker(hourSelection: $hourSelection, minuteSelection: $minuteSelection)
+                                    .onChange(of: hourSelection, perform: setTimeOffset)
+                                    .onChange(of: minuteSelection, perform: setTimeOffset)
+                            }
+                        }
+                        
                         HStack {
-                            TextWithCaption(text: "Day offset", caption: dateOffsetCaption())
+                            Text("Next due date")
                             Spacer()
-                            Text("\(item.dateOffset)")
+                            Text(checklistController.dateFormatter.string(from: item.nextDueDate))
+                                .fontWeight(.semibold)
                         }
-                    }
-                    
-                    DatePicker("Time", selection: $item.wrappedTime, displayedComponents: .hourAndMinute)
-                    
-                    HStack {
-                        Text("Next due date")
-                        Spacer()
-                        Text(checklistController.dateFormatter.string(from: item.nextDueDate))
-                            .fontWeight(.semibold)
+                        .id(0)
                     }
                 }
             }
@@ -69,18 +131,23 @@ struct ItemView: View {
         .navigationTitle("Item")
         .onAppear {
             due = item.due
+            specificTime = item.time != nil
+            if item.timeInterval > 1 {
+                hourSelection = Int(item.timeInterval / 3600)
+                minuteSelection = Int(item.timeInterval.truncatingRemainder(dividingBy: 3600) / 60)
+            }
         }
     }
     
-    func save() {
+    private func save() {
         PersistenceController.save(context: moc)
     }
     
-    func weekdays() -> [WeekDay] {
+    private func weekdays() -> [WeekDay] {
         IndexSet(1...7).compactMap { WeekDay.init(rawValue: ($0 + weekStartsOn - 2) % 7 + 1) }
     }
     
-    func dateOffsetCaption() -> String {
+    private func dateOffsetCaption() -> String {
         if let weekday = WeekDay(rawValue: Int(item.weekday))?.name() {
             switch item.dateOffset {
             case 0:
@@ -99,6 +166,30 @@ struct ItemView: View {
             default:
                 return "\(item.dateOffset) days after invocation"
             }
+        }
+    }
+    
+    private func setTimeOffset(_: Any? = nil) {
+        let hoursInSeconds = TimeInterval(hourSelection) * 3600
+        let minutesInSeconds = TimeInterval(minuteSelection) * 60
+        item.timeInterval = hoursInSeconds + minutesInSeconds
+    }
+    
+    private var timeOffsetText: String {
+        (hourSelection == 0 ? "" : "\(hourSelection) hour")
+            + (hourSelection > 1 ? "s" : "")
+            + (hourSelection == 0 || minuteSelection == 0 ? "" : ", ")
+            + (minuteSelection == 0 ? "" : "\(minuteSelection) minute")
+            + (minuteSelection > 1 ? "s" : "")
+    }
+    
+    private func changeTimeType(_: Any? = nil) {
+        if specificTime {
+            if item.time == nil {
+                item.time = item.wrappedTime
+            }
+        } else {
+            item.time = nil
         }
     }
 }

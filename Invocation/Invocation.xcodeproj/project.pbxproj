@@ -35,6 +35,7 @@
 		59C4AEB22550A15E00A4438A /* Invocation+Convenience.swift in Sources */ = {isa = PBXBuildFile; fileRef = 59C4AEB12550A15E00A4438A /* Invocation+Convenience.swift */; };
 		59DBA8112559DF0F00CCE185 /* TextEditorSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 59DBA8102559DF0F00CCE185 /* TextEditorSection.swift */; };
 		59DBA8192559E43B00CCE185 /* ChecklistLinkField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 59DBA8182559E43B00CCE185 /* ChecklistLinkField.swift */; };
+		59F79F1B255AF0BC00A930D5 /* TimePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 59F79F1A255AF0BC00A930D5 /* TimePicker.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -89,6 +90,7 @@
 		59C4AEB12550A15E00A4438A /* Invocation+Convenience.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Invocation+Convenience.swift"; sourceTree = "<group>"; };
 		59DBA8102559DF0F00CCE185 /* TextEditorSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextEditorSection.swift; sourceTree = "<group>"; };
 		59DBA8182559E43B00CCE185 /* ChecklistLinkField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChecklistLinkField.swift; sourceTree = "<group>"; };
+		59F79F1A255AF0BC00A930D5 /* TimePicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimePicker.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -234,6 +236,7 @@
 				59AA338E25538083009D3096 /* TextWithCaption.swift */,
 				59DBA8102559DF0F00CCE185 /* TextEditorSection.swift */,
 				59DBA8182559E43B00CCE185 /* ChecklistLinkField.swift */,
+				59F79F1A255AF0BC00A930D5 /* TimePicker.swift */,
 			);
 			path = "Supplementary Views";
 			sourceTree = "<group>";
@@ -383,6 +386,7 @@
 				59AA338F25538084009D3096 /* TextWithCaption.swift in Sources */,
 				59C4AEA72550885400A4438A /* ChecklistController.swift in Sources */,
 				59331B792559E78800F14270 /* TaskView.swift in Sources */,
+				59F79F1B255AF0BC00A930D5 /* TimePicker.swift in Sources */,
 				597C95E42554866C00A9A9D4 /* ObjectsContainer.swift in Sources */,
 				59AF3F472552163700F76C9D /* ProjectView.swift in Sources */,
 				59C00842254DDE5A00E33D98 /* Invocation+FetchRequest.swift in Sources */,
