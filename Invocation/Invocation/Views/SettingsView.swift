@@ -7,6 +7,7 @@
 
 import SwiftUI
 import SwiftDate
+import HorizontalReorder
 
 struct SettingsView: View {
     
@@ -21,13 +22,20 @@ struct SettingsView: View {
     @AppStorage(Defaults.projectSortAscending.rawValue) private var projectSortAscending: Bool = true
     @AppStorage(Defaults.projectSortEmptyFirst.rawValue) private var projectSortEmptyFirst: Bool = false
     @AppStorage(Defaults.weekStartsOn.rawValue) private var weekStartsOn: Int = 2
+    @AppStorage(Defaults.showYear.rawValue) private var showYear = true
+    @AppStorage(Defaults.showWeekday.rawValue) private var showWeekday = true
     
     @EnvironmentObject private var checklistController: ChecklistController
+    
+    private var dragObject = HorizontalDragObject(count: 3)
     
     //MARK: Body
     
     var body: some View {
         Form {
+            
+            //MARK: Preferences
+            
             Section(header: Text("Preferences")) {
                 Toggle(isOn: $projectNameFill) {
                     TextWithCaption(
@@ -35,6 +43,8 @@ struct SettingsView: View {
                         caption: "Copy a checklist's name to invocations")
                 }
             }
+            
+            //MARK: Sorting
             
             Section(header: Text("Invocation Sorting")) {
                 Picker("Sort by", selection: $projectSort) {
@@ -62,33 +72,41 @@ struct SettingsView: View {
                 }
             }
             
+            //MARK: Date format
+            
             Section(header: Text("Date Format")) {
-                Picker("Date style", selection: $dateStyle) {
-                    TextWithCaption(text: "Short", caption: dateFormatterShort.string(from: Date()))
-                    .tag(1)
-                    
-                    TextWithCaption(text: "Medium", caption: dateFormatterMedium.string(from: Date()))
-                    .tag(2)
-                    
-                    TextWithCaption(text: "Long", caption: dateFormatterLong.string(from: Date()))
-                    .tag(3)
+                HorizontalReorder(dragObject: dragObject) { index in
+                    ZStack {
+                        Color(.secondarySystemBackground)
+                        switch index {
+                        case 0: Text("Month")
+                        case 1: Text("Day")
+                        default:CheckboxView(title: "Year", checked: $showYear)
+                        }
+                    }
                 }
-                .onChange(of: dateStyle){ dateStyle in
-                    checklistController.setDateFormat(dateStyleInt: dateStyle, timeStyleInt: timeStyle)
-                }
+                .background(
+                    HStack {
+                        Spacer()
+                        Text("/")
+                            .foregroundColor(!showYear && dragObject.positions[2] == 0 ? .secondary : .primary)
+                        Spacer()
+                        Text("/")
+                            .foregroundColor(!showYear && 1...2 ~= dragObject.positions[2] ? .secondary : .primary)
+                        Spacer()
+                    }
+                )
                 
-                Picker("Time style", selection: $timeStyle) {
-                    TextWithCaption(text: "Short", caption: timeFormatterShort.string(from: Date()))
-                        .tag(1)
-                    
-                    TextWithCaption(text: "Medium", caption: timeFormatterMedium.string(from: Date()))
-                    .tag(2)
-                    
-                    TextWithCaption(text: "Long", caption: timeFormatterLong.string(from: Date()))
-                    .tag(3)
-                }
-                .onChange(of: timeStyle){ timeStyle in
-                    checklistController.setDateFormat(dateStyleInt: dateStyle, timeStyleInt: timeStyle)
+                HorizontalReorder(count: 3) { index in
+                    ZStack {
+                        Color(.secondarySystemBackground)
+                        switch index {
+                        case 0: CheckboxView(title: "Weekday", checked: $showWeekday)
+                            .minimumScaleFactor(0.5)
+                        case 1: Text("Date")
+                        default:Text("Time")
+                        }
+                    }
                 }
                 
                 Picker("Week starts on", selection: $weekStartsOn) {
@@ -99,10 +117,14 @@ struct SettingsView: View {
                 }
             }
             
+            //MARK: Show dates
+            
             Section(header: Text("Show dates"), footer: Text("Show dates of completed tasks")) {
                 Toggle("Invocations list", isOn: $showDateOnList)
                 Toggle("Invocation sheet", isOn: $showDateOnProject)
             }
+            
+            //MARK: Acknowledgements
             
             Section {
                 NavigationLink("Acknowledgements", destination: AcknowledgementsView())
@@ -177,6 +199,26 @@ struct SettingsView: View {
         return formatter
     }
     
+}
+
+private struct CheckboxView: View {
+    var title: String
+    @Binding var checked: Bool
+    
+    var body: some View {
+        HStack {
+            Text(title)
+                .foregroundColor(checked ? .primary : .secondary)
+            Image(systemName: checked ? "checkmark.square" : "square")
+                .imageScale(.large)
+                .foregroundColor(checked ? .accentColor : .secondary)
+        }
+        .onTapGesture {
+            withAnimation {
+                checked.toggle()
+            }
+        }
+    }
 }
 
 //MARK: Previews
