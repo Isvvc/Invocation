@@ -2,6 +2,15 @@
   "object": {
     "pins": [
       {
+        "package": "HorizontalReorder",
+        "repositoryURL": "https://github.com/Isvvc/HorizontalReorder.git",
+        "state": {
+          "branch": "main",
+          "revision": "e7bc9ade9e02fa7970973ed92670944eaef91323",
+          "version": null
+        }
+      },
+      {
         "package": "SwiftDate",
         "repositoryURL": "https://github.com/malcommac/SwiftDate.git",
         "state": {

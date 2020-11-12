@@ -33,6 +33,7 @@
 		59C4AEA72550885400A4438A /* ChecklistController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 59C4AEA62550885400A4438A /* ChecklistController.swift */; };
 		59C4AEAD25509F6A00A4438A /* ProjectsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 59C4AEAC25509F6900A4438A /* ProjectsView.swift */; };
 		59C4AEB22550A15E00A4438A /* Invocation+Convenience.swift in Sources */ = {isa = PBXBuildFile; fileRef = 59C4AEB12550A15E00A4438A /* Invocation+Convenience.swift */; };
+		59DA41E3255DC56B002CA13D /* HorizontalReorder in Frameworks */ = {isa = PBXBuildFile; productRef = 59DA41E2255DC56B002CA13D /* HorizontalReorder */; };
 		59DBA8112559DF0F00CCE185 /* TextEditorSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 59DBA8102559DF0F00CCE185 /* TextEditorSection.swift */; };
 		59DBA8192559E43B00CCE185 /* ChecklistLinkField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 59DBA8182559E43B00CCE185 /* ChecklistLinkField.swift */; };
 		59F79F1B255AF0BC00A930D5 /* TimePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 59F79F1A255AF0BC00A930D5 /* TimePicker.swift */; };
@@ -99,6 +100,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				5988B16D25573AC3008B9C91 /* SwiftDate in Frameworks */,
+				59DA41E3255DC56B002CA13D /* HorizontalReorder in Frameworks */,
 				5913C1F4254F439200A00F51 /* CloudKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -259,6 +261,7 @@
 			name = Invocation;
 			packageProductDependencies = (
 				5988B16C25573AC3008B9C91 /* SwiftDate */,
+				59DA41E2255DC56B002CA13D /* HorizontalReorder */,
 			);
 			productName = Invocation;
 			productReference = 5907F8CA254B3E9B00E3EF74 /* Invocation.app */;
@@ -333,6 +336,7 @@
 			mainGroup = 5907F8C1254B3E9A00E3EF74;
 			packageReferences = (
 				5988B16B25573AC3008B9C91 /* XCRemoteSwiftPackageReference "SwiftDate" */,
+				59DA41E1255DC56B002CA13D /* XCRemoteSwiftPackageReference "HorizontalReorder" */,
 			);
 			productRefGroup = 5907F8CB254B3E9B00E3EF74 /* Products */;
 			projectDirPath = "";
@@ -730,6 +734,14 @@
 				minimumVersion = 6.2.0;
 			};
 		};
+		59DA41E1255DC56B002CA13D /* XCRemoteSwiftPackageReference "HorizontalReorder" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/Isvvc/HorizontalReorder.git";
+			requirement = {
+				branch = main;
+				kind = branch;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -737,6 +749,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 5988B16B25573AC3008B9C91 /* XCRemoteSwiftPackageReference "SwiftDate" */;
 			productName = SwiftDate;
+		};
+		59DA41E2255DC56B002CA13D /* HorizontalReorder */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 59DA41E1255DC56B002CA13D /* XCRemoteSwiftPackageReference "HorizontalReorder" */;
+			productName = HorizontalReorder;
 		};
 /* End XCSwiftPackageProductDependency section */
 
