@@ -14,8 +14,6 @@ struct SettingsView: View {
     //MARK: Properties
     
     @AppStorage(Defaults.projectNameFill.rawValue) private var projectNameFill: Bool = false
-    @AppStorage(Defaults.dateStyle.rawValue) private var dateStyle: Int = 1
-    @AppStorage(Defaults.timeStyle.rawValue) private var timeStyle: Int = 1
     @AppStorage(Defaults.showDateOnList.rawValue) private var showDateOnList: Bool = true
     @AppStorage(Defaults.showDateOnProject.rawValue) private var showDateOnProject: Bool = true
     @AppStorage(Defaults.projectSort.rawValue) private var projectSort: Int = 0
@@ -31,6 +29,8 @@ struct SettingsView: View {
     
     private var dateDragObject = HorizontalDragObject(count: 3)
     private var dateTimeDragObject = HorizontalDragObject(count: 3)
+    
+    @State private var previewDate = Date()
     
     //MARK: Body
     
@@ -78,9 +78,10 @@ struct SettingsView: View {
             //MARK: Date format
             
             Section(header: Text("Date Format")) {
-                HorizontalReorder(dragObject: dateDragObject) { positions, _ in
-                    dateOrder = positions.encode()
-                    print("Date order: \(dateOrder)")
+                HorizontalReorder(dragObject: dateDragObject) { dragObject, _ in
+                    dateOrder = dragObject.encode()
+                    checklistController.setDateFormat(dragObject.positions)
+                    previewDate = Date()
                 } item: { index in
                     ZStack {
                         Color(.systemGroupedBackground)
@@ -105,10 +106,15 @@ struct SettingsView: View {
                 .onAppear {
                     dateDragObject.decode(lehmerCode: dateOrder)
                 }
+                .onChange(of: showYear) { value in
+                    checklistController.setShowYear(value)
+                    previewDate = Date()
+                }
                 
-                HorizontalReorder(dragObject: dateTimeDragObject) { positions, _ in
-                    dateTimeOrder = positions.encode()
-                    print("Date/time order: \(dateTimeOrder)")
+                HorizontalReorder(dragObject: dateTimeDragObject) { dragObject, _ in
+                    dateTimeOrder = dragObject.encode()
+                    checklistController.setDateTimeFormat(dragObject.positions)
+                    previewDate = Date()
                 } item: { index in
                     ZStack {
                         Color(.systemGroupedBackground)
@@ -131,6 +137,12 @@ struct SettingsView: View {
                 .onAppear {
                     dateTimeDragObject.decode(lehmerCode: dateTimeOrder)
                 }
+                .onChange(of: showWeekday) { value in
+                    checklistController.setShowWeekday(value)
+                    previewDate = Date()
+                }
+                
+                Text(checklistController.dateFormatter.string(from: previewDate))
             }
             
             //MARK: Show dates
@@ -168,53 +180,6 @@ struct SettingsView: View {
     
     private let weekDays: [WeekDay] = [.monday, .tuesday, .wednesday, .thursday, .friday, .saturday, .sunday]
     
-    //MARK: Date Formatters
-    
-    // I feel like I shoudln't have to do this but
-    // idk how else to get 6 different date formats.
-    
-    private var dateFormatterShort: DateFormatter {
-        let formatter = DateFormatter()
-        formatter.dateStyle = .short
-        formatter.timeStyle = .none
-        return formatter
-    }
-    
-    private var dateFormatterMedium: DateFormatter {
-        let formatter = DateFormatter()
-        formatter.dateStyle = .medium
-        formatter.timeStyle = .none
-        return formatter
-    }
-    
-    private var dateFormatterLong: DateFormatter {
-        let formatter = DateFormatter()
-        formatter.dateStyle = .long
-        formatter.timeStyle = .none
-        return formatter
-    }
-    
-    private var timeFormatterShort: DateFormatter {
-        let formatter = DateFormatter()
-        formatter.dateStyle = .none
-        formatter.timeStyle = .short
-        return formatter
-    }
-    
-    private var timeFormatterMedium: DateFormatter {
-        let formatter = DateFormatter()
-        formatter.dateStyle = .none
-        formatter.timeStyle = .medium
-        return formatter
-    }
-    
-    private var timeFormatterLong: DateFormatter {
-        let formatter = DateFormatter()
-        formatter.dateStyle = .none
-        formatter.timeStyle = .long
-        return formatter
-    }
-    
 }
 
 private struct CheckboxView: View {
@@ -243,7 +208,7 @@ struct SettingsView_Previews: PreviewProvider {
     static var previews: some View {
         NavigationView {
             SettingsView()
-                .previewDevice("iPhone 6S")
+                .environmentObject(ChecklistController())
         }
     }
 }

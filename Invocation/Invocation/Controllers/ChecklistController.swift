@@ -6,36 +6,82 @@
 //
 
 import Foundation
+import HorizontalReorder
 
 class ChecklistController: ObservableObject {
     
     var dateFormatter: DateFormatter
     
+    private(set) var dateTimeFormat: [Int]
+    private(set) var dateFormat: [Int]
+    private(set) var showYear: Bool
+    private(set) var showWeekday: Bool
+    
     init() {
-        var dateStyle = UserDefaults.standard.integer(forKey: Defaults.dateStyle.rawValue)
-        var timeStyle = UserDefaults.standard.integer(forKey: Defaults.timeStyle.rawValue)
+        UserDefaults.standard.register(defaults: [
+            Defaults.showYear.rawValue: true,
+            Defaults.showWeekday.rawValue: true
+        ])
         
-        // Style 0 is none (and the default value when installing the app).
-        // We want there to be a date and time, so set them to short by default.
-        if dateStyle == 0 {
-            dateStyle = 1
-            UserDefaults.standard.set(1, forKey: Defaults.dateStyle.rawValue)
-        }
-        if timeStyle == 0 {
-            timeStyle = 1
-            UserDefaults.standard.set(1, forKey: Defaults.timeStyle.rawValue)
-        }
+        showYear = UserDefaults.standard.bool(forKey: Defaults.showYear.rawValue)
+        showWeekday = UserDefaults.standard.bool(forKey: Defaults.showWeekday.rawValue)
+        
+        let dateTimeFormatCode = UserDefaults.standard.integer(forKey: Defaults.dateTimeOrder.rawValue)
+        let dateFormatCode = UserDefaults.standard.integer(forKey: Defaults.dateOrder.rawValue)
+        
+        dateTimeFormat = HorizontalDragObject.decode(lehmerCode: dateTimeFormatCode, length: 3)
+        dateFormat = HorizontalDragObject.decode(lehmerCode: dateFormatCode, length: 3)
         
         dateFormatter = DateFormatter()
-        setDateFormat(dateStyleInt: dateStyle, timeStyleInt: timeStyle)
+        setFormat()
     }
     
-    func setDateFormat(dateStyleInt: Int, timeStyleInt: Int) {
-        let dateStyle = DateFormatter.Style(rawValue: UInt(dateStyleInt)) ?? .short
-        let timeStyle = DateFormatter.Style(rawValue: UInt(timeStyleInt)) ?? .short
+    func setFormat() {
+        var dateFormatStrings: [String?] = dateFormat.map {_ in ""}
+        for (index, position) in dateFormat.enumerated() {
+            switch index {
+            case 0:
+                dateFormatStrings[position] = "MM"
+            case 1:
+                dateFormatStrings[position] = "dd"
+            default:
+                dateFormatStrings[position] = showYear ? "yyyy" : nil
+            }
+        }
         
-        dateFormatter.dateStyle = dateStyle
-        dateFormatter.timeStyle = timeStyle
+        var dateTimeFormatStrings: [String?] = dateTimeFormat.map {_ in ""}
+        for (index, position) in dateTimeFormat.enumerated() {
+            switch index {
+            case 0:
+                dateTimeFormatStrings[position] = showWeekday ? "E" : nil
+            case 1:
+                dateTimeFormatStrings[position] = dateFormatStrings.compactMap { $0 }.joined(separator: "/")
+            default:
+                dateTimeFormatStrings[position] = "HH:mm"
+            }
+        }
+        
+        dateFormatter.dateFormat = dateTimeFormatStrings.compactMap { $0 }.joined(separator: ", ")
+    }
+    
+    func setDateFormat(_ permutation: [Int]) {
+        dateFormat = permutation
+        setFormat()
+    }
+    
+    func setDateTimeFormat(_ permutation: [Int]) {
+        dateTimeFormat = permutation
+        setFormat()
+    }
+    
+    func setShowYear(_ show: Bool) {
+        showYear = show
+        setFormat()
+    }
+    
+    func setShowWeekday(_ show: Bool) {
+        showWeekday = show
+        setFormat()
     }
     
     /// Sets a URL's protocol to HTTPS.
