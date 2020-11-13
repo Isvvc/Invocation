@@ -57,12 +57,10 @@ class ChecklistController: ObservableObject {
             }
         }
         
+        // Add a comma before the year
         if monthFormat >= 2 {
-            // Add a comma around the year
             if dateFormatStrings.first == "yyyy" {
                 dateFormatStrings[0]?.append(",")
-            } else if dateFormatStrings.last == "yyyy" {
-                dateFormatStrings[dateFormatStrings.count - 2]?.append(",")
             }
         }
         
@@ -78,7 +76,13 @@ class ChecklistController: ObservableObject {
             }
         }
         
-        dateFormatter.dateFormat = dateTimeFormatStrings.compactMap { $0 }.joined(separator: ", ")
+        // Add a comma after the weekday
+        if let index = dateTimeFormatStrings.firstIndex(of: "E"),
+           index < 2 {
+            dateTimeFormatStrings[index]?.append(",")
+        }
+        
+        dateFormatter.dateFormat = dateTimeFormatStrings.compactMap { $0 }.joined(separator: " ")
         datePreview = dateFormatter.string(from: Date())
     }
     
