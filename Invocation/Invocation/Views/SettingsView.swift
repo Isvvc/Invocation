@@ -89,6 +89,7 @@ struct SettingsView: View {
                         case 0: Text("Month")
                         case 1: Text("Day")
                         default:CheckboxView(title: "Year", checked: $showYear)
+                            .imageScale(.large)
                         }
                     }
                 }
@@ -119,9 +120,9 @@ struct SettingsView: View {
                     ZStack {
                         Color(.systemGroupedBackground)
                         switch index {
-                        case 0: CheckboxView(title: "Weekday", checked: $showWeekday)
+                        case 0: CheckboxView(title: "Weekday", spacing: 0, checked: $showWeekday)
                             .minimumScaleFactor(0.5)
-                            //TODO: Also scale the checkbox
+                            .padding(4)
                         case 1: Text("Date")
                         default:Text("Time")
                         }
@@ -182,16 +183,18 @@ struct SettingsView: View {
     
 }
 
+//MARK: Checkbox view
+
 private struct CheckboxView: View {
     var title: String
+    var spacing: CGFloat?
     @Binding var checked: Bool
     
     var body: some View {
-        HStack {
+        HStack(spacing: spacing) {
             Text(title)
                 .foregroundColor(checked ? .primary : .secondary)
             Image(systemName: checked ? "checkmark.square" : "square")
-                .imageScale(.large)
                 .foregroundColor(checked ? .accentColor : .secondary)
         }
         .onTapGesture {
