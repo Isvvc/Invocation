@@ -84,7 +84,13 @@ struct SettingsView: View {
                     checklistController.setDateFormat(dragObject.positions)
                 } item: { index in
                     ZStack {
-                        Color(.systemGroupedBackground)
+                        // Tertiary system fill is the the background of the
+                        // segmented picker below, but it is translucent.
+                        // Secondary system grouped background is the
+                        // background of the list cells, so placing it
+                        // behind the system fill makes the item opaque.
+                        Color(.secondarySystemGroupedBackground)
+                        Color(.tertiarySystemFill)
                         switch index {
                         case 0: Text("Month")
                         case 1: Text("Day")
@@ -138,7 +144,8 @@ struct SettingsView: View {
                     checklistController.setDateTimeFormat(dragObject.positions)
                 } item: { index in
                     ZStack {
-                        Color(.systemGroupedBackground)
+                        Color(.secondarySystemGroupedBackground)
+                        Color(.tertiarySystemFill)
                         switch index {
                         case 0: CheckboxView(title: "Weekday", spacing: 2, checked: $showWeekday)
                             .minimumScaleFactor(0.5)
