@@ -12,19 +12,24 @@ class ChecklistController: ObservableObject {
     
     var dateFormatter: DateFormatter
     
+    @Published var datePreview: String
+    
     private(set) var dateTimeFormat: [Int]
     private(set) var dateFormat: [Int]
     private(set) var showYear: Bool
     private(set) var showWeekday: Bool
+    private(set) var dateSeparator: String
     
     init() {
         UserDefaults.standard.register(defaults: [
             Defaults.showYear.rawValue: true,
-            Defaults.showWeekday.rawValue: true
+            Defaults.showWeekday.rawValue: true,
+            Defaults.dateSeparator.rawValue: "/"
         ])
         
         showYear = UserDefaults.standard.bool(forKey: Defaults.showYear.rawValue)
         showWeekday = UserDefaults.standard.bool(forKey: Defaults.showWeekday.rawValue)
+        dateSeparator = UserDefaults.standard.string(forKey: Defaults.dateSeparator.rawValue) ?? "/"
         
         let dateTimeFormatCode = UserDefaults.standard.integer(forKey: Defaults.dateTimeOrder.rawValue)
         let dateFormatCode = UserDefaults.standard.integer(forKey: Defaults.dateOrder.rawValue)
@@ -33,6 +38,7 @@ class ChecklistController: ObservableObject {
         dateFormat = HorizontalDragObject.decode(lehmerCode: dateFormatCode, length: 3)
         
         dateFormatter = DateFormatter()
+        datePreview = ""
         setFormat()
     }
     
@@ -55,13 +61,14 @@ class ChecklistController: ObservableObject {
             case 0:
                 dateTimeFormatStrings[position] = showWeekday ? "E" : nil
             case 1:
-                dateTimeFormatStrings[position] = dateFormatStrings.compactMap { $0 }.joined(separator: "/")
+                dateTimeFormatStrings[position] = dateFormatStrings.compactMap { $0 }.joined(separator: dateSeparator)
             default:
                 dateTimeFormatStrings[position] = "HH:mm"
             }
         }
         
         dateFormatter.dateFormat = dateTimeFormatStrings.compactMap { $0 }.joined(separator: ", ")
+        datePreview = dateFormatter.string(from: Date())
     }
     
     func setDateFormat(_ permutation: [Int]) {
@@ -81,6 +88,11 @@ class ChecklistController: ObservableObject {
     
     func setShowWeekday(_ show: Bool) {
         showWeekday = show
+        setFormat()
+    }
+    
+    func setDateSeparator(_ separator: String) {
+        dateSeparator = separator
         setFormat()
     }
     

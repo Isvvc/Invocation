@@ -31,9 +31,7 @@ struct SettingsView: View {
     
     private var dateDragObject = HorizontalDragObject(count: 3)
     private var dateTimeDragObject = HorizontalDragObject(count: 3)
-    
-    @State private var previewDate = Date()
-    
+        
     //MARK: Body
     
     var body: some View {
@@ -83,7 +81,6 @@ struct SettingsView: View {
                 HorizontalReorder(dragObject: dateDragObject) { dragObject, _ in
                     dateOrder = dragObject.encode()
                     checklistController.setDateFormat(dragObject.positions)
-                    previewDate = Date()
                 } item: { index in
                     ZStack {
                         Color(.systemGroupedBackground)
@@ -111,17 +108,15 @@ struct SettingsView: View {
                 }
                 .onChange(of: showYear) { value in
                     checklistController.setShowYear(value)
-                    previewDate = Date()
                 }
                 
                 StringPicker(title: "Separator", strings: ["/", ".", "-"], customLimit: 3, selection: $dateSeparator) { seletion in
-                    
+                    checklistController.setDateSeparator(seletion)
                 }
                 
                 HorizontalReorder(dragObject: dateTimeDragObject) { dragObject, _ in
                     dateTimeOrder = dragObject.encode()
                     checklistController.setDateTimeFormat(dragObject.positions)
-                    previewDate = Date()
                 } item: { index in
                     ZStack {
                         Color(.systemGroupedBackground)
@@ -146,10 +141,9 @@ struct SettingsView: View {
                 }
                 .onChange(of: showWeekday) { value in
                     checklistController.setShowWeekday(value)
-                    previewDate = Date()
                 }
                 
-                Text(checklistController.dateFormatter.string(from: previewDate))
+                Text(checklistController.datePreview)
             }
             
             //MARK: Show dates
