@@ -24,6 +24,8 @@ struct SettingsView: View {
     @AppStorage(Defaults.dateTimeOrder.rawValue) private var dateTimeOrder: Int = 0
     @AppStorage(Defaults.showYear.rawValue) private var showYear = true
     @AppStorage(Defaults.showWeekday.rawValue) private var showWeekday = true
+    @AppStorage(Defaults.dateSeparator.rawValue) private var dateSeparator = "/"
+    @AppStorage(Defaults.dateTimeSeparator.rawValue) private var dateTimeSeparator = " "
     
     @EnvironmentObject private var checklistController: ChecklistController
     
@@ -112,6 +114,10 @@ struct SettingsView: View {
                     previewDate = Date()
                 }
                 
+                StringPicker(title: "Separator", strings: ["/", ".", "-"], customLimit: 3, selection: $dateSeparator) { seletion in
+                    
+                }
+                
                 HorizontalReorder(dragObject: dateTimeDragObject) { dragObject, _ in
                     dateTimeOrder = dragObject.encode()
                     checklistController.setDateTimeFormat(dragObject.positions)
@@ -120,7 +126,7 @@ struct SettingsView: View {
                     ZStack {
                         Color(.systemGroupedBackground)
                         switch index {
-                        case 0: CheckboxView(title: "Weekday", spacing: 0, checked: $showWeekday)
+                        case 0: CheckboxView(title: "Weekday", spacing: 2, checked: $showWeekday)
                             .minimumScaleFactor(0.5)
                             .padding(4)
                         case 1: Text("Date")

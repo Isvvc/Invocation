@@ -19,4 +19,6 @@ enum Defaults: String {
     case dateTimeOrder
     case showYear
     case showWeekday
+    case dateSeparator
+    case dateTimeSeparator
 }
