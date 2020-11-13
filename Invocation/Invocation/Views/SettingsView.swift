@@ -94,11 +94,12 @@ struct SettingsView: View {
                 }
                 .background(
                     HStack {
+                        let separator = dateSeparator.count == 1 ? dateSeparator : " "
                         Spacer()
-                        Text("/")
+                        Text(separator)
                             .foregroundColor(!showYear && dateDragObject.positions[2] == 0 ? .secondary : .primary)
                         Spacer()
-                        Text("/")
+                        Text(separator)
                             .foregroundColor(!showYear && 1...2 ~= dateDragObject.positions[2] ? .secondary : .primary)
                         Spacer()
                     }
