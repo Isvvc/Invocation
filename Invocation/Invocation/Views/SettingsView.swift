@@ -24,6 +24,7 @@ struct SettingsView: View {
     @AppStorage(Defaults.dateTimeOrder.rawValue) private var dateTimeOrder: Int = 0
     @AppStorage(Defaults.showYear.rawValue) private var showYear = true
     @AppStorage(Defaults.showWeekday.rawValue) private var showWeekday = true
+    @AppStorage(Defaults.monthFormat.rawValue) private var monthFormat: Int = 0
     @AppStorage(Defaults.dateSeparator.rawValue) private var dateSeparator = "/"
     @AppStorage(Defaults.dateTimeSeparator.rawValue) private var dateTimeSeparator = " "
     
@@ -94,7 +95,7 @@ struct SettingsView: View {
                 }
                 .background(
                     HStack {
-                        let separator = dateSeparator.count == 1 ? dateSeparator : " "
+                        let separator = monthFormat < 2 && dateSeparator.count == 1 ? dateSeparator : " "
                         Spacer()
                         Text(separator)
                             .foregroundColor(!showYear && dateDragObject.positions[2] == 0 ? .secondary : .primary)
@@ -111,8 +112,25 @@ struct SettingsView: View {
                     checklistController.setShowYear(value)
                 }
                 
-                StringPicker(title: "Separator", strings: ["/", ".", "-"], customLimit: 3, selection: $dateSeparator) { seletion in
-                    checklistController.setDateSeparator(seletion)
+                Picker("Month", selection: $monthFormat.animation()) {
+                    Text("1")
+                        .tag(0)
+                    Text("01")
+                        .tag(1)
+                    Text("Jan")
+                        .tag(2)
+                    Text("January")
+                        .tag(3)
+                }
+                .pickerStyle(SegmentedPickerStyle())
+                .onChange(of: monthFormat) { value in
+                    checklistController.setMonthFormat(value)
+                }
+                
+                if monthFormat < 2 {
+                    StringPicker(title: "Separator", strings: ["/", ".", "-"], customLimit: 3, selection: $dateSeparator) { seletion in
+                        checklistController.setDateSeparator(seletion)
+                    }
                 }
                 
                 HorizontalReorder(dragObject: dateTimeDragObject) { dragObject, _ in

@@ -18,6 +18,7 @@ class ChecklistController: ObservableObject {
     private(set) var dateFormat: [Int]
     private(set) var showYear: Bool
     private(set) var showWeekday: Bool
+    private(set) var monthFormat: Int
     private(set) var dateSeparator: String
     
     init() {
@@ -29,6 +30,7 @@ class ChecklistController: ObservableObject {
         
         showYear = UserDefaults.standard.bool(forKey: Defaults.showYear.rawValue)
         showWeekday = UserDefaults.standard.bool(forKey: Defaults.showWeekday.rawValue)
+        monthFormat = UserDefaults.standard.integer(forKey: Defaults.monthFormat.rawValue)
         dateSeparator = UserDefaults.standard.string(forKey: Defaults.dateSeparator.rawValue) ?? "/"
         
         let dateTimeFormatCode = UserDefaults.standard.integer(forKey: Defaults.dateTimeOrder.rawValue)
@@ -47,7 +49,7 @@ class ChecklistController: ObservableObject {
         for (index, position) in dateFormat.enumerated() {
             switch index {
             case 0:
-                dateFormatStrings[position] = "MM"
+                dateFormatStrings[position] = String(repeating: "M", count: monthFormat + 1)
             case 1:
                 dateFormatStrings[position] = "dd"
             default:
@@ -61,7 +63,7 @@ class ChecklistController: ObservableObject {
             case 0:
                 dateTimeFormatStrings[position] = showWeekday ? "E" : nil
             case 1:
-                dateTimeFormatStrings[position] = dateFormatStrings.compactMap { $0 }.joined(separator: dateSeparator)
+                dateTimeFormatStrings[position] = dateFormatStrings.compactMap { $0 }.joined(separator: monthFormat < 2 ? dateSeparator : " ")
             default:
                 dateTimeFormatStrings[position] = "HH:mm"
             }
@@ -93,6 +95,11 @@ class ChecklistController: ObservableObject {
     
     func setDateSeparator(_ separator: String) {
         dateSeparator = separator
+        setFormat()
+    }
+    
+    func setMonthFormat(_ format: Int) {
+        monthFormat = format
         setFormat()
     }
     
