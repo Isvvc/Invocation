@@ -57,6 +57,15 @@ class ChecklistController: ObservableObject {
             }
         }
         
+        if monthFormat >= 2 {
+            // Add a comma around the year
+            if dateFormatStrings.first == "yyyy" {
+                dateFormatStrings[0]?.append(",")
+            } else if dateFormatStrings.last == "yyyy" {
+                dateFormatStrings[dateFormatStrings.count - 2]?.append(",")
+            }
+        }
+        
         var dateTimeFormatStrings: [String?] = dateTimeFormat.map {_ in ""}
         for (index, position) in dateTimeFormat.enumerated() {
             switch index {
