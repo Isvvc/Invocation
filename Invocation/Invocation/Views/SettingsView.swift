@@ -22,12 +22,15 @@ struct SettingsView: View {
     @AppStorage(Defaults.projectSortAscending.rawValue) private var projectSortAscending: Bool = true
     @AppStorage(Defaults.projectSortEmptyFirst.rawValue) private var projectSortEmptyFirst: Bool = false
     @AppStorage(Defaults.weekStartsOn.rawValue) private var weekStartsOn: Int = 2
+    @AppStorage(Defaults.dateOrder.rawValue) private var dateOrder: Int = 0
+    @AppStorage(Defaults.dateTimeOrder.rawValue) private var dateTimeOrder: Int = 0
     @AppStorage(Defaults.showYear.rawValue) private var showYear = true
     @AppStorage(Defaults.showWeekday.rawValue) private var showWeekday = true
     
     @EnvironmentObject private var checklistController: ChecklistController
     
-    private var dragObject = HorizontalDragObject(count: 3)
+    private var dateDragObject = HorizontalDragObject(count: 3)
+    private var dateTimeDragObject = HorizontalDragObject(count: 3)
     
     //MARK: Body
     
@@ -75,9 +78,12 @@ struct SettingsView: View {
             //MARK: Date format
             
             Section(header: Text("Date Format")) {
-                HorizontalReorder(dragObject: dragObject) { index in
+                HorizontalReorder(dragObject: dateDragObject) { positions, _ in
+                    dateOrder = positions.encode()
+                    print("Date order: \(dateOrder)")
+                } item: { index in
                     ZStack {
-                        Color(.secondarySystemBackground)
+                        Color(.systemGroupedBackground)
                         switch index {
                         case 0: Text("Month")
                         case 1: Text("Day")
@@ -89,20 +95,27 @@ struct SettingsView: View {
                     HStack {
                         Spacer()
                         Text("/")
-                            .foregroundColor(!showYear && dragObject.positions[2] == 0 ? .secondary : .primary)
+                            .foregroundColor(!showYear && dateDragObject.positions[2] == 0 ? .secondary : .primary)
                         Spacer()
                         Text("/")
-                            .foregroundColor(!showYear && 1...2 ~= dragObject.positions[2] ? .secondary : .primary)
+                            .foregroundColor(!showYear && 1...2 ~= dateDragObject.positions[2] ? .secondary : .primary)
                         Spacer()
                     }
                 )
+                .onAppear {
+                    dateDragObject.decode(lehmerCode: dateOrder)
+                }
                 
-                HorizontalReorder(count: 3) { index in
+                HorizontalReorder(dragObject: dateTimeDragObject) { positions, _ in
+                    dateTimeOrder = positions.encode()
+                    print("Date/time order: \(dateTimeOrder)")
+                } item: { index in
                     ZStack {
-                        Color(.secondarySystemBackground)
+                        Color(.systemGroupedBackground)
                         switch index {
                         case 0: CheckboxView(title: "Weekday", checked: $showWeekday)
                             .minimumScaleFactor(0.5)
+                            //TODO: Also scale the checkbox
                         case 1: Text("Date")
                         default:Text("Time")
                         }
@@ -114,6 +127,9 @@ struct SettingsView: View {
                         Text(weekday.name())
                             .tag(weekday.rawValue)
                     }
+                }
+                .onAppear {
+                    dateTimeDragObject.decode(lehmerCode: dateTimeOrder)
                 }
             }
             
