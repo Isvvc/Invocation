@@ -70,7 +70,7 @@ class ChecklistController: ObservableObject {
             case 0:
                 dateTimeFormatStrings[position] = showWeekday ? "E" : nil
             case 1:
-                dateTimeFormatStrings[position] = dateFormatStrings.compactMap { $0 }.joined(separator: monthFormat < 2 ? dateSeparator : " ")
+                dateTimeFormatStrings[position] = dateFormatStrings.compactMap { $0 }.joined(separator: monthFormat < 2 ? "'\(dateSeparator)'" : " ")
             default:
                 dateTimeFormatStrings[position] = "HH:mm"
             }
