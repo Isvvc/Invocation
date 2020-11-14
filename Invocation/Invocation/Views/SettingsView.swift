@@ -20,6 +20,8 @@ struct SettingsView: View {
     @AppStorage(Defaults.projectSortAscending.rawValue) private var projectSortAscending: Bool = true
     @AppStorage(Defaults.projectSortEmptyFirst.rawValue) private var projectSortEmptyFirst: Bool = false
     @AppStorage(Defaults.weekStartsOn.rawValue) private var weekStartsOn: Int = 2
+    @AppStorage(Defaults.advancedDateFormat.rawValue) private var advancedDateFormat: Bool = false
+    @AppStorage(Defaults.dateStyle.rawValue) private var dateStyle: Int = 1
     @AppStorage(Defaults.dateOrder.rawValue) private var dateOrder: Int = 0
     @AppStorage(Defaults.dateTimeOrder.rawValue) private var dateTimeOrder: Int = 0
     @AppStorage(Defaults.showYear.rawValue) private var showYear = true
@@ -32,7 +34,7 @@ struct SettingsView: View {
     
     private var dateDragObject = HorizontalDragObject(count: 3)
     private var dateTimeDragObject = HorizontalDragObject(count: 3)
-        
+    
     //MARK: Body
     
     var body: some View {
@@ -79,94 +81,110 @@ struct SettingsView: View {
             //MARK: Date format
             
             Section(header: Text("Date Format")) {
-                HorizontalReorder(dragObject: dateDragObject) { dragObject, _ in
-                    dateOrder = dragObject.encode()
-                    checklistController.setDateFormat(dragObject.positions)
-                } item: { index in
-                    ZStack {
-                        // Tertiary system fill is the the background of the
-                        // segmented picker below, but it is translucent.
-                        // Secondary system grouped background is the
-                        // background of the list cells, so placing it
-                        // behind the system fill makes the item opaque.
-                        Color(.secondarySystemGroupedBackground)
-                        Color(.tertiarySystemFill)
-                        switch index {
-                        case 0: Text("Month")
-                        case 1: Text("Day")
-                        default:CheckboxView(title: "Year", checked: $showYear)
-                            .imageScale(.large)
-                        }
-                    }
-                }
-                .background(
-                    HStack {
-                        let separator = monthFormat < 2 && dateSeparator.count == 1 ? dateSeparator : " "
-                        Spacer()
-                        Text(separator)
-                            .foregroundColor(!showYear && dateDragObject.positions[2] == 0 ? .secondary : .primary)
-                        Spacer()
-                        Text(separator)
-                            .foregroundColor(!showYear && 1...2 ~= dateDragObject.positions[2] ? .secondary : .primary)
-                        Spacer()
-                    }
-                )
-                .onAppear {
-                    dateDragObject.decode(lehmerCode: dateOrder)
-                }
-                .onChange(of: showYear) { value in
-                    checklistController.setShowYear(value)
-                }
-                
-                Picker("Month", selection: $monthFormat.animation()) {
-                    Text("1")
-                        .tag(0)
-                    Text("01")
+                if !advancedDateFormat {
+                    Picker("Date style", selection: $dateStyle) {
+                        TextWithCaption(text: "Short", caption: dateFormatterShort.string(from: Date()))
                         .tag(1)
-                    Text("Jan")
+                        
+                        TextWithCaption(text: "Medium", caption: dateFormatterMedium.string(from: Date()))
                         .tag(2)
-                    Text("January")
+                        
+                        TextWithCaption(text: "Long", caption: dateFormatterLong.string(from: Date()))
                         .tag(3)
-                }
-                .pickerStyle(SegmentedPickerStyle())
-                .onChange(of: monthFormat) { value in
-                    checklistController.setMonthFormat(value)
-                }
-                
-                if monthFormat < 2 {
-                    StringPicker(title: "Separator", strings: ["/", ".", "-"], customLimit: 3, selection: $dateSeparator) { seletion in
-                        checklistController.setDateSeparator(seletion)
+                        
+                        TextWithCaption(text: "Full", caption: dateFormatterFull.string(from: Date()))
+                        .tag(4)
                     }
+                    .onChange(of: dateStyle, perform: checklistController.setDateStyle)
                 }
                 
-                HorizontalReorder(dragObject: dateTimeDragObject) { dragObject, _ in
-                    dateTimeOrder = dragObject.encode()
-                    checklistController.setDateTimeFormat(dragObject.positions)
-                } item: { index in
-                    ZStack {
-                        Color(.secondarySystemGroupedBackground)
-                        Color(.tertiarySystemFill)
-                        switch index {
-                        case 0: CheckboxView(title: "Weekday", spacing: 2, checked: $showWeekday)
-                            .minimumScaleFactor(0.5)
-                            .padding(4)
-                        case 1: Text("Date")
-                        default:Text("Time")
+                Toggle("Show advanced options", isOn: $advancedDateFormat.animation())
+                    .onChange(of: advancedDateFormat, perform: checklistController.setAdvancedFormat)
+                
+                if advancedDateFormat {
+                    HorizontalReorder(dragObject: dateDragObject) { dragObject, _ in
+                        dateOrder = dragObject.encode()
+                        checklistController.setDateFormat(dragObject.positions)
+                    } item: { index in
+                        ZStack {
+                            // Tertiary system fill is the the background of the
+                            // segmented picker below, but it is translucent.
+                            // Secondary system grouped background is the
+                            // background of the list cells, so placing it
+                            // behind the system fill makes the item opaque.
+                            Color(.secondarySystemGroupedBackground)
+                            Color(.tertiarySystemFill)
+                            switch index {
+                            case 0: Text("Month")
+                            case 1: Text("Day")
+                            default:CheckboxView(title: "Year", checked: $showYear)
+                                .imageScale(.large)
+                            }
                         }
                     }
-                }
-                
-                Picker("Week starts on", selection: $weekStartsOn) {
-                    ForEach(weekDays, id: \.self) { weekday in
-                        Text(weekday.name())
-                            .tag(weekday.rawValue)
+                    .background(
+                        HStack {
+                            let separator = monthFormat < 2 && dateSeparator.count == 1 ? dateSeparator : " "
+                            Spacer()
+                            Text(separator)
+                                .foregroundColor(!showYear && dateDragObject.positions[2] == 0 ? .secondary : .primary)
+                            Spacer()
+                            Text(separator)
+                                .foregroundColor(!showYear && 1...2 ~= dateDragObject.positions[2] ? .secondary : .primary)
+                            Spacer()
+                        }
+                    )
+                    .onAppear {
+                        dateDragObject.decode(lehmerCode: dateOrder)
                     }
-                }
-                .onAppear {
-                    dateTimeDragObject.decode(lehmerCode: dateTimeOrder)
-                }
-                .onChange(of: showWeekday) { value in
-                    checklistController.setShowWeekday(value)
+                    .onChange(of: showYear, perform: checklistController.setShowYear)
+                    
+                    Picker("Month", selection: $monthFormat.animation()) {
+                        Text("1")
+                            .tag(0)
+                        Text("01")
+                            .tag(1)
+                        Text("Jan")
+                            .tag(2)
+                        Text("January")
+                            .tag(3)
+                    }
+                    .pickerStyle(SegmentedPickerStyle())
+                    .onChange(of: monthFormat, perform: checklistController.setMonthFormat)
+                    
+                    if monthFormat < 2 {
+                        StringPicker(title: "Separator", strings: ["/", ".", "-"], customLimit: 3, selection: $dateSeparator) { seletion in
+                            checklistController.setDateSeparator(seletion)
+                        }
+                    }
+                    
+                    HorizontalReorder(dragObject: dateTimeDragObject) { dragObject, _ in
+                        dateTimeOrder = dragObject.encode()
+                        checklistController.setDateTimeFormat(dragObject.positions)
+                    } item: { index in
+                        ZStack {
+                            Color(.secondarySystemGroupedBackground)
+                            Color(.tertiarySystemFill)
+                            switch index {
+                            case 0: CheckboxView(title: "Weekday", spacing: 2, checked: $showWeekday)
+                                .minimumScaleFactor(0.5)
+                                .padding(4)
+                            case 1: Text("Date")
+                            default:Text("Time")
+                            }
+                        }
+                    }
+                    
+                    Picker("Week starts on", selection: $weekStartsOn) {
+                        ForEach(weekDays, id: \.self) { weekday in
+                            Text(weekday.name())
+                                .tag(weekday.rawValue)
+                        }
+                    }
+                    .onAppear {
+                        dateTimeDragObject.decode(lehmerCode: dateTimeOrder)
+                    }
+                    .onChange(of: showWeekday, perform: checklistController.setShowWeekday)
                 }
                 
                 Text(checklistController.datePreview)
@@ -206,6 +224,36 @@ struct SettingsView: View {
     ]
     
     private let weekDays: [WeekDay] = [.monday, .tuesday, .wednesday, .thursday, .friday, .saturday, .sunday]
+    
+    //MARK: Date Formatters
+    
+    private var dateFormatterShort: DateFormatter {
+        let formatter = DateFormatter()
+        formatter.dateStyle = .short
+        formatter.timeStyle = .none
+        return formatter
+    }
+    
+    private var dateFormatterMedium: DateFormatter {
+        let formatter = DateFormatter()
+        formatter.dateStyle = .medium
+        formatter.timeStyle = .none
+        return formatter
+    }
+    
+    private var dateFormatterLong: DateFormatter {
+        let formatter = DateFormatter()
+        formatter.dateStyle = .long
+        formatter.timeStyle = .none
+        return formatter
+    }
+    
+    private var dateFormatterFull: DateFormatter {
+        let formatter = DateFormatter()
+        formatter.dateStyle = .full
+        formatter.timeStyle = .none
+        return formatter
+    }
     
 }
 

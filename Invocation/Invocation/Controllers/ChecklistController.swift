@@ -14,6 +14,8 @@ class ChecklistController: ObservableObject {
     
     @Published var datePreview: String
     
+    private(set) var advancedDateFormat: Bool
+    private(set) var dateStyle: Int
     private(set) var dateTimeFormat: [Int]
     private(set) var dateFormat: [Int]
     private(set) var showYear: Bool
@@ -25,9 +27,12 @@ class ChecklistController: ObservableObject {
         UserDefaults.standard.register(defaults: [
             Defaults.showYear.rawValue: true,
             Defaults.showWeekday.rawValue: true,
-            Defaults.dateSeparator.rawValue: "/"
+            Defaults.dateSeparator.rawValue: "/",
+            Defaults.dateStyle.rawValue: 1
         ])
         
+        advancedDateFormat = UserDefaults.standard.bool(forKey: Defaults.advancedDateFormat.rawValue)
+        dateStyle = UserDefaults.standard.integer(forKey: Defaults.dateStyle.rawValue)
         showYear = UserDefaults.standard.bool(forKey: Defaults.showYear.rawValue)
         showWeekday = UserDefaults.standard.bool(forKey: Defaults.showWeekday.rawValue)
         monthFormat = UserDefaults.standard.integer(forKey: Defaults.monthFormat.rawValue)
@@ -45,45 +50,62 @@ class ChecklistController: ObservableObject {
     }
     
     func setFormat() {
-        var dateFormatStrings: [String?] = dateFormat.map {_ in ""}
-        for (index, position) in dateFormat.enumerated() {
-            switch index {
-            case 0:
-                dateFormatStrings[position] = String(repeating: "M", count: monthFormat + 1)
-            case 1:
-                dateFormatStrings[position] = "dd"
-            default:
-                dateFormatStrings[position] = showYear ? "yyyy" : nil
+        if !advancedDateFormat {
+            let dateStyle = DateFormatter.Style(rawValue: UInt(self.dateStyle)) ?? .short
+            dateFormatter.dateStyle = dateStyle
+            dateFormatter.timeStyle = .short
+            datePreview = dateFormatter.string(from: Date())
+        } else {
+            var dateFormatStrings: [String?] = dateFormat.map {_ in ""}
+            for (index, position) in dateFormat.enumerated() {
+                switch index {
+                case 0:
+                    dateFormatStrings[position] = String(repeating: "M", count: monthFormat + 1)
+                case 1:
+                    dateFormatStrings[position] = "dd"
+                default:
+                    dateFormatStrings[position] = showYear ? "yyyy" : nil
+                }
             }
-        }
-        
-        // Add a comma before the year
-        if monthFormat >= 2 {
-            if dateFormatStrings.first == "yyyy" {
-                dateFormatStrings[0]?.append(",")
+            
+            // Add a comma before the year
+            if monthFormat >= 2 {
+                if dateFormatStrings.first == "yyyy" {
+                    dateFormatStrings[0]?.append(",")
+                }
             }
-        }
-        
-        var dateTimeFormatStrings: [String?] = dateTimeFormat.map {_ in ""}
-        for (index, position) in dateTimeFormat.enumerated() {
-            switch index {
-            case 0:
-                dateTimeFormatStrings[position] = showWeekday ? "E" : nil
-            case 1:
-                dateTimeFormatStrings[position] = dateFormatStrings.compactMap { $0 }.joined(separator: monthFormat < 2 ? "'\(dateSeparator)'" : " ")
-            default:
-                dateTimeFormatStrings[position] = "HH:mm"
+            
+            var dateTimeFormatStrings: [String?] = dateTimeFormat.map {_ in ""}
+            for (index, position) in dateTimeFormat.enumerated() {
+                switch index {
+                case 0:
+                    dateTimeFormatStrings[position] = showWeekday ? "E" : nil
+                case 1:
+                    dateTimeFormatStrings[position] = dateFormatStrings.compactMap { $0 }.joined(separator: monthFormat < 2 ? "'\(dateSeparator)'" : " ")
+                default:
+                    dateTimeFormatStrings[position] = "HH:mm"
+                }
             }
+            
+            // Add a comma after the weekday
+            if let index = dateTimeFormatStrings.firstIndex(of: "E"),
+               index < 2 {
+                dateTimeFormatStrings[index]?.append(",")
+            }
+            
+            dateFormatter.dateFormat = dateTimeFormatStrings.compactMap { $0 }.joined(separator: " ")
+            datePreview = dateFormatter.string(from: Date())
         }
-        
-        // Add a comma after the weekday
-        if let index = dateTimeFormatStrings.firstIndex(of: "E"),
-           index < 2 {
-            dateTimeFormatStrings[index]?.append(",")
-        }
-        
-        dateFormatter.dateFormat = dateTimeFormatStrings.compactMap { $0 }.joined(separator: " ")
-        datePreview = dateFormatter.string(from: Date())
+    }
+    
+    func setAdvancedFormat(_ advanced: Bool) {
+        advancedDateFormat = advanced
+        setFormat()
+    }
+    
+    func setDateStyle(_ style: Int) {
+        dateStyle = style
+        setFormat()
     }
     
     func setDateFormat(_ permutation: [Int]) {
