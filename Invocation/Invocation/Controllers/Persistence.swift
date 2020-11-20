@@ -6,6 +6,7 @@
 //
 
 import CoreData
+import UserNotifications
 
 class PersistenceController {
     static let shared = PersistenceController()
@@ -99,12 +100,15 @@ class PersistenceController {
     
     lazy var operationQueue: OperationQueue = {
         let queue = OperationQueue()
-        queue.maxConcurrentOperationCount = 1
+        queue.maxConcurrentOperationCount = 2
         return queue
     }()
     
     @objc
     private func processUpdate(notification: Notification) {
+        operationQueue.cancelAllOperations()
+        
+        // Update indices
         operationQueue.addOperation {
             guard let container = notification.object as? NSPersistentCloudKitContainer else { return }
             let context = container.newBackgroundContext()
@@ -137,6 +141,35 @@ class PersistenceController {
                 } catch {
                     let nsError = error as NSError
                     NSLog("Error processing update error \(nsError), \(nsError.userInfo)")
+                }
+            }
+        }
+        
+        // Update notifications
+        operationQueue.addOperation {
+            guard let container = notification.object as? NSPersistentCloudKitContainer else { return }
+            let context = container.newBackgroundContext()
+            
+            context.performAndWait {
+                UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound]) { granted, error in
+                    guard granted else {
+                        if let error = error {
+                            NSLog("\(error)")
+                        }
+                        return
+                    }
+                    
+                    do {
+                        let tasksFetchRequest: NSFetchRequest<Task> = Task.fetchRequest()
+                        let tasks = try context.fetch(tasksFetchRequest)
+                        
+                        let notificationCenter = UNUserNotificationCenter.current()
+                        notificationCenter.removeAllPendingNotificationRequests()
+                        tasks.compactMap { $0.makeNotification() }.forEach { notificationCenter.add($0) }
+                    } catch {
+                        let nsError = error as NSError
+                        NSLog("Error processing update error \(nsError), \(nsError.userInfo)")
+                    }
                 }
             }
         }

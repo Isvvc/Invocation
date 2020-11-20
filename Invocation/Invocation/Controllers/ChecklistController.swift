@@ -7,6 +7,7 @@
 
 import Foundation
 import HorizontalReorder
+import UserNotifications
 
 class ChecklistController: ObservableObject {
     
@@ -48,6 +49,8 @@ class ChecklistController: ObservableObject {
         datePreview = ""
         setFormat()
     }
+    
+    //MARK: Date format
     
     func setFormat() {
         if !advancedDateFormat {
@@ -137,6 +140,26 @@ class ChecklistController: ObservableObject {
         monthFormat = format
         setFormat()
     }
+    
+    //MARK: Notifications
+    
+    func createNotifications(for project: Project) {
+        guard let tasks = project.tasks as? Set<Task>  else { return }
+        UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound]) { granted, error in
+            guard granted else {
+                if let error = error {
+                    NSLog("\(error)")
+                }
+                return
+            }
+            
+            let notificationCenter = UNUserNotificationCenter.current()
+            notificationCenter.removeAllPendingNotificationRequests()
+            tasks.compactMap { $0.makeNotification() }.forEach { notificationCenter.add($0) }
+        }
+    }
+    
+    //MARK: Misc
     
     /// Sets a URL's protocol to HTTPS.
     ///

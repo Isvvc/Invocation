@@ -7,6 +7,7 @@
 
 import CoreData
 import SwiftDate
+import UserNotifications
 
 extension Project {
     @discardableResult
@@ -61,6 +62,20 @@ extension Task {
     func resetDueDate() {
         guard let invocation = project?.invoked else { return }
         due = item?.dueDate(after: invocation)
+    }
+    
+    func makeNotification() -> UNNotificationRequest? {
+        guard let dueDate = due, dueDate > Date() else { return nil }
+        let content = UNMutableNotificationContent()
+//        content.title = wrappedName
+        content.body = wrappedName
+        content.sound = .default
+        
+        let components = Calendar.current.dateComponents([.year, .month, .day, .hour, .minute], from: dueDate)
+        let trigger = UNCalendarNotificationTrigger(dateMatching: components, repeats: false)
+        print(components)
+        print(objectID.description)
+        return UNNotificationRequest(identifier: objectID.description, content: content, trigger: trigger)
     }
 }
 
