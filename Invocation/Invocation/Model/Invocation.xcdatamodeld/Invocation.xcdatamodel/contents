@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="17192" systemVersion="19H2" minimumToolsVersion="Automatic" sourceLanguage="Swift" usedWithCloudKit="YES" userDefinedModelVersionIdentifier="">
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="17511" systemVersion="19H15" minimumToolsVersion="Automatic" sourceLanguage="Swift" usedWithCloudKit="YES" userDefinedModelVersionIdentifier="">
     <entity name="Checklist" representedClassName="Checklist" syncable="YES" codeGenerationType="class">
         <attribute name="showComplete" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
         <attribute name="showOne" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
@@ -37,6 +37,7 @@
         <attribute name="link" optional="YES" attributeType="URI"/>
         <attribute name="name" optional="YES" attributeType="String"/>
         <attribute name="notes" optional="YES" attributeType="String"/>
+        <attribute name="notificationID" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
         <relationship name="item" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Item" inverseName="tasks" inverseEntity="Item"/>
         <relationship name="project" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Project" inverseName="tasks" inverseEntity="Project"/>
     </entity>
@@ -44,6 +45,6 @@
         <element name="Checklist" positionX="-63" positionY="-18" width="128" height="133"/>
         <element name="Item" positionX="-63" positionY="-18" width="128" height="208"/>
         <element name="Project" positionX="-54" positionY="18" width="128" height="148"/>
-        <element name="Task" positionX="-36" positionY="72" width="128" height="163"/>
+        <element name="Task" positionX="-36" positionY="72" width="128" height="178"/>
     </elements>
 </model>

@@ -25,6 +25,8 @@ struct ProjectView: View {
         tasksFetchRequest.wrappedValue
     }
     
+    @EnvironmentObject private var checklistController: ChecklistController
+    
     @ObservedObject var project: Project
     
     @State private var title: String = ""
@@ -179,13 +181,14 @@ struct ProjectView: View {
     
     func deleteProject() {
         presentationMode.wrappedValue.dismiss()
-        project.deleteChildrenAndSelf(context: moc)
-        PersistenceController.save(context: moc)
+        checklistController.delete(project, context: moc)
     }
     
     func delete(_ indexSet: IndexSet) {
-        indexSet.map { tasks[$0] }.forEach(moc.delete)
-        project.updateIndices(items: tasks)
+        DispatchQueue.main.async {
+            let tasks = indexSet.map { self.tasks[$0] }
+            checklistController.delete(tasks, context: moc)
+        }
     }
     
     func move(_ indices: IndexSet, newOffset: Int) {

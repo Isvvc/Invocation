@@ -66,6 +66,14 @@ extension Task {
     
     func makeNotification() -> UNNotificationRequest? {
         guard let dueDate = due, dueDate > Date() else { return nil }
+        let id: UUID
+        if let notificationID = notificationID {
+            id = notificationID
+        } else {
+            id = UUID()
+            notificationID = id
+        }
+        
         let content = UNMutableNotificationContent()
 //        content.title = wrappedName
         content.body = wrappedName
@@ -74,8 +82,8 @@ extension Task {
         let components = Calendar.current.dateComponents([.year, .month, .day, .hour, .minute], from: dueDate)
         let trigger = UNCalendarNotificationTrigger(dateMatching: components, repeats: false)
         print(components)
-        print(objectID.description)
-        return UNNotificationRequest(identifier: objectID.description, content: content, trigger: trigger)
+        print(id)
+        return UNNotificationRequest(identifier: id.uuidString, content: content, trigger: trigger)
     }
 }
 

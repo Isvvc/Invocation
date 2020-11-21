@@ -8,6 +8,7 @@
 import Foundation
 import HorizontalReorder
 import UserNotifications
+import CoreData
 
 class ChecklistController: ObservableObject {
     
@@ -139,6 +140,38 @@ class ChecklistController: ObservableObject {
     func setMonthFormat(_ format: Int) {
         monthFormat = format
         setFormat()
+    }
+    
+    //MARK: Project/Task CRUD
+    
+    func delete(_ project: Project, context: NSManagedObjectContext) {
+        if let tasks = project.tasks as? Set<Task> {
+            let notificationIDs = tasks.compactMap { $0.notificationID?.uuidString }
+            UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: notificationIDs)
+        }
+        project.deleteChildrenAndSelf(context: context)
+        PersistenceController.save(context: context)
+    }
+    
+    func delete(_ tasks: [Task], context: NSManagedObjectContext) {
+        UNUserNotificationCenter.current().getPendingNotificationRequests { a in
+            print(a)
+        }
+        
+        // Remove notifications
+        let notificationIDs = tasks.compactMap { $0.notificationID?.uuidString }
+        print(notificationIDs)
+        UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: notificationIDs)
+        
+        // Get set of projects
+        var projects: Set<Project> = []
+        tasks.compactMap { $0.project }.forEach { projects.insert($0) }
+        
+        // Delete tasks
+        tasks.forEach(context.delete)
+        
+        // Update project indices
+        projects.forEach { try? $0.updateIndices(context: context) }
     }
     
     //MARK: Notifications
