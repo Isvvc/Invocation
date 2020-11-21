@@ -154,8 +154,22 @@ class ChecklistController: ObservableObject {
             }
             
             let notificationCenter = UNUserNotificationCenter.current()
-            notificationCenter.removeAllPendingNotificationRequests()
             tasks.compactMap { $0.makeNotification() }.forEach { notificationCenter.add($0) }
+        }
+    }
+    
+    func createNotification(for task: Task) {
+        UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound]) { granted, error in
+            guard granted,
+                  let notification = task.makeNotification() else {
+                if let error = error {
+                    NSLog("\(error)")
+                }
+                return
+            }
+            
+            let notificationCenter = UNUserNotificationCenter.current()
+            notificationCenter.add(notification)
         }
     }
     

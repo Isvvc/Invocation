@@ -11,6 +11,8 @@ import CoreData
 struct TaskView: View {
     @Environment(\.managedObjectContext) private var moc
     
+    @EnvironmentObject private var checklistController: ChecklistController
+    
     @ObservedObject var task: Task
     
     @State private var due = false
@@ -55,6 +57,9 @@ struct TaskView: View {
                 }
             }
             .labelsHidden()
+            .onChange(of: task.due) { _ in
+                checklistController.createNotification(for: task)
+            }
         }
         .navigationTitle("Task")
         .onAppear {
