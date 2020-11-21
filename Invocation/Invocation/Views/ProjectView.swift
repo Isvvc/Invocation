@@ -200,7 +200,7 @@ struct ProjectView: View {
     }
 }
 
-//MARK: Tasks View
+//MARK: Task Row
 
 fileprivate struct TaskRow: View {
     
@@ -229,11 +229,16 @@ fileprivate struct TaskRow: View {
                     VStack(alignment: .leading) {
                         Text(task.wrappedName ??? "Task")
                             .foregroundColor(.primary)
-                        if showDateOnProject,
-                           let completedDate = task.completed {
-                            Text("Completed \(checklistController.dateFormatter.string(from: completedDate))")
-                                .foregroundColor(.secondary)
-                                .font(.caption)
+                        if showDateOnProject {
+                            if let completedDate = task.completed {
+                                Text("Completed \(completedDate, formatter: checklistController.dateFormatter)")
+                                    .foregroundColor(.secondary)
+                                    .font(.caption)
+                            } else if let dueDate = task.due {
+                                Text("Due \(dueDate, formatter: checklistController.dateFormatter)")
+                                    .foregroundColor(dueDate > Date() ? .secondary : .red)
+                                    .font(.caption)
+                            }
                         }
                     }
                     .animation(.easeInOut)

@@ -192,7 +192,7 @@ struct SettingsView: View {
             
             //MARK: Show dates
             
-            Section(header: Text("Show dates"), footer: Text("Show dates of completed tasks")) {
+            Section(header: Text("Show dates"), footer: Text("Show dates under tasks")) {
                 Toggle("Invocations list", isOn: $showDateOnList)
                 Toggle("Invocation sheet", isOn: $showDateOnProject)
             }

@@ -168,13 +168,18 @@ fileprivate struct TaskCell: View {
                 VStack(alignment: .leading) {
                     Text(task.wrappedName ??? "Task")
                         .foregroundColor(.primary)
-                    if showComplete,
-                       showDateOnList,
-                       let completedDate = task.completed,
+                    if showDateOnList,
                        let dateFormatter = dateFormatter {
-                        Text("Completed \(completedDate, formatter: dateFormatter)")
-                            .foregroundColor(.secondary)
-                            .font(.caption)
+                        if showComplete,
+                           let completedDate = task.completed {
+                            Text("Completed \(completedDate, formatter: dateFormatter)")
+                                .foregroundColor(.secondary)
+                                .font(.caption)
+                        } else if let dueDate = task.due {
+                            Text("Due \(dueDate, formatter: dateFormatter)")
+                                .foregroundColor(dueDate > Date() ? .secondary : .red)
+                                .font(.caption)
+                        }
                     }
                 }
                 Spacer()
