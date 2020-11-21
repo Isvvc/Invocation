@@ -78,9 +78,7 @@ struct ChecklistView: View {
                 Toggle("Show only one item", isOn: $checklist.showOne)
             }
             
-            Button("Invoke") {
-                project = Project(checklist: checklist, context: moc)
-            }
+            Button("Invoke", action: invoke)
         }
         .navigationTitle(checklist.wrappedTitle ??? "Checklist")
         .navigationBarItems(trailing: EditButton())
@@ -117,6 +115,12 @@ struct ChecklistView: View {
         itemIndices.enumerated().compactMap { $0.element != $0.offset ? (item: items[$0.element], newIndex: Int16($0.offset)) : nil }.forEach { $0.item.index = $0.newIndex }
         
         PersistenceController.save(context: moc)
+    }
+    
+    private func invoke() {
+        let project = Project(checklist: checklist, context: moc)
+        self.project = project
+        checklistController.createNotifications(for: project)
     }
 }
 

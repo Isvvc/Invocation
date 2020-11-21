@@ -25,6 +25,8 @@ struct ProjectView: View {
         tasksFetchRequest.wrappedValue
     }
     
+    @EnvironmentObject private var checklistController: ChecklistController
+    
     @ObservedObject var project: Project
     
     @State private var title: String = ""
@@ -91,7 +93,7 @@ struct ProjectView: View {
             
             Section(header: Text("Tasks")) {
                 ForEach(tasks) { task in
-                    TaskView(task: task, selection: $selection)
+                    TaskRow(task: task, selection: $selection)
                 }
                 .onDelete(perform: delete)
                 .onMove(perform: move)
@@ -179,13 +181,14 @@ struct ProjectView: View {
     
     func deleteProject() {
         presentationMode.wrappedValue.dismiss()
-        project.deleteChildrenAndSelf(context: moc)
-        PersistenceController.save(context: moc)
+        checklistController.delete(project, context: moc)
     }
     
     func delete(_ indexSet: IndexSet) {
-        indexSet.map { tasks[$0] }.forEach(moc.delete)
-        project.updateIndices(items: tasks)
+        DispatchQueue.main.async {
+            let tasks = indexSet.map { self.tasks[$0] }
+            checklistController.delete(tasks, context: moc)
+        }
     }
     
     func move(_ indices: IndexSet, newOffset: Int) {
@@ -197,9 +200,9 @@ struct ProjectView: View {
     }
 }
 
-//MARK: Tasks View
+//MARK: Task Row
 
-fileprivate struct TaskView: View {
+fileprivate struct TaskRow: View {
     
     @EnvironmentObject private var checklistController: ChecklistController
     
@@ -211,7 +214,7 @@ fileprivate struct TaskView: View {
     var body: some View {
         HStack {
             NavigationLink(
-                destination: Text("Task"),
+                destination: TaskView(task: task),
                 tag: task,
                 selection: $selection,
                 label: { EmptyView() })
@@ -226,11 +229,16 @@ fileprivate struct TaskView: View {
                     VStack(alignment: .leading) {
                         Text(task.wrappedName ??? "Task")
                             .foregroundColor(.primary)
-                        if showDateOnProject,
-                           let completedDate = task.completed {
-                            Text("Completed \(checklistController.dateFormatter.string(from: completedDate))")
-                                .foregroundColor(.secondary)
-                                .font(.caption)
+                        if showDateOnProject {
+                            if let completedDate = task.completed {
+                                Text("Completed \(completedDate, formatter: checklistController.dateFormatter)")
+                                    .foregroundColor(.secondary)
+                                    .font(.caption)
+                            } else if let dueDate = task.due {
+                                Text("Due \(dueDate, formatter: checklistController.dateFormatter)")
+                                    .foregroundColor(dueDate > Date() ? .secondary : .red)
+                                    .font(.caption)
+                            }
                         }
                     }
                     .animation(.easeInOut)

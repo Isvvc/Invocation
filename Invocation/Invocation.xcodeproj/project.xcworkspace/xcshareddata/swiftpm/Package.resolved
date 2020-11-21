@@ -1,0 +1,25 @@
+{
+  "object": {
+    "pins": [
+      {
+        "package": "HorizontalReorder",
+        "repositoryURL": "https://github.com/Isvvc/HorizontalReorder.git",
+        "state": {
+          "branch": "main",
+          "revision": "72d7e50e221ac68e6d382989f6d8be6b42f13d67",
+          "version": null
+        }
+      },
+      {
+        "package": "SwiftDate",
+        "repositoryURL": "https://github.com/malcommac/SwiftDate.git",
+        "state": {
+          "branch": null,
+          "revision": "a25913b19833860b61fac161a706e44834f03c47",
+          "version": "6.2.0"
+        }
+      }
+    ]
+  },
+  "version": 1
+}

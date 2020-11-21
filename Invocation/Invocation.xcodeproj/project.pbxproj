@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 50;
+	objectVersion = 52;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -18,9 +18,12 @@
 		5907F910254B435100E3EF74 /* ChecklistsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5907F90F254B435100E3EF74 /* ChecklistsView.swift */; };
 		5907F915254B463C00E3EF74 /* ChecklistView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5907F914254B463C00E3EF74 /* ChecklistView.swift */; };
 		5913C1F4254F439200A00F51 /* CloudKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5913C1F3254F439200A00F51 /* CloudKit.framework */; };
+		59331B792559E78800F14270 /* TaskView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 59331B782559E78800F14270 /* TaskView.swift */; };
 		593591092551D22100695B43 /* Invocation+Delete.swift in Sources */ = {isa = PBXBuildFile; fileRef = 593591082551D22100695B43 /* Invocation+Delete.swift */; };
 		597C95DF25547A2400A9A9D4 /* AcknowledgementsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 597C95DE25547A2400A9A9D4 /* AcknowledgementsView.swift */; };
 		597C95E42554866C00A9A9D4 /* ObjectsContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 597C95E32554866C00A9A9D4 /* ObjectsContainer.swift */; };
+		5988B16D25573AC3008B9C91 /* SwiftDate in Frameworks */ = {isa = PBXBuildFile; productRef = 5988B16C25573AC3008B9C91 /* SwiftDate */; };
+		599CE620255F059B003231FE /* StringPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 599CE61F255F059B003231FE /* StringPicker.swift */; };
 		59AA338525533EF9009D3096 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 59AA338425533EF9009D3096 /* SettingsView.swift */; };
 		59AA338A255340C6009D3096 /* Defaults.swift in Sources */ = {isa = PBXBuildFile; fileRef = 59AA3389255340C6009D3096 /* Defaults.swift */; };
 		59AA338F25538084009D3096 /* TextWithCaption.swift in Sources */ = {isa = PBXBuildFile; fileRef = 59AA338E25538083009D3096 /* TextWithCaption.swift */; };
@@ -31,6 +34,10 @@
 		59C4AEA72550885400A4438A /* ChecklistController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 59C4AEA62550885400A4438A /* ChecklistController.swift */; };
 		59C4AEAD25509F6A00A4438A /* ProjectsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 59C4AEAC25509F6900A4438A /* ProjectsView.swift */; };
 		59C4AEB22550A15E00A4438A /* Invocation+Convenience.swift in Sources */ = {isa = PBXBuildFile; fileRef = 59C4AEB12550A15E00A4438A /* Invocation+Convenience.swift */; };
+		59DA41E3255DC56B002CA13D /* HorizontalReorder in Frameworks */ = {isa = PBXBuildFile; productRef = 59DA41E2255DC56B002CA13D /* HorizontalReorder */; };
+		59DBA8112559DF0F00CCE185 /* TextEditorSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 59DBA8102559DF0F00CCE185 /* TextEditorSection.swift */; };
+		59DBA8192559E43B00CCE185 /* ChecklistLinkField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 59DBA8182559E43B00CCE185 /* ChecklistLinkField.swift */; };
+		59F79F1B255AF0BC00A930D5 /* TimePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 59F79F1A255AF0BC00A930D5 /* TimePicker.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -69,9 +76,11 @@
 		5907F914254B463C00E3EF74 /* ChecklistView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChecklistView.swift; sourceTree = "<group>"; };
 		5913C1EE254F438F00A00F51 /* Invocation.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Invocation.entitlements; sourceTree = "<group>"; };
 		5913C1F3254F439200A00F51 /* CloudKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CloudKit.framework; path = System/Library/Frameworks/CloudKit.framework; sourceTree = SDKROOT; };
+		59331B782559E78800F14270 /* TaskView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskView.swift; sourceTree = "<group>"; };
 		593591082551D22100695B43 /* Invocation+Delete.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Invocation+Delete.swift"; sourceTree = "<group>"; };
 		597C95DE25547A2400A9A9D4 /* AcknowledgementsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AcknowledgementsView.swift; sourceTree = "<group>"; };
 		597C95E32554866C00A9A9D4 /* ObjectsContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObjectsContainer.swift; sourceTree = "<group>"; };
+		599CE61F255F059B003231FE /* StringPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StringPicker.swift; sourceTree = "<group>"; };
 		59AA338425533EF9009D3096 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		59AA3389255340C6009D3096 /* Defaults.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Defaults.swift; sourceTree = "<group>"; };
 		59AA338E25538083009D3096 /* TextWithCaption.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextWithCaption.swift; sourceTree = "<group>"; };
@@ -82,6 +91,9 @@
 		59C4AEA62550885400A4438A /* ChecklistController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChecklistController.swift; sourceTree = "<group>"; };
 		59C4AEAC25509F6900A4438A /* ProjectsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectsView.swift; sourceTree = "<group>"; };
 		59C4AEB12550A15E00A4438A /* Invocation+Convenience.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Invocation+Convenience.swift"; sourceTree = "<group>"; };
+		59DBA8102559DF0F00CCE185 /* TextEditorSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextEditorSection.swift; sourceTree = "<group>"; };
+		59DBA8182559E43B00CCE185 /* ChecklistLinkField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChecklistLinkField.swift; sourceTree = "<group>"; };
+		59F79F1A255AF0BC00A930D5 /* TimePicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimePicker.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -89,6 +101,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5988B16D25573AC3008B9C91 /* SwiftDate in Frameworks */,
+				59DA41E3255DC56B002CA13D /* HorizontalReorder in Frameworks */,
 				5913C1F4254F439200A00F51 /* CloudKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -138,6 +152,7 @@
 				5907F8CD254B3E9B00E3EF74 /* InvocationApp.swift */,
 				5907F900254B401000E3EF74 /* Model */,
 				5907F904254B401B00E3EF74 /* Views */,
+				59A59BF82559DE0400DB85B0 /* Supplementary Views */,
 				5907F908254B402500E3EF74 /* Controllers */,
 				5907F8D1254B3E9D00E3EF74 /* Assets.xcassets */,
 				5907F8DB254B3E9D00E3EF74 /* Info.plist */,
@@ -195,9 +210,10 @@
 				59C4AEA125507EC700A4438A /* ItemView.swift */,
 				59C4AEAC25509F6900A4438A /* ProjectsView.swift */,
 				59AF3F462552163700F76C9D /* ProjectView.swift */,
+				59331B782559E78800F14270 /* TaskView.swift */,
 				59AA338425533EF9009D3096 /* SettingsView.swift */,
+				599CE61F255F059B003231FE /* StringPicker.swift */,
 				597C95DE25547A2400A9A9D4 /* AcknowledgementsView.swift */,
-				59AA338E25538083009D3096 /* TextWithCaption.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -219,6 +235,17 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
+		59A59BF82559DE0400DB85B0 /* Supplementary Views */ = {
+			isa = PBXGroup;
+			children = (
+				59AA338E25538083009D3096 /* TextWithCaption.swift */,
+				59DBA8102559DF0F00CCE185 /* TextEditorSection.swift */,
+				59DBA8182559E43B00CCE185 /* ChecklistLinkField.swift */,
+				59F79F1A255AF0BC00A930D5 /* TimePicker.swift */,
+			);
+			path = "Supplementary Views";
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -235,6 +262,10 @@
 			dependencies = (
 			);
 			name = Invocation;
+			packageProductDependencies = (
+				5988B16C25573AC3008B9C91 /* SwiftDate */,
+				59DA41E2255DC56B002CA13D /* HorizontalReorder */,
+			);
 			productName = Invocation;
 			productReference = 5907F8CA254B3E9B00E3EF74 /* Invocation.app */;
 			productType = "com.apple.product-type.application";
@@ -306,6 +337,10 @@
 				Base,
 			);
 			mainGroup = 5907F8C1254B3E9A00E3EF74;
+			packageReferences = (
+				5988B16B25573AC3008B9C91 /* XCRemoteSwiftPackageReference "SwiftDate" */,
+				59DA41E1255DC56B002CA13D /* XCRemoteSwiftPackageReference "HorizontalReorder" */,
+			);
 			productRefGroup = 5907F8CB254B3E9B00E3EF74 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -348,6 +383,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				59DBA8192559E43B00CCE185 /* ChecklistLinkField.swift in Sources */,
+				59DBA8112559DF0F00CCE185 /* TextEditorSection.swift in Sources */,
 				59AA338525533EF9009D3096 /* SettingsView.swift in Sources */,
 				59AA338A255340C6009D3096 /* Defaults.swift in Sources */,
 				5907F8D7254B3E9D00E3EF74 /* Persistence.swift in Sources */,
@@ -355,6 +392,8 @@
 				593591092551D22100695B43 /* Invocation+Delete.swift in Sources */,
 				59AA338F25538084009D3096 /* TextWithCaption.swift in Sources */,
 				59C4AEA72550885400A4438A /* ChecklistController.swift in Sources */,
+				59331B792559E78800F14270 /* TaskView.swift in Sources */,
+				59F79F1B255AF0BC00A930D5 /* TimePicker.swift in Sources */,
 				597C95E42554866C00A9A9D4 /* ObjectsContainer.swift in Sources */,
 				59AF3F472552163700F76C9D /* ProjectView.swift in Sources */,
 				59C00842254DDE5A00E33D98 /* Invocation+FetchRequest.swift in Sources */,
@@ -363,6 +402,7 @@
 				5907F910254B435100E3EF74 /* ChecklistsView.swift in Sources */,
 				5907F915254B463C00E3EF74 /* ChecklistView.swift in Sources */,
 				5907F8D0254B3E9B00E3EF74 /* ContentView.swift in Sources */,
+				599CE620255F059B003231FE /* StringPicker.swift in Sources */,
 				59C4AEB22550A15E00A4438A /* Invocation+Convenience.swift in Sources */,
 				59C4AEAD25509F6A00A4438A /* ProjectsView.swift in Sources */,
 				5907F8CE254B3E9B00E3EF74 /* InvocationApp.swift in Sources */,
@@ -688,6 +728,38 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		5988B16B25573AC3008B9C91 /* XCRemoteSwiftPackageReference "SwiftDate" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/malcommac/SwiftDate.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 6.2.0;
+			};
+		};
+		59DA41E1255DC56B002CA13D /* XCRemoteSwiftPackageReference "HorizontalReorder" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/Isvvc/HorizontalReorder.git";
+			requirement = {
+				branch = main;
+				kind = branch;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		5988B16C25573AC3008B9C91 /* SwiftDate */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 5988B16B25573AC3008B9C91 /* XCRemoteSwiftPackageReference "SwiftDate" */;
+			productName = SwiftDate;
+		};
+		59DA41E2255DC56B002CA13D /* HorizontalReorder */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 59DA41E1255DC56B002CA13D /* XCRemoteSwiftPackageReference "HorizontalReorder" */;
+			productName = HorizontalReorder;
+		};
+/* End XCSwiftPackageProductDependency section */
 
 /* Begin XCVersionGroup section */
 		5907F8D8254B3E9D00E3EF74 /* Invocation.xcdatamodeld */ = {

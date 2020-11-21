@@ -6,6 +6,8 @@
 //
 
 import CoreData
+import SwiftDate
+import UserNotifications
 
 extension Project {
     @discardableResult
@@ -28,6 +30,9 @@ extension Task {
         self.init(context: context)
         self.item = item
         self.index = item.index
+        if item.due {
+            self.due = item.nextDueDate
+        }
     }
     
     func toggle() {
@@ -40,5 +45,83 @@ extension Task {
     
     func complete() {
         completed = Date()
+    }
+    
+    var dueDateIsUnchanged: Bool {
+        if due == nil,
+           item?.due == false {
+            return true
+        }
+        
+        guard let invocation = project?.invoked else { return false }
+        let dueDate = due?.dateRoundedAt(at: .toFloorMins(1))
+        let itemDueDate = item?.dueDate(after: invocation).dateRoundedAt(at: .toFloorMins(1))
+        return dueDate == itemDueDate
+    }
+    
+    func resetDueDate() {
+        guard let invocation = project?.invoked else { return }
+        due = item?.dueDate(after: invocation)
+    }
+    
+    func makeNotification() -> UNNotificationRequest? {
+        guard let dueDate = due, dueDate > Date() else { return nil }
+        let id: UUID
+        if let notificationID = notificationID {
+            id = notificationID
+        } else {
+            id = UUID()
+            notificationID = id
+        }
+        
+        let content = UNMutableNotificationContent()
+//        content.title = wrappedName
+        content.body = wrappedName
+        content.sound = .default
+        
+        let components = Calendar.current.dateComponents([.year, .month, .day, .hour, .minute], from: dueDate)
+        let trigger = UNCalendarNotificationTrigger(dateMatching: components, repeats: false)
+        print(components)
+        print(id)
+        return UNNotificationRequest(identifier: id.uuidString, content: content, trigger: trigger)
+    }
+}
+
+extension Item {
+    var nextDueDate: Date {
+        dueDate(after: Date())
+    }
+    
+    func dueDate(after date: Date) -> Date {
+        let offsetDate = DateInRegion(date, region: .current)
+            .dateByAdding(Int(dateOffset), .day)
+        let dateComponents = offsetDate.dateComponents
+        
+        let timeComponents: DateComponents
+        
+        if let time = time {
+            timeComponents = DateInRegion(time, region: .current).dateComponents
+        } else {
+            timeComponents = dateComponents
+        }
+        
+        var dateAndTime = DateInRegion(year: dateComponents.year!, month: dateComponents.month!, day: dateComponents.day!,
+                                       hour: timeComponents.hour!, minute: timeComponents.minute!, region: .current)
+        
+        if time == nil {
+            dateAndTime.addTimeInterval(timeInterval)
+        }
+        
+        // Ensure the next due date isn't in the past
+        if dateAndTime.date < date {
+            dateAndTime = dateAndTime + 1.days
+        }
+        
+        if let weekday = WeekDay(rawValue: Int(weekday)),
+           weekday.rawValue != dateAndTime.weekday {
+            return dateAndTime.nextWeekday(weekday).date
+        }
+        
+        return dateAndTime.date
     }
 }

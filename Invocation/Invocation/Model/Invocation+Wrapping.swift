@@ -6,6 +6,9 @@
 //
 
 import Foundation
+import SwiftDate
+
+//MARK: Checklist
 
 extension Checklist {
     var wrappedTitle: String {
@@ -13,6 +16,8 @@ extension Checklist {
         set { title = newValue }
     }
 }
+
+//MARK: Item
 
 extension Item {
     var wrappedName: String {
@@ -27,7 +32,14 @@ extension Item {
         get { notes ?? "" }
         set { notes = newValue }
     }
+    
+    var wrappedTime: Date {
+        get { time ?? Date() }
+        set { time = newValue }
+    }
 }
+
+//MARK: Project
 
 extension Project {
     var wrappedTitle: String {
@@ -53,12 +65,46 @@ extension Project {
     }
 }
 
+//MARK: Task
+
 extension Task {
     var wrappedName: String {
         get { name ?? item?.name ?? "" }
-        set { name = newValue }
+        set {
+            if newValue == item?.name {
+                name = nil
+            }
+            name = newValue
+        }
+    }
+    
+    var wrappedNotes: String {
+        get { notes ?? item?.notes ?? "" }
+        set {
+            if newValue == item?.notes {
+                notes = nil
+            }
+            notes = newValue
+        }
+    }
+    
+    var wrappedOptionalLink: URL? {
+        get { link ?? item?.link }
+        set {
+            if newValue == item?.link {
+                link = nil
+            }
+            link = newValue
+        }
+    }
+    
+    var wrappedDueDate: Date {
+        get { due ?? Date() + 10.minutes }
+        set { due = newValue }
     }
 }
+
+//MARK: Operators
 
 infix operator ???: NilCoalescingPrecedence
 extension String {

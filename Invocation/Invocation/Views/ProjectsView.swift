@@ -156,6 +156,7 @@ fileprivate struct TaskCell: View {
     
     @State private var completed = false
     @State private var work: DispatchWorkItem?
+    @State private var dateFormatter: DateFormatter?
     
     var body: some View {
         Button(action: completeTask) {
@@ -167,12 +168,18 @@ fileprivate struct TaskCell: View {
                 VStack(alignment: .leading) {
                     Text(task.wrappedName ??? "Task")
                         .foregroundColor(.primary)
-                    if showComplete,
-                       showDateOnList,
-                       let completedDate = task.completed {
-                        Text("Completed \(checklistController.dateFormatter.string(from: completedDate))")
-                            .foregroundColor(.secondary)
-                            .font(.caption)
+                    if showDateOnList,
+                       let dateFormatter = dateFormatter {
+                        if showComplete,
+                           let completedDate = task.completed {
+                            Text("Completed \(completedDate, formatter: dateFormatter)")
+                                .foregroundColor(.secondary)
+                                .font(.caption)
+                        } else if let dueDate = task.due {
+                            Text("Due \(dueDate, formatter: dateFormatter)")
+                                .foregroundColor(dueDate > Date() ? .secondary : .red)
+                                .font(.caption)
+                        }
                     }
                 }
                 Spacer()
@@ -183,6 +190,17 @@ fileprivate struct TaskCell: View {
                 .frame(maxWidth: completed ? .infinity : 0, maxHeight: 1)
                 .animation(.easeIn(duration: 0.125))
         )
+        .onAppear {
+            // The dateFormatter has to be changed for it to update.
+            // If we don't set it to nil here first, it won't update
+            // the date. If we instead make Checklist Controller's
+            // Date Formatter a Published property and run `objectWillChange.send()`
+            // before changing the date format, then the date format
+            // settings will have laggy animations as every checklist
+            // item has to update at once on each change.
+            dateFormatter = nil
+            dateFormatter = checklistController.dateFormatter
+        }
     }
     
     private func completeTask() {

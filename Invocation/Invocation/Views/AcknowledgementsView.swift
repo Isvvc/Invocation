@@ -14,6 +14,12 @@ struct AcknowledgementsView: View {
                 Text("This app is open-sounce software.")
                 NavigationLink("BSD 2-Clause License", destination: LicenseView())
             }
+            
+            Section(header: Text("Libraries")) {
+                ForEach(LibraryView.Library.allCases, id: \.self) { library in
+                    NavigationLink(library.name, destination: LibraryView(library: library))
+                }
+            }
         }
         .listStyle(InsetGroupedListStyle())
         .navigationTitle("Acknowledgements")
@@ -42,6 +48,75 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
         }
         .listStyle(InsetGroupedListStyle())
         .navigationTitle("BSD 2-Clause License")
+    }
+}
+
+fileprivate struct LibraryView: View {
+    
+    enum Library: CaseIterable {
+        case swiftDate
+        
+        var name: String {
+            switch self {
+            case .swiftDate:
+                return "SwiftDate"
+            }
+        }
+        
+        var url: URL {
+            switch self {
+            case .swiftDate:
+                return URL(string: "https://github.com/malcommac/SwiftDate")!
+            }
+        }
+        
+        var link: URL {
+            switch self {
+            case .swiftDate:
+                return URL(string: "https://github.com/malcommac/SwiftDate")!
+            }
+        }
+        
+        var license: String {
+            switch self {
+            case .swiftDate:
+                return Library.mit(copyright: "2018 Daniele Margutti")
+            }
+        }
+        
+        private static func mit(copyright: String) -> String {
+"""
+Copyright (c) \(copyright)
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+"""
+        }
+    }
+    
+    var library: Library
+    
+    var body: some View {
+        List {
+            Section {
+                Link(destination: library.url) {
+                    HStack {
+                        Text(library.name)
+                        Spacer()
+                        Image(systemName: "arrow.up.right")
+                    }
+                }
+            }
+            
+            Section(header: Text("License")) {
+                Text(library.license)
+            }
+        }
+        .listStyle(InsetGroupedListStyle())
+        .navigationTitle(library.name)
     }
 }
 

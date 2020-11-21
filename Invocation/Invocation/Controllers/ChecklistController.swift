@@ -6,37 +6,207 @@
 //
 
 import Foundation
+import HorizontalReorder
+import UserNotifications
+import CoreData
 
 class ChecklistController: ObservableObject {
     
     var dateFormatter: DateFormatter
     
+    @Published var datePreview: String
+    
+    private(set) var advancedDateFormat: Bool
+    private(set) var dateStyle: Int
+    private(set) var dateTimeFormat: [Int]
+    private(set) var dateFormat: [Int]
+    private(set) var showYear: Bool
+    private(set) var showWeekday: Bool
+    private(set) var monthFormat: Int
+    private(set) var dateSeparator: String
+    
     init() {
-        var dateStyle = UserDefaults.standard.integer(forKey: Defaults.dateStyle.rawValue)
-        var timeStyle = UserDefaults.standard.integer(forKey: Defaults.timeStyle.rawValue)
+        UserDefaults.standard.register(defaults: [
+            Defaults.showYear.rawValue: true,
+            Defaults.showWeekday.rawValue: true,
+            Defaults.dateSeparator.rawValue: "/",
+            Defaults.dateStyle.rawValue: 1
+        ])
         
-        // Style 0 is none (and the default value when installing the app).
-        // We want there to be a date and time, so set them to short by default.
-        if dateStyle == 0 {
-            dateStyle = 1
-            UserDefaults.standard.set(1, forKey: Defaults.dateStyle.rawValue)
-        }
-        if timeStyle == 0 {
-            timeStyle = 1
-            UserDefaults.standard.set(1, forKey: Defaults.timeStyle.rawValue)
-        }
+        advancedDateFormat = UserDefaults.standard.bool(forKey: Defaults.advancedDateFormat.rawValue)
+        dateStyle = UserDefaults.standard.integer(forKey: Defaults.dateStyle.rawValue)
+        showYear = UserDefaults.standard.bool(forKey: Defaults.showYear.rawValue)
+        showWeekday = UserDefaults.standard.bool(forKey: Defaults.showWeekday.rawValue)
+        monthFormat = UserDefaults.standard.integer(forKey: Defaults.monthFormat.rawValue)
+        dateSeparator = UserDefaults.standard.string(forKey: Defaults.dateSeparator.rawValue) ?? "/"
+        
+        let dateTimeFormatCode = UserDefaults.standard.integer(forKey: Defaults.dateTimeOrder.rawValue)
+        let dateFormatCode = UserDefaults.standard.integer(forKey: Defaults.dateOrder.rawValue)
+        
+        dateTimeFormat = HorizontalDragObject.decode(lehmerCode: dateTimeFormatCode, length: 3)
+        dateFormat = HorizontalDragObject.decode(lehmerCode: dateFormatCode, length: 3)
         
         dateFormatter = DateFormatter()
-        setDateFormat(dateStyleInt: dateStyle, timeStyleInt: timeStyle)
+        datePreview = ""
+        setFormat()
     }
     
-    func setDateFormat(dateStyleInt: Int, timeStyleInt: Int) {
-        let dateStyle = DateFormatter.Style(rawValue: UInt(dateStyleInt)) ?? .short
-        let timeStyle = DateFormatter.Style(rawValue: UInt(timeStyleInt)) ?? .short
-        
-        dateFormatter.dateStyle = dateStyle
-        dateFormatter.timeStyle = timeStyle
+    //MARK: Date format
+    
+    func setFormat() {
+        if !advancedDateFormat {
+            let dateStyle = DateFormatter.Style(rawValue: UInt(self.dateStyle)) ?? .short
+            dateFormatter.dateStyle = dateStyle
+            dateFormatter.timeStyle = .short
+            datePreview = dateFormatter.string(from: Date())
+        } else {
+            var dateFormatStrings: [String?] = dateFormat.map {_ in ""}
+            for (index, position) in dateFormat.enumerated() {
+                switch index {
+                case 0:
+                    dateFormatStrings[position] = String(repeating: "M", count: monthFormat + 1)
+                case 1:
+                    dateFormatStrings[position] = "dd"
+                default:
+                    dateFormatStrings[position] = showYear ? "yyyy" : nil
+                }
+            }
+            
+            // Add a comma before the year
+            if monthFormat >= 2 {
+                if dateFormatStrings.first == "yyyy" {
+                    dateFormatStrings[0]?.append(",")
+                }
+            }
+            
+            var dateTimeFormatStrings: [String?] = dateTimeFormat.map {_ in ""}
+            for (index, position) in dateTimeFormat.enumerated() {
+                switch index {
+                case 0:
+                    dateTimeFormatStrings[position] = showWeekday ? "E" : nil
+                case 1:
+                    dateTimeFormatStrings[position] = dateFormatStrings.compactMap { $0 }.joined(separator: monthFormat < 2 ? "'\(dateSeparator)'" : " ")
+                default:
+                    dateTimeFormatStrings[position] = "HH:mm"
+                }
+            }
+            
+            // Add a comma after the weekday
+            if let index = dateTimeFormatStrings.firstIndex(of: "E"),
+               index < 2 {
+                dateTimeFormatStrings[index]?.append(",")
+            }
+            
+            dateFormatter.dateFormat = dateTimeFormatStrings.compactMap { $0 }.joined(separator: " ")
+            datePreview = dateFormatter.string(from: Date())
+        }
     }
+    
+    func setAdvancedFormat(_ advanced: Bool) {
+        advancedDateFormat = advanced
+        setFormat()
+    }
+    
+    func setDateStyle(_ style: Int) {
+        dateStyle = style
+        setFormat()
+    }
+    
+    func setDateFormat(_ permutation: [Int]) {
+        dateFormat = permutation
+        setFormat()
+    }
+    
+    func setDateTimeFormat(_ permutation: [Int]) {
+        dateTimeFormat = permutation
+        setFormat()
+    }
+    
+    func setShowYear(_ show: Bool) {
+        showYear = show
+        setFormat()
+    }
+    
+    func setShowWeekday(_ show: Bool) {
+        showWeekday = show
+        setFormat()
+    }
+    
+    func setDateSeparator(_ separator: String) {
+        dateSeparator = separator
+        setFormat()
+    }
+    
+    func setMonthFormat(_ format: Int) {
+        monthFormat = format
+        setFormat()
+    }
+    
+    //MARK: Project/Task CRUD
+    
+    func delete(_ project: Project, context: NSManagedObjectContext) {
+        if let tasks = project.tasks as? Set<Task> {
+            let notificationIDs = tasks.compactMap { $0.notificationID?.uuidString }
+            UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: notificationIDs)
+        }
+        project.deleteChildrenAndSelf(context: context)
+        PersistenceController.save(context: context)
+    }
+    
+    func delete(_ tasks: [Task], context: NSManagedObjectContext) {
+        UNUserNotificationCenter.current().getPendingNotificationRequests { a in
+            print(a)
+        }
+        
+        // Remove notifications
+        let notificationIDs = tasks.compactMap { $0.notificationID?.uuidString }
+        print(notificationIDs)
+        UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: notificationIDs)
+        
+        // Get set of projects
+        var projects: Set<Project> = []
+        tasks.compactMap { $0.project }.forEach { projects.insert($0) }
+        
+        // Delete tasks
+        tasks.forEach(context.delete)
+        
+        // Update project indices
+        projects.forEach { try? $0.updateIndices(context: context) }
+    }
+    
+    //MARK: Notifications
+    
+    func createNotifications(for project: Project) {
+        guard let tasks = project.tasks as? Set<Task>  else { return }
+        UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound]) { granted, error in
+            guard granted else {
+                if let error = error {
+                    NSLog("\(error)")
+                }
+                return
+            }
+            
+            let notificationCenter = UNUserNotificationCenter.current()
+            tasks.compactMap { $0.makeNotification() }.forEach { notificationCenter.add($0) }
+        }
+    }
+    
+    func createNotification(for task: Task) {
+        UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound]) { granted, error in
+            guard granted,
+                  let notification = task.makeNotification() else {
+                if let error = error {
+                    NSLog("\(error)")
+                }
+                return
+            }
+            
+            let notificationCenter = UNUserNotificationCenter.current()
+            notificationCenter.add(notification)
+        }
+    }
+    
+    //MARK: Misc
     
     /// Sets a URL's protocol to HTTPS.
     ///
