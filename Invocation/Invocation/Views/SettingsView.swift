@@ -174,17 +174,17 @@ struct SettingsView: View {
                             }
                         }
                     }
-                    
-                    Picker("Week starts on", selection: $weekStartsOn) {
-                        ForEach(weekDays, id: \.self) { weekday in
-                            Text(weekday.name())
-                                .tag(weekday.rawValue)
-                        }
-                    }
                     .onAppear {
                         dateTimeDragObject.decode(lehmerCode: dateTimeOrder)
                     }
                     .onChange(of: showWeekday, perform: checklistController.setShowWeekday)
+                }
+                
+                Picker("Week starts on", selection: $weekStartsOn) {
+                    ForEach(weekDays, id: \.self) { weekday in
+                        Text(weekday.name())
+                            .tag(weekday.rawValue)
+                    }
                 }
                 
                 Text(checklistController.datePreview)
