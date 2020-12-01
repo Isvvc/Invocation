@@ -205,7 +205,7 @@ fileprivate struct TaskCell: View {
     
     private func completeTask() {
         if showComplete {
-            task.toggle()
+            checklistController.toggle(task)
             updateProjectSorting()
         } else {
             if completed {
@@ -214,7 +214,7 @@ fileprivate struct TaskCell: View {
                 // Complete the task in 1 second to give time for
                 // the animation to play and for the user to cancel.
                 let work = DispatchWorkItem {
-                    task.complete()
+                    checklistController.complete(task)
                     self.work = nil
                     PersistenceController.save(context: moc)
                     // Give time for the cell to disappear

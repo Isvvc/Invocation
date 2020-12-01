@@ -12,6 +12,8 @@ import CoreData
 
 class ChecklistController: ObservableObject {
     
+    //MARK: Properties
+    
     var dateFormatter: DateFormatter
     
     @Published var datePreview: String
@@ -172,6 +174,21 @@ class ChecklistController: ObservableObject {
         
         // Update project indices
         projects.forEach { try? $0.updateIndices(context: context) }
+    }
+    
+    func complete(_ task: Task) {
+        task.complete()
+        guard let id = task.notificationID?.uuidString else { return }
+        UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: [id])
+    }
+    
+    func toggle(_ task: Task) {
+        if task.completed == nil {
+            complete(task)
+        } else {
+            task.completed = nil
+            createNotification(for: task)
+        }
     }
     
     //MARK: Notifications
