@@ -18,7 +18,7 @@ struct ContentView: View {
     let checklistController = ChecklistController()
     
     @State private var projectsContainer: ObjectsContainer<Project>?
-    @State private var tab = 0
+    @SceneStorage("selectedTab") private var tab = 0
 
     var body: some View {
         TabView(selection: $tab) {
