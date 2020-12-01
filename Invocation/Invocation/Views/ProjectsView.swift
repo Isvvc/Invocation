@@ -97,7 +97,8 @@ fileprivate struct ProjectSection: View {
                     Text(project.wrappedTitle ??? "Project")
                         .font(.title)
                         .foregroundColor(.primary)
-                    Text("\(project.tasks?.count ?? 0) Tasks")
+                    Text("\(project.tasks?.count ?? 0) Task\(project.tasks?.count == 1 ? "" : "s")")
+                        .font(.subheadline)
                         .foregroundColor(.secondary)
                     Spacer()
                 }
@@ -108,23 +109,28 @@ fileprivate struct ProjectSection: View {
                     .rotationEffect(expanded ? .degrees(90) : .zero)
             }
         }
-        .textCase(.none)
     }
     
     private var footer: some View {
         HStack {
             Spacer()
-            Button {
-                selection = project
-            } label: {
+            HStack {
                 Text("Details")
                 Image(systemName: "chevron.forward")
+            }
+            .font(.subheadline)
+            .foregroundColor(.secondary)
+            .padding(.trailing)
+            .onTapGesture {
+                selection = project
             }
         }
     }
     
     var body: some View {
-        Section(header: header, footer: footer) {
+        Group {
+            header
+                .listRowBackground(Color(.systemGroupedBackground))
             if expanded {
                 if !project.showOne {
                     ForEach(tasks) { task in
@@ -136,6 +142,10 @@ fileprivate struct ProjectSection: View {
                     }
                 }
             }
+            footer
+                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
+                .listRowInsets(EdgeInsets())
+                .background(Color(.systemGroupedBackground))
         }
     }
 }
