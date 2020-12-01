@@ -38,6 +38,7 @@
 		59DBA8112559DF0F00CCE185 /* TextEditorSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 59DBA8102559DF0F00CCE185 /* TextEditorSection.swift */; };
 		59DBA8192559E43B00CCE185 /* ChecklistLinkField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 59DBA8182559E43B00CCE185 /* ChecklistLinkField.swift */; };
 		59F79F1B255AF0BC00A930D5 /* TimePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 59F79F1A255AF0BC00A930D5 /* TimePicker.swift */; };
+		59FEB2BC2576E3F2000713A4 /* View+Keyboard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 59FEB2BB2576E3F2000713A4 /* View+Keyboard.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -94,6 +95,7 @@
 		59DBA8102559DF0F00CCE185 /* TextEditorSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextEditorSection.swift; sourceTree = "<group>"; };
 		59DBA8182559E43B00CCE185 /* ChecklistLinkField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChecklistLinkField.swift; sourceTree = "<group>"; };
 		59F79F1A255AF0BC00A930D5 /* TimePicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimePicker.swift; sourceTree = "<group>"; };
+		59FEB2BB2576E3F2000713A4 /* View+Keyboard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "View+Keyboard.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -242,6 +244,7 @@
 				59DBA8102559DF0F00CCE185 /* TextEditorSection.swift */,
 				59DBA8182559E43B00CCE185 /* ChecklistLinkField.swift */,
 				59F79F1A255AF0BC00A930D5 /* TimePicker.swift */,
+				59FEB2BB2576E3F2000713A4 /* View+Keyboard.swift */,
 			);
 			path = "Supplementary Views";
 			sourceTree = "<group>";
@@ -387,6 +390,7 @@
 				59DBA8112559DF0F00CCE185 /* TextEditorSection.swift in Sources */,
 				59AA338525533EF9009D3096 /* SettingsView.swift in Sources */,
 				59AA338A255340C6009D3096 /* Defaults.swift in Sources */,
+				59FEB2BC2576E3F2000713A4 /* View+Keyboard.swift in Sources */,
 				5907F8D7254B3E9D00E3EF74 /* Persistence.swift in Sources */,
 				59C4AE9D255077EB00A4438A /* Invocation+Wrapping.swift in Sources */,
 				593591092551D22100695B43 /* Invocation+Delete.swift in Sources */,

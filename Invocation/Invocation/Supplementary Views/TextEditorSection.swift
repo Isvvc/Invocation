@@ -18,7 +18,7 @@ struct TextEditorSection: View {
     var body: some View {
         Section(header: header) {
             TextEditor(text: $editorText.animation())
-            if editorText != text {
+            if editorTextInitialized && editorText != text {
                 HStack {
                     Text("Save changes")
                         .onTapGesture(perform: save)
@@ -38,6 +38,7 @@ struct TextEditorSection: View {
     }
     
     private func save() {
+        hideKeyboard()
         withAnimation {
             text = editorText
             onSave()
@@ -45,6 +46,7 @@ struct TextEditorSection: View {
     }
     
     private func reset() {
+        hideKeyboard()
         withAnimation {
             editorText = text
         }
