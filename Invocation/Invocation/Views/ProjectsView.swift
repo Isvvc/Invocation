@@ -21,6 +21,7 @@ struct ProjectsView: View {
     @Binding var tab: Int
     
     @State private var selection: Project?
+    @State private var collapsing: Bool = false
     @State private var toDelete: Project?
     
     var emptyHeader: some View {
@@ -48,7 +49,7 @@ struct ProjectsView: View {
                     Section(header: emptyHeader, footer: footer(projects.last)) {
                         ForEach(projects) { project in
                             if project != toDelete {
-                                ProjectSection(project: project, selection: $selection, last: project == projects.last)
+                                ProjectSection(project: project, selection: $selection, collapsing: $collapsing, last: project == projects.last)
                             }
                         }
                     }
@@ -110,16 +111,18 @@ fileprivate struct ProjectSection: View {
     @ObservedObject var project: Project
     
     @Binding var selection: Project?
+    @Binding var collapsing: Bool
     var last: Bool
     
     @State private var expanded = true
     
-    init(project: Project, selection: Binding<Project?>, last: Bool) {
+    init(project: Project, selection: Binding<Project?>, collapsing: Binding<Bool>, last: Bool) {
         self.project = project
         _selection = selection
         tasksFetchRequest = FetchRequest(
             fetchRequest: project.tasksFetchRequest(),
             animation: .default)
+        _collapsing = collapsing
         self.last = last
     }
     
@@ -127,6 +130,10 @@ fileprivate struct ProjectSection: View {
         Button {
             withAnimation {
                 expanded.toggle()
+            }
+            collapsing = true
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) {
+                collapsing = false
             }
         } label: {
             HStack {
@@ -143,10 +150,13 @@ fileprivate struct ProjectSection: View {
                 Spacer()
                 Image(systemName: "chevron.forward")
                     .imageScale(.large)
-                    .foregroundColor(.accentColor)
+                    // Using blue here instead of accentColor so it stays blue
+                    // while temporarily disabled when collapsing or expanding.
+                    .foregroundColor(.blue)
                     .rotationEffect(expanded ? .degrees(90) : .zero)
             }
         }
+        .disabled(collapsing)
     }
     
     private var footer: some View {
@@ -188,6 +198,7 @@ fileprivate struct ProjectSection: View {
                     .background(Color(.systemGroupedBackground))
             }
         }
+//        .animation(.easeInOut(duration: 0.125))
     }
 }
 
