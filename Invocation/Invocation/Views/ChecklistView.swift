@@ -118,9 +118,7 @@ struct ChecklistView: View {
     }
     
     private func invoke() {
-        let project = Project(checklist: checklist, context: moc)
-        self.project = project
-        checklistController.createNotifications(for: project)
+        project = checklistController.invoke(checklist, context: moc)
     }
 }
 

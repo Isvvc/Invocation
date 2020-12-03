@@ -146,6 +146,12 @@ class ChecklistController: ObservableObject {
     
     //MARK: Project/Task CRUD
     
+    func invoke(_ checklist: Checklist, context: NSManagedObjectContext) -> Project {
+        let project = Project(checklist: checklist, context: context)
+        createNotifications(for: project)
+        return project
+    }
+    
     func delete(_ project: Project, context: NSManagedObjectContext) {
         if let tasks = project.tasks as? Set<Task> {
             let notificationIDs = tasks.compactMap { $0.notificationID?.uuidString }
