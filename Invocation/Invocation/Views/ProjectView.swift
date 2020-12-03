@@ -217,13 +217,6 @@ fileprivate struct TaskRow: View {
     
     var body: some View {
         HStack {
-            NavigationLink(
-                destination: TaskView(task: task),
-                tag: task,
-                selection: $selection,
-                label: { EmptyView() })
-                .frame(width: 0, height: 0)
-            
             Button {
                 task.toggle()
             } label: {
@@ -256,6 +249,14 @@ fileprivate struct TaskRow: View {
                 Image(systemName: "questionmark.circle")
                     .imageScale(.large)
             }
+            
+            NavigationLink(
+                destination: TaskView(task: task),
+                tag: task,
+                selection: $selection,
+                label: { EmptyView() })
+                .frame(width: 0, height: 0)
+                .opacity(0)
         }
         .buttonStyle(BorderlessButtonStyle())
     }
