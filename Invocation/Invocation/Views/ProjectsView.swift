@@ -13,15 +13,16 @@ struct ProjectsView: View {
     @Environment(\.managedObjectContext) private var moc
     
     @EnvironmentObject private var checklistController: ChecklistController
-    @EnvironmentObject var projectsContainer: ObjectsContainer<Project>
+    @EnvironmentObject private var projectsContainer: ObjectsContainer<Project>
     var projects: [Project] {
         projectsContainer.sortedObjects
     }
     
+    @StateObject private var collapseController = CollapseController<Project>()
+    
     @Binding var tab: Int
     
     @State private var selection: Project?
-    @State private var collapsing: Bool = false
     @State private var toDelete: Project?
     
     var emptyHeader: some View {
@@ -58,10 +59,11 @@ struct ProjectsView: View {
                     Section(header: emptyHeader, footer: footer(projects.last)) {
                         ForEach(projects) { project in
                             if project != toDelete {
-                                ProjectSection(project: project, selection: $selection, collapsing: $collapsing, last: project == projects.last)
+                                ProjectSection(project: project, selection: $selection, last: project == projects.last)
                             }
                         }
                     }
+                    .environmentObject(collapseController)
                 }
             }
         }
@@ -118,32 +120,29 @@ fileprivate struct ProjectSection: View {
         return [task]
     }
     
+    @EnvironmentObject private var collapseController: CollapseController<Project>
+    
     @ObservedObject var project: Project
     
     @Binding var selection: Project?
-    @Binding var collapsing: Bool
     var last: Bool
     
     @State private var expanded = true
     
-    init(project: Project, selection: Binding<Project?>, collapsing: Binding<Bool>, last: Bool) {
+    init(project: Project, selection: Binding<Project?>, last: Bool) {
         self.project = project
         _selection = selection
         tasksFetchRequest = FetchRequest(
             fetchRequest: project.tasksFetchRequest(),
             animation: .default)
-        _collapsing = collapsing
         self.last = last
     }
     
     private var header: some View {
         Button {
-            withAnimation {
-                expanded.toggle()
-            }
-            collapsing = true
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) {
-                collapsing = false
+            let collapsed = collapseController.toggle(project)
+            withAnimation(.easeInOut(duration: 0.25)) {
+                expanded = !collapsed
             }
         } label: {
             HStack {
@@ -166,7 +165,6 @@ fileprivate struct ProjectSection: View {
                     .rotationEffect(expanded ? .degrees(90) : .zero)
             }
         }
-        .disabled(collapsing)
     }
     
     private var footer: some View {
@@ -188,7 +186,7 @@ fileprivate struct ProjectSection: View {
         Group {
             header
                 .listRowBackground(Color(.systemGroupedBackground))
-            if expanded {
+            if !collapseController.collapsed.contains(project) {
                 if !project.showOne {
                     ForEach(tasks) { task in
                         TaskCell(task: task, showComplete: project.showComplete)
