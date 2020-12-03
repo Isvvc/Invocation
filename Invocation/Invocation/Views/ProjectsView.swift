@@ -23,6 +23,14 @@ struct ProjectsView: View {
     @State private var selection: Project?
     @State private var toDelete: Project?
     
+    var emptyHeader: some View {
+        EmptyView()
+            .padding(.trailing)
+            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
+            .listRowInsets(EdgeInsets())
+            .background(Color(.systemGroupedBackground))
+    }
+    
     var body: some View {
         Group {
             if projects.count == 0 {
@@ -37,9 +45,11 @@ struct ProjectsView: View {
                 }
             } else {
                 List {
-                    ForEach(projects) { project in
-                        if project != toDelete {
-                            ProjectSection(project: project, selection: $selection)
+                    Section(header: emptyHeader, footer: footer(projects.last)) {
+                        ForEach(projects) { project in
+                            if project != toDelete {
+                                ProjectSection(project: project, selection: $selection, last: project == projects.last)
+                            }
                         }
                     }
                 }
@@ -67,6 +77,21 @@ struct ProjectsView: View {
             toDelete = project
         }
     }
+    
+    private func footer(_ project: Project?) -> some View {
+        HStack {
+            Spacer()
+            HStack {
+                Text("Details")
+                Image(systemName: "chevron.forward")
+            }
+            .font(.subheadline)
+            .foregroundColor(.secondary)
+            .onTapGesture {
+                selection = project
+            }
+        }
+    }
 }
 
 //MARK: Project Section
@@ -85,14 +110,17 @@ fileprivate struct ProjectSection: View {
     @ObservedObject var project: Project
     
     @Binding var selection: Project?
+    var last: Bool
+    
     @State private var expanded = true
     
-    init(project: Project, selection: Binding<Project?>) {
+    init(project: Project, selection: Binding<Project?>, last: Bool) {
         self.project = project
         _selection = selection
         tasksFetchRequest = FetchRequest(
             fetchRequest: project.tasksFetchRequest(),
             animation: .default)
+        self.last = last
     }
     
     private var header: some View {
@@ -151,12 +179,14 @@ fileprivate struct ProjectSection: View {
                     }
                 }
             }
-            footer
-                // This removes the separator line from below the footer cell
-                .padding(.trailing)
-                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
-                .listRowInsets(EdgeInsets())
-                .background(Color(.systemGroupedBackground))
+            if !last {
+                footer
+                    // This removes the separator line from below the footer cell
+                    .padding(.trailing)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
+                    .listRowInsets(EdgeInsets())
+                    .background(Color(.systemGroupedBackground))
+            }
         }
     }
 }
