@@ -29,16 +29,19 @@ struct ProjectView: View {
     
     @ObservedObject var project: Project
     
+    var markForDelete: (Project) -> Void
+    
     @State private var title: String = ""
     @State private var selection: Task?
     @State private var delete = false
     @State private var showOne = false
     
-    init(project: Project) {
+    init(project: Project, markForDelete: @escaping (Project) -> Void = {_ in}) {
         self.project = project
         self.tasksFetchRequest = FetchRequest(
             fetchRequest: project.allTasksFetchRequest(),
             animation: .default)
+        self.markForDelete = markForDelete
     }
     
     //MARK: Views
@@ -180,6 +183,7 @@ struct ProjectView: View {
     }
     
     func deleteProject() {
+        markForDelete(project)
         presentationMode.wrappedValue.dismiss()
         checklistController.delete(project, context: moc)
     }

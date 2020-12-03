@@ -21,6 +21,7 @@ struct ProjectsView: View {
     @Binding var tab: Int
     
     @State private var selection: Project?
+    @State private var toDelete: Project?
     
     var body: some View {
         Group {
@@ -37,7 +38,9 @@ struct ProjectsView: View {
             } else {
                 List {
                     ForEach(projects) { project in
-                        ProjectSection(project: project, selection: $selection)
+                        if project != toDelete {
+                            ProjectSection(project: project, selection: $selection)
+                        }
                     }
                 }
             }
@@ -46,15 +49,22 @@ struct ProjectsView: View {
         .navigationTitle("Invocations")
         .sheet(item: $selection) { project in
             NavigationView {
-                ProjectView(project: project)
+                ProjectView(project: project, markForDelete: markForDelete)
             }
             .environment(\.managedObjectContext, moc)
             .environmentObject(checklistController)
+            // When the project view is dismissed, update its position in the list
             .onDisappear {
                 withAnimation {
                     projectsContainer.update(object: project)
                 }
             }
+        }
+    }
+    
+    private func markForDelete(_ project: Project) {
+        withAnimation(.none) {
+            toDelete = project
         }
     }
 }
@@ -120,7 +130,6 @@ fileprivate struct ProjectSection: View {
             }
             .font(.subheadline)
             .foregroundColor(.secondary)
-            .padding(.trailing)
             .onTapGesture {
                 selection = project
             }
@@ -143,6 +152,8 @@ fileprivate struct ProjectSection: View {
                 }
             }
             footer
+                // This removes the separator line from below the footer cell
+                .padding(.trailing)
                 .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
                 .listRowInsets(EdgeInsets())
                 .background(Color(.systemGroupedBackground))
