@@ -331,6 +331,7 @@ struct ProjectsView_Previews: PreviewProvider {
             ProjectsView(tab: .constant(0))
                 .environment(\.managedObjectContext, PersistenceController.preview.container.viewContext)
                 .environmentObject(projectsContainer)
+                .environmentObject(ChecklistController())
         }
     }
 }
