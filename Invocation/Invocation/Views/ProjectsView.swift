@@ -46,6 +46,15 @@ struct ProjectsView: View {
                 }
             } else {
                 List {
+                    // What appear to be section headers and footers in this list are actually
+                    // just cells with their background color set to the grouped list background
+                    // color and their separator lines removed.
+                    // The issue is that this puts a line at the top and bottom of the list.
+                    // By putting the entire thing in a section, we can create a header with
+                    // its bottom line removed and use an actual footer for the last section
+                    // instead of the pseudo-footers used for the other sections. This allows
+                    // us to remove those extra separator lines at the top and bottom of the
+                    // list to make the pseudo-sections look more like actual sections.
                     Section(header: emptyHeader, footer: footer(projects.last)) {
                         ForEach(projects) { project in
                             if project != toDelete {
@@ -92,6 +101,7 @@ struct ProjectsView: View {
                 selection = project
             }
         }
+        .padding(.top, 8)
     }
 }
 
@@ -198,7 +208,6 @@ fileprivate struct ProjectSection: View {
                     .background(Color(.systemGroupedBackground))
             }
         }
-//        .animation(.easeInOut(duration: 0.125))
     }
 }
 
