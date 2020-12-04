@@ -218,7 +218,7 @@ fileprivate struct TaskRow: View {
     var body: some View {
         HStack {
             Button {
-                task.toggle()
+                checklistController.toggle(task)
             } label: {
                 HStack {
                     Image(systemName: task.completed != nil ? "checkmark.square" : "square")
