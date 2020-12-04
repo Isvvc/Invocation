@@ -9,6 +9,9 @@ import SwiftUI
 import CoreData
 
 struct ChecklistsView: View {
+    
+    //MARK: Properties
+    
     @Environment(\.managedObjectContext) private var moc
     
     @FetchRequest(
@@ -18,7 +21,11 @@ struct ChecklistsView: View {
     
     @EnvironmentObject private var checklistController: ChecklistController
     
+    @State private var selection: Checklist?
     @State private var newChecklist: Checklist?
+    @State private var project: Project?
+    
+    //MARK: Views
     
     private var addButton: some View {
         Button() {
@@ -40,25 +47,58 @@ struct ChecklistsView: View {
         }
     }
     
+    //MARK: Body
+    
     var body: some View {
         List {
             ForEach(checklists) { checklist in
-                NavigationLink(destination: ChecklistView(checklist: checklist)) {
-                    HStack {
-                        Text(checklist.wrappedTitle ??? "Checklist")
-                            .foregroundColor(checklist.title != nil ? .primary : .secondary)
-                        Spacer()
-                        Text("\(checklist.items?.count ?? 0) Items")
-                            .foregroundColor(.secondary)
+                HStack {
+                    Button {
+                        project = checklistController.invoke(checklist, context: moc)
+                    } label: {
+                        HStack {
+                            let items = checklist.items?.count ?? 0
+                            let projects = checklist.projects?.count ?? 0
+                            TextWithCaption(text: checklist.wrappedTitle ??? "Checklist", caption: "\(items) Item\(items == 1 ? "" : "s")")
+                                .foregroundColor(checklist.title != nil ? .primary : .secondary)
+                            Spacer()
+                            Text("\(projects) invocation\(projects == 1 ? "" : "s")")
+                                .foregroundColor(.secondary)
+                        }
                     }
+                    
+                    Button {
+                        selection = checklist
+                    } label: {
+                        Image(systemName: "questionmark.circle")
+                            .imageScale(.large)
+                    }
+                    
+                    NavigationLink(
+                        destination: ChecklistView(checklist: checklist),
+                        tag: checklist,
+                        selection: $selection,
+                        label: { EmptyView() })
+                        .frame(width: 0, height: 0)
+                        .opacity(0)
                 }
+                .buttonStyle(BorderlessButtonStyle())
             }
             .onDelete(perform: delete)
         }
         .listStyle(PlainListStyle())
         .navigationTitle("Checklists")
         .navigationBarItems(trailing: addButton)
+        .sheet(item: $project) { project in
+            NavigationView {
+                ProjectView(project: project)
+            }
+            .environment(\.managedObjectContext, moc)
+            .environmentObject(checklistController)
+        }
     }
+    
+    //MARK: Functions
     
     func delete(_ indexSet: IndexSet) {
         indexSet.map({ checklists[$0] }).forEach { checklist in

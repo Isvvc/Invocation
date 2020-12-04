@@ -13,14 +13,25 @@ struct ProjectsView: View {
     @Environment(\.managedObjectContext) private var moc
     
     @EnvironmentObject private var checklistController: ChecklistController
-    @EnvironmentObject var projectsContainer: ObjectsContainer<Project>
+    @EnvironmentObject private var projectsContainer: ObjectsContainer<Project>
     var projects: [Project] {
         projectsContainer.sortedObjects
     }
     
+    @StateObject private var collapseController = CollapseController<Project>()
+    
     @Binding var tab: Int
     
     @State private var selection: Project?
+    @State private var toDelete: Project?
+    
+    var emptyHeader: some View {
+        EmptyView()
+            .padding(.trailing)
+            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
+            .listRowInsets(EdgeInsets())
+            .background(Color(.systemGroupedBackground))
+    }
     
     var body: some View {
         Group {
@@ -36,9 +47,23 @@ struct ProjectsView: View {
                 }
             } else {
                 List {
-                    ForEach(projects) { project in
-                        ProjectSection(project: project, selection: $selection)
+                    // What appear to be section headers and footers in this list are actually
+                    // just cells with their background color set to the grouped list background
+                    // color and their separator lines removed.
+                    // The issue is that this puts a line at the top and bottom of the list.
+                    // By putting the entire thing in a section, we can create a header with
+                    // its bottom line removed and use an actual footer for the last section
+                    // instead of the pseudo-footers used for the other sections. This allows
+                    // us to remove those extra separator lines at the top and bottom of the
+                    // list to make the pseudo-sections look more like actual sections.
+                    Section(header: emptyHeader, footer: footer(projects.last)) {
+                        ForEach(projects) { project in
+                            if project != toDelete {
+                                ProjectSection(project: project, selection: $selection, last: project == projects.last)
+                            }
+                        }
                     }
+                    .environmentObject(collapseController)
                 }
             }
         }
@@ -46,16 +71,39 @@ struct ProjectsView: View {
         .navigationTitle("Invocations")
         .sheet(item: $selection) { project in
             NavigationView {
-                ProjectView(project: project)
+                ProjectView(project: project, markForDelete: markForDelete)
             }
             .environment(\.managedObjectContext, moc)
             .environmentObject(checklistController)
+            // When the project view is dismissed, update its position in the list
             .onDisappear {
                 withAnimation {
                     projectsContainer.update(object: project)
                 }
             }
         }
+    }
+    
+    private func markForDelete(_ project: Project) {
+        withAnimation(.none) {
+            toDelete = project
+        }
+    }
+    
+    private func footer(_ project: Project?) -> some View {
+        HStack {
+            Spacer()
+            HStack {
+                Text("Details")
+                Image(systemName: "chevron.forward")
+            }
+            .font(.subheadline)
+            .foregroundColor(.secondary)
+            .onTapGesture {
+                selection = project
+            }
+        }
+        .padding(.top, 8)
     }
 }
 
@@ -72,23 +120,29 @@ fileprivate struct ProjectSection: View {
         return [task]
     }
     
+    @EnvironmentObject private var collapseController: CollapseController<Project>
+    
     @ObservedObject var project: Project
     
     @Binding var selection: Project?
+    var last: Bool
+    
     @State private var expanded = true
     
-    init(project: Project, selection: Binding<Project?>) {
+    init(project: Project, selection: Binding<Project?>, last: Bool) {
         self.project = project
         _selection = selection
         tasksFetchRequest = FetchRequest(
             fetchRequest: project.tasksFetchRequest(),
             animation: .default)
+        self.last = last
     }
     
     private var header: some View {
         Button {
-            withAnimation {
-                expanded.toggle()
+            let collapsed = collapseController.toggle(project)
+            withAnimation(.easeInOut(duration: 0.25)) {
+                expanded = !collapsed
             }
         } label: {
             HStack {
@@ -97,35 +151,42 @@ fileprivate struct ProjectSection: View {
                     Text(project.wrappedTitle ??? "Project")
                         .font(.title)
                         .foregroundColor(.primary)
-                    Text("\(project.tasks?.count ?? 0) Tasks")
+                    Text("\(project.tasks?.count ?? 0) Task\(project.tasks?.count == 1 ? "" : "s")")
+                        .font(.subheadline)
                         .foregroundColor(.secondary)
                     Spacer()
                 }
                 Spacer()
                 Image(systemName: "chevron.forward")
                     .imageScale(.large)
-                    .foregroundColor(.accentColor)
+                    // Using blue here instead of accentColor so it stays blue
+                    // while temporarily disabled when collapsing or expanding.
+                    .foregroundColor(.blue)
                     .rotationEffect(expanded ? .degrees(90) : .zero)
             }
         }
-        .textCase(.none)
     }
     
     private var footer: some View {
         HStack {
             Spacer()
-            Button {
-                selection = project
-            } label: {
+            HStack {
                 Text("Details")
                 Image(systemName: "chevron.forward")
+            }
+            .font(.subheadline)
+            .foregroundColor(.secondary)
+            .onTapGesture {
+                selection = project
             }
         }
     }
     
     var body: some View {
-        Section(header: header, footer: footer) {
-            if expanded {
+        Group {
+            header
+                .listRowBackground(Color(.systemGroupedBackground))
+            if !collapseController.collapsed.contains(project) {
                 if !project.showOne {
                     ForEach(tasks) { task in
                         TaskCell(task: task, showComplete: project.showComplete)
@@ -135,6 +196,14 @@ fileprivate struct ProjectSection: View {
                         TaskCell(task: task, showComplete: false)
                     }
                 }
+            }
+            if !last {
+                footer
+                    // This removes the separator line from below the footer cell
+                    .padding(.trailing)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
+                    .listRowInsets(EdgeInsets())
+                    .background(Color(.systemGroupedBackground))
             }
         }
     }
@@ -260,6 +329,7 @@ struct ProjectsView_Previews: PreviewProvider {
             ProjectsView(tab: .constant(0))
                 .environment(\.managedObjectContext, PersistenceController.preview.container.viewContext)
                 .environmentObject(projectsContainer)
+                .environmentObject(ChecklistController())
         }
     }
 }
