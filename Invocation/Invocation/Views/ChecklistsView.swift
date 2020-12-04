@@ -14,6 +14,8 @@ struct ChecklistsView: View {
     
     @Environment(\.managedObjectContext) private var moc
     
+    @AppStorage(Defaults.invokeOnTap.rawValue) private var invokeOnTap: Bool = true
+    
     @FetchRequest(
         sortDescriptors: [NSSortDescriptor(keyPath: \Checklist.title, ascending: true)],
         animation: .default)
@@ -54,7 +56,11 @@ struct ChecklistsView: View {
             ForEach(checklists) { checklist in
                 HStack {
                     Button {
-                        project = checklistController.invoke(checklist, context: moc)
+                        if invokeOnTap {
+                            project = checklistController.invoke(checklist, context: moc)
+                        } else {
+                            selection = checklist
+                        }
                     } label: {
                         HStack {
                             let items = checklist.items?.count ?? 0
@@ -67,11 +73,13 @@ struct ChecklistsView: View {
                         }
                     }
                     
-                    Button {
-                        selection = checklist
-                    } label: {
-                        Image(systemName: "questionmark.circle")
-                            .imageScale(.large)
+                    if invokeOnTap {
+                        Button {
+                            selection = checklist
+                        } label: {
+                            Image(systemName: "questionmark.circle")
+                                .imageScale(.large)
+                        }
                     }
                     
                     NavigationLink(
@@ -79,8 +87,8 @@ struct ChecklistsView: View {
                         tag: checklist,
                         selection: $selection,
                         label: { EmptyView() })
-                        .frame(width: 0, height: 0)
-                        .opacity(0)
+                        .frame(width: invokeOnTap ? 0 : 20)
+                        .opacity(invokeOnTap ? 0 : 1)
                 }
                 .buttonStyle(BorderlessButtonStyle())
             }

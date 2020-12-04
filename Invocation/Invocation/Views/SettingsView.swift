@@ -14,6 +14,7 @@ struct SettingsView: View {
     //MARK: Properties
     
     @AppStorage(Defaults.projectNameFill.rawValue) private var projectNameFill: Bool = false
+    @AppStorage(Defaults.invokeOnTap.rawValue) private var invokeOnTap: Bool = true
     @AppStorage(Defaults.showDateOnList.rawValue) private var showDateOnList: Bool = true
     @AppStorage(Defaults.showDateOnProject.rawValue) private var showDateOnProject: Bool = true
     @AppStorage(Defaults.projectSort.rawValue) private var projectSort: Int = 0
@@ -47,6 +48,13 @@ struct SettingsView: View {
                     TextWithCaption(
                         text: "Auto fill invocation name",
                         caption: "Copy a checklist's name to invocations")
+                }
+                Toggle(isOn: $invokeOnTap) {
+                    TextWithCaption(
+                        text: "Invoke on checklist tap",
+                        caption: invokeOnTap
+                            ? "Tapping a checklist will create a new invocation"
+                            : "Tapping a checklist will show its details")
                 }
             }
             

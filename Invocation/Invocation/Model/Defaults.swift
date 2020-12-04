@@ -9,6 +9,7 @@ import Foundation
 
 enum Defaults: String {
     case projectNameFill
+    case invokeOnTap
     case showDateOnList
     case showDateOnProject
     case projectSort
