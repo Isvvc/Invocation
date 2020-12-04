@@ -75,7 +75,9 @@ extension Task {
         }
         
         let content = UNMutableNotificationContent()
-//        content.title = wrappedName
+        if let projectTitle = project?.wrappedTitle {
+            content.title = projectTitle
+        }
         content.body = wrappedName
         content.sound = .default
         
