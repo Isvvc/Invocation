@@ -18,6 +18,7 @@ struct ContentView: View {
     let checklistController = ChecklistController()
     
     @State private var projectsContainer: ObjectsContainer<Project>?
+    @State private var newProject: Project?
     @SceneStorage("selectedTab") private var tab = 0
 
     var body: some View {
@@ -38,7 +39,7 @@ struct ContentView: View {
             .tag(0)
             
             NavigationView {
-                ChecklistsView()
+                ChecklistsView(newProject: $newProject)
             }
             .tabItem {
                 Image(systemName: "list.bullet")
@@ -60,6 +61,13 @@ struct ContentView: View {
             if projectsContainer == nil {
                 initProjectsContainer()
             }
+        }
+        .sheet(item: $newProject) { newProject in
+            NavigationView {
+                ProjectView(project: newProject)
+            }
+            .environment(\.managedObjectContext, moc)
+            .environmentObject(checklistController)
         }
     }
     
