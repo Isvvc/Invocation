@@ -267,8 +267,10 @@ fileprivate struct TaskCell: View {
             // before changing the date format, then the date format
             // settings will have laggy animations as every checklist
             // item has to update at once on each change.
-            dateFormatter = nil
-            dateFormatter = checklistController.dateFormatter
+            DispatchQueue.main.async {
+                dateFormatter = nil
+                dateFormatter = checklistController.dateFormatter
+            }
         }
     }
     
