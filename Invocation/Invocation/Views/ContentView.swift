@@ -9,6 +9,9 @@ import SwiftUI
 import CoreData
 
 struct ContentView: View {
+    
+    static let newProjectType = "vc.isv.Invocation.new-project"
+    
     @Environment(\.managedObjectContext) private var moc
     
     @AppStorage(Defaults.projectSort.rawValue) private var projectSort: Int = 0
@@ -68,6 +71,22 @@ struct ContentView: View {
             }
             .environment(\.managedObjectContext, moc)
             .environmentObject(checklistController)
+        }
+        .userActivity(ContentView.newProjectType, element: newProject) { newProject, activity in
+            activity.isEligibleForSearch = true
+            activity.isEligibleForPrediction = true
+            activity.isEligibleForHandoff = false
+
+            activity.title = "Invoke \(newProject.checklist?.title ?? "Checklist")"
+            activity.userInfo = ["id": newProject.checklist?.id?.uuidString as Any]
+
+            print("Advertising Invoke \(newProject.checklist?.title ?? "Checklist")")
+        }
+        .onContinueUserActivity(ContentView.newProjectType) { userActivity in
+            guard newProject == nil,
+                  let checklistIDString = userActivity.userInfo?["id"] as? String,
+                  let checklistID = UUID(uuidString: checklistIDString) else { return }
+            newProject = checklistController.invoke(checklistID: checklistID, context: moc)
         }
     }
     
