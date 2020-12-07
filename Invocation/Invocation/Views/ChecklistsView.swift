@@ -104,7 +104,14 @@ struct ChecklistsView: View {
     //MARK: Functions
     
     func delete(_ indexSet: IndexSet) {
-        indexSet.map({ checklists[$0] }).forEach { checklist in
+        let checklists = indexSet.map({ self.checklists[$0] })
+        
+        let ids = checklists.compactMap { $0.id?.uuidString }
+        NSUserActivity.deleteSavedUserActivities(withPersistentIdentifiers: ids) {
+            print("Deleted NSUserActivity for:", ids)
+        }
+        
+        checklists.forEach { checklist in
             checklist.deleteChildrenAndSelf(context: moc)
         }
         PersistenceController.save(context: moc)

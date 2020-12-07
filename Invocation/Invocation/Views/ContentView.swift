@@ -84,6 +84,7 @@ struct ContentView: View {
 
             activity.title = "Invoke \(newProject.checklist?.title ?? "Checklist")"
             activity.userInfo = ["id": newProject.checklist?.id?.uuidString as Any]
+            activity.persistentIdentifier = newProject.checklist?.id?.uuidString
 
             print("Advertising Invoke \(newProject.checklist?.title ?? "Checklist")")
         }
