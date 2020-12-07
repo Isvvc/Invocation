@@ -32,7 +32,7 @@ struct ChecklistsView: View {
     
     private var addButton: some View {
         Button() {
-            newChecklist = Checklist(context: moc)
+            newChecklist = Checklist(id: UUID(), context: moc)
             PersistenceController.save(context: moc)
         } label: {
             Image(systemName: "plus")

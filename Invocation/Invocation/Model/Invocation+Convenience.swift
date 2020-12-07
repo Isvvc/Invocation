@@ -9,6 +9,13 @@ import CoreData
 import SwiftDate
 import UserNotifications
 
+extension Checklist {
+    convenience init(id: UUID, context: NSManagedObjectContext) {
+        self.init(context: context)
+        self.id = id
+    }
+}
+
 extension Project {
     @discardableResult
     convenience init(checklist: Checklist, context: NSManagedObjectContext) {
