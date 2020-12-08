@@ -78,17 +78,20 @@ struct ContentView: View {
             .environmentObject(checklistController)
         }
         .userActivity(ContentView.newProjectType, element: newProject) { newProject, activity in
+            activity.persistentIdentifier = newProject.checklist?.id?.uuidString
+            activity.title = "Invoke \(newProject.checklist?.title ?? "Checklist")"
+            activity.userInfo = ["id": newProject.checklist?.id?.uuidString as Any]
+            
             activity.isEligibleForSearch = true
             activity.isEligibleForPrediction = true
             activity.isEligibleForHandoff = false
 
-            activity.title = "Invoke \(newProject.checklist?.title ?? "Checklist")"
-            activity.userInfo = ["id": newProject.checklist?.id?.uuidString as Any]
-            activity.persistentIdentifier = newProject.checklist?.id?.uuidString
+            print(newProject.checklist?.id?.uuidString as Any)
 
             print("Advertising Invoke \(newProject.checklist?.title ?? "Checklist")")
         }
         .onContinueUserActivity(ContentView.newProjectType) { userActivity in
+            print(userActivity.userInfo?["id"] as Any)
             guard newProject == nil,
                   let checklistIDString = userActivity.userInfo?["id"] as? String,
                   let checklistID = UUID(uuidString: checklistIDString) else { return }
