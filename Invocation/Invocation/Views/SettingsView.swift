@@ -41,6 +41,14 @@ struct SettingsView: View {
     var body: some View {
         Form {
             
+            #if DEBUG
+            Button("Forget NSUserActivity") {
+                NSUserActivity.deleteAllSavedUserActivities {
+                    print("done!")
+                }
+            }
+            #endif
+            
             //MARK: Preferences
             
             Section(header: Text("Preferences")) {
