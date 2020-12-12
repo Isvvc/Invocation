@@ -208,6 +208,14 @@ class ChecklistController: ObservableObject {
         }
     }
     
+    func latestProject(ofChecklistWithID checklistID: UUID, context: NSManagedObjectContext) -> Project? {
+        let fetchRequest: NSFetchRequest<Project> = Project.fetchRequest()
+        fetchRequest.fetchLimit = 1
+        fetchRequest.predicate = NSPredicate(format: "checklist.id == %@", checklistID as CVarArg)
+        fetchRequest.sortDescriptors = [NSSortDescriptor(keyPath: \Project.invoked, ascending: false)]
+        return try? context.fetch(fetchRequest).first
+    }
+    
     //MARK: Notifications
     
     func createNotifications(for project: Project) {
