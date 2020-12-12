@@ -23,15 +23,16 @@ struct ChecklistsView: View {
     
     @EnvironmentObject private var checklistController: ChecklistController
     
+    @Binding var newProject: Project?
+    
     @State private var selection: Checklist?
     @State private var newChecklist: Checklist?
-    @State private var project: Project?
     
     //MARK: Views
     
     private var addButton: some View {
         Button() {
-            newChecklist = Checklist(context: moc)
+            newChecklist = Checklist(id: UUID(), context: moc)
             PersistenceController.save(context: moc)
         } label: {
             Image(systemName: "plus")
@@ -40,11 +41,12 @@ struct ChecklistsView: View {
         }
         .sheet(item: $newChecklist) { newChecklist in
             NavigationView {
-                ChecklistView(checklist: newChecklist)
+                ChecklistView(checklist: newChecklist, newProject: $newProject)
                     .environment(\.managedObjectContext, moc)
                     .environmentObject(checklistController)
             }
-            // I have no idea why, but everything is bold if I don't add this
+            // Because the button this is attached to is bolded,
+            // the sheet contents will be bold by defualt.
             .font(.body)
         }
     }
@@ -57,7 +59,7 @@ struct ChecklistsView: View {
                 HStack {
                     Button {
                         if invokeOnTap {
-                            project = checklistController.invoke(checklist, context: moc)
+                            newProject = checklistController.invoke(checklist, context: moc)
                         } else {
                             selection = checklist
                         }
@@ -83,7 +85,7 @@ struct ChecklistsView: View {
                     }
                     
                     NavigationLink(
-                        destination: ChecklistView(checklist: checklist),
+                        destination: ChecklistView(checklist: checklist, newProject: $newProject),
                         tag: checklist,
                         selection: $selection,
                         label: { EmptyView() })
@@ -97,19 +99,19 @@ struct ChecklistsView: View {
         .listStyle(PlainListStyle())
         .navigationTitle("Checklists")
         .navigationBarItems(trailing: addButton)
-        .sheet(item: $project) { project in
-            NavigationView {
-                ProjectView(project: project)
-            }
-            .environment(\.managedObjectContext, moc)
-            .environmentObject(checklistController)
-        }
     }
     
     //MARK: Functions
     
     func delete(_ indexSet: IndexSet) {
-        indexSet.map({ checklists[$0] }).forEach { checklist in
+        let checklists = indexSet.map({ self.checklists[$0] })
+        
+        let ids = checklists.compactMap { $0.id?.uuidString }
+        NSUserActivity.deleteSavedUserActivities(withPersistentIdentifiers: ids) {
+            print("Deleted NSUserActivity for:", ids)
+        }
+        
+        checklists.forEach { checklist in
             checklist.deleteChildrenAndSelf(context: moc)
         }
         PersistenceController.save(context: moc)
@@ -119,7 +121,7 @@ struct ChecklistsView: View {
 struct ChecklistsView_Previews: PreviewProvider {
     static var previews: some View {
         NavigationView {
-            ChecklistsView()
+            ChecklistsView(newProject: .constant(nil))
                 .environment(\.managedObjectContext, PersistenceController.preview.container.viewContext)
         }
     }

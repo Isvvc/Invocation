@@ -15,7 +15,7 @@ class PersistenceController {
         let result = PersistenceController(inMemory: true)
         let viewContext = result.container.viewContext
         for i in 0..<5 {
-            let newChecklist = Checklist(context: viewContext)
+            let newChecklist = Checklist(id: UUID(), context: viewContext)
             newChecklist.title = String(UUID().uuidString.prefix(8))
             
             for i in 0..<Int16.random(in: 3..<6) {

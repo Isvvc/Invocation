@@ -152,6 +152,17 @@ class ChecklistController: ObservableObject {
         return project
     }
     
+    func invoke(checklistID: UUID, context: NSManagedObjectContext) -> Project? {
+        let fetchRequest: NSFetchRequest<Checklist> = Checklist.fetchRequest()
+        fetchRequest.fetchLimit = 1
+        fetchRequest.predicate = NSPredicate(format: "id == %@", checklistID as CVarArg)
+        if let checklist = try? context.fetch(fetchRequest).first {
+            return invoke(checklist, context: context)
+        }
+        
+        return nil
+    }
+    
     func delete(_ project: Project, context: NSManagedObjectContext) {
         if let tasks = project.tasks as? Set<Task> {
             let notificationIDs = tasks.compactMap { $0.notificationID?.uuidString }
@@ -195,6 +206,14 @@ class ChecklistController: ObservableObject {
             task.completed = nil
             createNotification(for: task)
         }
+    }
+    
+    func latestProject(ofChecklistWithID checklistID: UUID, context: NSManagedObjectContext) -> Project? {
+        let fetchRequest: NSFetchRequest<Project> = Project.fetchRequest()
+        fetchRequest.fetchLimit = 1
+        fetchRequest.predicate = NSPredicate(format: "checklist.id == %@", checklistID as CVarArg)
+        fetchRequest.sortDescriptors = [NSSortDescriptor(keyPath: \Project.invoked, ascending: false)]
+        return try? context.fetch(fetchRequest).first
     }
     
     //MARK: Notifications

@@ -10,6 +10,9 @@ import SwiftUI
 //MARK: Projects View
 
 struct ProjectsView: View {
+    
+    static let viewProjectType = "vc.isv.Invocation.view-project"
+    
     @Environment(\.managedObjectContext) private var moc
     
     @EnvironmentObject private var checklistController: ChecklistController
@@ -79,6 +82,36 @@ struct ProjectsView: View {
             .onDisappear {
                 withAnimation {
                     projectsContainer.update(object: project)
+                }
+            }
+        }
+        
+        .userActivity(ProjectsView.viewProjectType, element: selection) { selection, activity in
+            activity.persistentIdentifier = selection.checklist?.id?.uuidString
+            activity.title = "View latest \(selection.checklist?.title ?? "Invocation") invocation"
+            activity.userInfo = ["id": selection.checklist?.id?.uuidString as Any]
+            
+            activity.isEligibleForSearch = true
+            activity.isEligibleForPrediction = true
+            activity.isEligibleForHandoff = true
+
+            print(selection.checklist?.id?.uuidString as Any)
+            print("Advertising View latest \(selection.checklist?.title ?? "Invocation") invocation")
+        }
+        .onContinueUserActivity(ProjectsView.viewProjectType) { userActivity in
+            print(userActivity.userInfo?["id"] as Any)
+            guard let checklistIDString = userActivity.userInfo?["id"] as? String,
+                  let checklistID = UUID(uuidString: checklistIDString) else { return }
+            if let activityProject = checklistController.latestProject(ofChecklistWithID: checklistID, context: moc) {
+                if selection == nil {
+                    selection = activityProject
+                } else {
+                    // Dismiss the currently opened Project.
+                    selection = nil
+                    // Wait for the dismiss animation to finish.
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                        selection = activityProject
+                    }
                 }
             }
         }
@@ -267,8 +300,10 @@ fileprivate struct TaskCell: View {
             // before changing the date format, then the date format
             // settings will have laggy animations as every checklist
             // item has to update at once on each change.
-            dateFormatter = nil
-            dateFormatter = checklistController.dateFormatter
+            DispatchQueue.main.async {
+                dateFormatter = nil
+                dateFormatter = checklistController.dateFormatter
+            }
         }
     }
     

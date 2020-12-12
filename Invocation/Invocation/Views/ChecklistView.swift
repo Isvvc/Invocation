@@ -21,16 +21,18 @@ struct ChecklistView: View {
     
     @ObservedObject var checklist: Checklist
     
+    @Binding var newProject: Project?
+    
     @State private var title: String
     @State private var newItem: Item?
-    @State private var project: Project?
     
-    init(checklist: Checklist) {
+    init(checklist: Checklist, newProject: Binding<Project?>) {
         self.checklist = checklist
         self.itemsFetchRequest = FetchRequest(
             fetchRequest: checklist.itemsFetchRequest(),
             animation: .default)
         _title = .init(wrappedValue: checklist.wrappedTitle)
+        _newProject = newProject
     }
     
     var newItemDoneButton: some View {
@@ -78,17 +80,12 @@ struct ChecklistView: View {
                 Toggle("Show only one item", isOn: $checklist.showOne)
             }
             
-            Button("Invoke", action: invoke)
+            Button("Invoke") {
+                newProject = checklistController.invoke(checklist, context: moc)
+            }
         }
         .navigationTitle(checklist.wrappedTitle ??? "Checklist")
         .navigationBarItems(trailing: EditButton())
-        .sheet(item: $project) { project in
-            NavigationView {
-                ProjectView(project: project)
-            }
-            .environment(\.managedObjectContext, moc)
-            .environmentObject(checklistController)
-        }
     }
     
     func createItem() {
@@ -116,10 +113,6 @@ struct ChecklistView: View {
         
         PersistenceController.save(context: moc)
     }
-    
-    private func invoke() {
-        project = checklistController.invoke(checklist, context: moc)
-    }
 }
 
 fileprivate struct ItemCell: View {
@@ -143,7 +136,7 @@ struct ChecklistView_Previews: PreviewProvider {
     
     static var previews: some View {
         NavigationView {
-            ChecklistView(checklist: checklist)
+            ChecklistView(checklist: checklist, newProject: .constant(nil))
                 .environment(\.managedObjectContext, PersistenceController.preview.container.viewContext)
         }
     }

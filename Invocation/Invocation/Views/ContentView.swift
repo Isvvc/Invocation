@@ -9,6 +9,12 @@ import SwiftUI
 import CoreData
 
 struct ContentView: View {
+    
+    //MARK: Properties
+    
+    static let newProjectType = "vc.isv.Invocation.new-project"
+    
+    @Environment(\.scenePhase) private var scenePhase
     @Environment(\.managedObjectContext) private var moc
     
     @AppStorage(Defaults.projectSort.rawValue) private var projectSort: Int = 0
@@ -18,7 +24,10 @@ struct ContentView: View {
     let checklistController = ChecklistController()
     
     @State private var projectsContainer: ObjectsContainer<Project>?
+    @State private var newProject: Project?
     @SceneStorage("selectedTab") private var tab = 0
+    
+    //MARK: Body
 
     var body: some View {
         TabView(selection: $tab) {
@@ -38,7 +47,7 @@ struct ContentView: View {
             .tag(0)
             
             NavigationView {
-                ChecklistsView()
+                ChecklistsView(newProject: $newProject)
             }
             .tabItem {
                 Image(systemName: "list.bullet")
@@ -61,7 +70,41 @@ struct ContentView: View {
                 initProjectsContainer()
             }
         }
+        .sheet(item: $newProject) { newProject in
+            NavigationView {
+                ProjectView(project: newProject)
+            }
+            .environment(\.managedObjectContext, moc)
+            .environmentObject(checklistController)
+        }
+        .userActivity(ContentView.newProjectType, element: newProject) { newProject, activity in
+            activity.persistentIdentifier = newProject.checklist?.id?.uuidString
+            activity.title = "Invoke \(newProject.checklist?.title ?? "Checklist")"
+            activity.userInfo = ["id": newProject.checklist?.id?.uuidString as Any]
+            
+            activity.isEligibleForSearch = true
+            activity.isEligibleForPrediction = true
+            activity.isEligibleForHandoff = false
+
+            print(newProject.checklist?.id?.uuidString as Any)
+
+            print("Advertising Invoke \(newProject.checklist?.title ?? "Checklist")")
+        }
+        .onContinueUserActivity(ContentView.newProjectType) { userActivity in
+            print(userActivity.userInfo?["id"] as Any)
+            guard newProject == nil,
+                  let checklistIDString = userActivity.userInfo?["id"] as? String,
+                  let checklistID = UUID(uuidString: checklistIDString) else { return }
+            newProject = checklistController.invoke(checklistID: checklistID, context: moc)
+        }
+        .onChange(of: scenePhase) { newScenePhase in
+            if newScenePhase == .background {
+                PersistenceController.save(context: moc)
+            }
+        }
     }
+    
+    //MARK: Functions
     
     func initProjectsContainer() {
         let projectsContainer = ObjectsContainer<Project>(method: projectSort, ascending: projectSortAscending, emptyFirst: projectSortEmptyFirst, context: moc)
